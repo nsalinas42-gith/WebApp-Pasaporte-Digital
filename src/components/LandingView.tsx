@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { UserProfile } from '../types';
 import { 
   Compass, 
   Map, 
@@ -23,9 +24,10 @@ import {
 
 interface LandingViewProps {
   onEnter: () => void;
+  user?: UserProfile;
 }
 
-export default function LandingView({ onEnter }: LandingViewProps) {
+export default function LandingView({ onEnter, user }: LandingViewProps) {
   // Smooth scroll helper
   const scrollToHowItWorks = () => {
     document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
@@ -53,10 +55,19 @@ export default function LandingView({ onEnter }: LandingViewProps) {
             onClick={onEnter}
             className="px-5 py-2.5 rounded-xl bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.15)]"
           >
-            <span className="inline-flex w-4 h-4 bg-[#003732] rounded-md items-center justify-center text-[10px] text-secondary font-black">
-              G
-            </span>
-            <span>Ingresar con Gmail</span>
+            {user?.avatarUrl ? (
+              <img 
+                src={user.avatarUrl} 
+                alt={user.name} 
+                className="w-5.5 h-5.5 rounded-full object-cover border border-[#003732]/20" 
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="inline-flex w-4 h-4 bg-[#003732] rounded-md items-center justify-center text-[10px] text-secondary font-black">
+                G
+              </span>
+            )}
+            <span>{user?.name ? `Entrar como ${user.name.split(' ')[0]}` : 'Ingresar con Gmail'}</span>
           </button>
         </div>
       </header>
@@ -109,11 +120,19 @@ export default function LandingView({ onEnter }: LandingViewProps) {
               onClick={onEnter}
               className="w-full sm:w-auto px-8 py-4 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-extrabold rounded-xl text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(67,229,212,0.35)] hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 outline-none cursor-pointer"
             >
-              {/* Fake Google Sign-In structure */}
-              <span className="inline-flex w-4 h-4 bg-[#003732] rounded-md items-center justify-center text-[10px] text-secondary font-black">
-                G
-              </span>
-              <span>Ingresar con Gmail</span>
+              {user?.avatarUrl ? (
+                <img 
+                  src={user.avatarUrl} 
+                  alt={user.name} 
+                  className="w-6 h-6 rounded-full object-cover border border-[#003732]/20 shadow-sm"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <span className="inline-flex w-4 h-4 bg-[#003732] rounded-md items-center justify-center text-[10px] text-secondary font-black">
+                  G
+                </span>
+              )}
+              <span>{user?.name ? `Iniciar Sesión (${user.name})` : 'Ingresar con Gmail'}</span>
             </button>
 
             <button

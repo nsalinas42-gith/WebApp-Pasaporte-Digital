@@ -38,11 +38,33 @@ export default function App() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<string>('dashboard');
+
+  // Selected Route state for sub-navigation in Exploration menu
+  const [selectedRouteId, setSelectedRouteId] = useState<string>(() => {
+    return localStorage.getItem('passport_selected_route_id') || 'alhambra';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('passport_selected_route_id', selectedRouteId);
+  }, [selectedRouteId]);
   
   // App States with LocalStorage Hydration
   const [locations, setLocations] = useState<Location[]>(() => {
     const saved = localStorage.getItem('passport_locations');
-    return saved ? JSON.parse(saved) : INITIAL_LOCATIONS;
+    if (!saved) return INITIAL_LOCATIONS;
+    try {
+      const parsed = JSON.parse(saved) as Location[];
+      return parsed.map(loc => {
+        const matchingInitial = INITIAL_LOCATIONS.find(initial => initial.id === loc.id);
+        const places = loc.places && loc.places.length === 8 ? loc.places : (matchingInitial?.places || []);
+        return {
+          ...loc,
+          places
+        };
+      });
+    } catch (e) {
+      return INITIAL_LOCATIONS;
+    }
   });
 
   const [user, setUser] = useState<UserProfile>(() => {
@@ -107,27 +129,57 @@ export default function App() {
 
   // Handle click on location stamp in dashboard/stamps
   const handleSelectAndExploreLocation = (locationId: string) => {
+    setSelectedRouteId(locationId);
     setActiveTab('exploration');
-    // We let exploration view handle focusing on that specific location
   };
 
-  // Perform a Geolocation site Check-In
-  const handlePerformCheckIn = (locationId: string) => {
+  // Perform a Geolocation site Check-In for a specific place within a route
+  const handlePerformCheckIn = (locationId: string, placeId: string) => {
     // 1. Identify location details
     const targetLoc = locations.find(loc => loc.id === locationId);
-    if (!targetLoc || targetLoc.isCheckedIn) return;
+    if (!targetLoc) return;
 
-    // 2. Mark as completed
+    // Find the place
+    const place = targetLoc.places?.find(p => p.id === placeId);
+    if (!place || place.isCheckedIn) return;
+
+    // Helper to evaluate progressive check-in rule:
+    // "para obtener la insignia explorador principiante deberá completar la primera geolocalización de la ficha de ruta, y así sucesivamente..."
+    const isRouteInsigniaUnlocked = (locId: string, completedCount: number): boolean => {
+      if (locId === 'alhambra') return completedCount >= 1;
+      if (locId === 'mezquita_cordoba') return completedCount >= 2;
+      if (locId === 'acueducto_segovia') return completedCount >= 3;
+      if (locId === 'alcazar_sevilla') return completedCount >= 4;
+      if (locId === 'sagrada_familia') return completedCount >= 6;
+      if (locId === 'castillo_olite') return completedCount >= 8;
+      return completedCount >= 8;
+    };
+
+    // 2. Mark place as checked in
     const updatedLocations = locations.map(loc => {
       if (loc.id === locationId) {
-        return { ...loc, isCheckedIn: true };
+        const updatedPlaces = (loc.places || []).map(p => {
+          if (p.id === placeId) {
+            return { ...p, isCheckedIn: true };
+          }
+          return p;
+        });
+
+        const completedCount = updatedPlaces.filter(p => p.isCheckedIn).length;
+        const isBadgeUnlocked = isRouteInsigniaUnlocked(loc.id, completedCount);
+
+        return { 
+          ...loc, 
+          places: updatedPlaces,
+          isCheckedIn: isBadgeUnlocked
+        };
       }
       return loc;
     });
     setLocations(updatedLocations);
 
     // 3. Compute score and XP increase, as well as levels
-    const pointsAwarded = targetLoc.points;
+    const pointsAwarded = place.points || 500;
     let newXp = user.xp + pointsAwarded;
     let currentLvl = user.level;
     let didLevelUp = false;
@@ -144,16 +196,94 @@ export default function App() {
       level: currentLvl
     }));
 
-    // Update stats
-    setStats(prev => ({
-      ...prev,
-      regionsVisited: prev.regionsVisited + 1
-    }));
+    // Check if the entire route was completed to increment regionsVisited
+    const wasAlreadyCompleted = targetLoc.isCheckedIn;
+    const isNowCompleted = updatedLocations.find(l => l.id === locationId)?.isCheckedIn || false;
+
+    if (isNowCompleted && !wasAlreadyCompleted) {
+      setStats(prev => ({
+        ...prev,
+        regionsVisited: prev.regionsVisited + 1
+      }));
+    }
 
     // Trigger level up animation overlay if state changed
     if (didLevelUp) {
       setLeveledUpTo(currentLvl);
       setShowLevelUp(true);
+    }
+  };
+
+  // Reset/Clear Geolocation check-in for a specific place within a route
+  const handleResetPlaceCheckIn = (locationId: string, placeId: string) => {
+    let pointsAwarded = 500;
+    const targetLoc = locations.find(loc => loc.id === locationId);
+    if (targetLoc) {
+       const place = targetLoc.places?.find(p => p.id === placeId);
+       if (place) {
+        pointsAwarded = place.points || 500;
+         if (!place.isCheckedIn) return; // Already unchecked
+       }
+     }
+
+    const isRouteInsigniaUnlocked = (locId: string, count: number): boolean => {
+      if (locId === 'alhambra') return count >= 1;
+      if (locId === 'mezquita_cordoba') return count >= 2;
+      if (locId === 'acueducto_segovia') return count >= 3;
+      if (locId === 'alcazar_sevilla') return count >= 4;
+      if (locId === 'sagrada_familia') return count >= 6;
+      if (locId === 'castillo_olite') return count >= 8;
+      return count >= 8;
+    };
+
+    const updatedLocations = locations.map(loc => {
+      if (loc.id === locationId) {
+        const updatedPlaces = (loc.places || []).map(p => {
+          if (p.id === placeId) {
+            return { ...p, isCheckedIn: false };
+          }
+          return p;
+        });
+
+        const completedCount = updatedPlaces.filter(p => p.isCheckedIn).length;
+        const isBadgeUnlocked = isRouteInsigniaUnlocked(loc.id, completedCount);
+
+        return { 
+          ...loc, 
+          places: updatedPlaces,
+          isCheckedIn: isBadgeUnlocked
+        };
+      }
+      return loc;
+    });
+    setLocations(updatedLocations);
+
+    // Deduct points since check-in has been cleared
+    setUser(prev => {
+      let newXp = prev.xp - pointsAwarded;
+      let currentLvl = prev.level;
+      if (newXp < 0) {
+        if (currentLvl > 1) {
+          currentLvl = currentLvl - 1;
+          newXp = prev.xpToNextLevel + newXp;
+        } else {
+          newXp = 0;
+        }
+      }
+      return {
+        ...prev,
+        xp: newXp,
+        level: currentLvl
+      };
+    });
+
+    // Check if the entire route was completed before, and decrement regionsVisited
+    const wasAlreadyCompleted = targetLoc?.isCheckedIn;
+    if (wasAlreadyCompleted) {
+      setStats(prev => ({
+        ...prev,
+        regionsVisited: Math.max(0, prev.regionsVisited - 1)
+      }));
     }
   };
 
@@ -181,6 +311,65 @@ export default function App() {
     }));
   };
 
+  // Toggle completion status of a location/badge
+  const handleToggleLocationCheckIn = (locationId: string) => {
+    const targetLoc = locations.find(loc => loc.id === locationId);
+    if (!targetLoc) return;
+    const nextStatus = !targetLoc.isCheckedIn;
+
+    const updatedLocations = locations.map(loc => {
+      if (loc.id === locationId) {
+        const updatedPlaces = (loc.places || []).map(p => ({
+          ...p,
+          isCheckedIn: nextStatus
+        }));
+        return {
+          ...loc,
+          isCheckedIn: nextStatus,
+          places: updatedPlaces
+        };
+      }
+      return loc;
+    });
+
+    setLocations(updatedLocations);
+
+    // Give some points on manual completion/uncompleting
+    const xpDifference = nextStatus ? (targetLoc.points || 400) : -(targetLoc.points || 400);
+    let newXp = user.xp + xpDifference;
+    let currentLvl = user.level;
+    let didLevelUp = false;
+
+    if (newXp >= user.xpToNextLevel) {
+      newXp = newXp - user.xpToNextLevel;
+      currentLvl = currentLvl + 1;
+      didLevelUp = true;
+    } else if (newXp < 0) {
+      if (currentLvl > 1) {
+        currentLvl = currentLvl - 1;
+        newXp = user.xpToNextLevel + newXp;
+      } else {
+        newXp = 0;
+      }
+    }
+
+    setUser(prev => ({
+      ...prev,
+      xp: newXp,
+      level: currentLvl
+    }));
+
+    if (didLevelUp) {
+      setLeveledUpTo(currentLvl);
+      setShowLevelUp(true);
+    }
+
+    setStats(prev => ({
+      ...prev,
+      regionsVisited: Math.max(0, prev.regionsVisited + (nextStatus ? 1 : -1))
+    }));
+  };
+
   // Photo selfie action stat increment
   const handleTriggerSelfiePhoto = () => {
     setStats(prev => ({
@@ -201,8 +390,25 @@ export default function App() {
   // State Resets
   const handleResetToMockupState = () => {
     localStorage.clear();
-    setLocations(INITIAL_LOCATIONS);
-    setUser(INITIAL_USER);
+    // In mockup state, Alhambra, Córdoba, and Segovia are fully checked in/completed
+    const mockupLocations = INITIAL_LOCATIONS.map(loc => {
+      const isCompletedInMockup = ['alhambra', 'mezquita_cordoba', 'acueducto_segovia'].includes(loc.id);
+      return {
+        ...loc,
+        isCheckedIn: isCompletedInMockup,
+        places: (loc.places || []).map(p => ({
+          ...p,
+          isCheckedIn: isCompletedInMockup
+        }))
+      };
+    });
+    setLocations(mockupLocations);
+    setUser({
+      ...INITIAL_USER,
+      level: 4,
+      xp: 1200,
+      xpToNextLevel: 3000
+    });
     setStats({
       regionsVisited: 3,
       momentsCaptured: 12,
@@ -216,7 +422,11 @@ export default function App() {
 
   const handleResetToZeroState = () => {
     localStorage.clear();
-    const zeroLocations = INITIAL_LOCATIONS.map(loc => ({ ...loc, isCheckedIn: false }));
+    const zeroLocations = INITIAL_LOCATIONS.map(loc => ({
+      ...loc,
+      isCheckedIn: false,
+      places: (loc.places || []).map(p => ({ ...p, isCheckedIn: false }))
+    }));
     setLocations(zeroLocations);
     setUser({
       ...INITIAL_USER,
@@ -247,6 +457,7 @@ export default function App() {
   if (showLanding) {
     return (
       <LandingView 
+        user={user}
         onEnter={() => {
           setShowLanding(false);
           localStorage.setItem('passport_landing_entered', 'true');
@@ -314,12 +525,13 @@ export default function App() {
               <div className="w-10 h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-secondary">
                 <img 
                   alt="Profile" 
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" 
+                  src={user.avatarUrl} 
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-background shadow-md">
-                12
+              <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-background shadow-md font-mono">
+                {user.level}
               </div>
             </div>
 
@@ -345,6 +557,9 @@ export default function App() {
         onReset={handleResetToMockupState}
         onUnlockNewRegion={() => setShowRegionAlert(true)}
         onLogout={handleLogout}
+        locations={locations}
+        selectedRouteId={selectedRouteId}
+        onSelectRoute={setSelectedRouteId}
       />
 
       {/* Main Responsive Canvas Content wrapper */}
@@ -369,7 +584,10 @@ export default function App() {
         {activeTab === 'exploration' && (
           <ExplorationView 
             locations={locations}
+            selectedRouteId={selectedRouteId}
+            onSelectRoute={setSelectedRouteId}
             onCheckIn={handlePerformCheckIn}
+            onResetPlaceCheckIn={handleResetPlaceCheckIn}
             user={user}
             onTriggerPhoto={handleTriggerSelfiePhoto}
           />
@@ -379,6 +597,7 @@ export default function App() {
           <StampsView 
             locations={locations}
             onExploreLocation={handleSelectAndExploreLocation}
+            onToggleCheckIn={handleToggleLocationCheckIn}
           />
         )}
 
@@ -584,6 +803,25 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* SVG filter globally used to key out solid white backgrounds from the generated badge PNGs */}
+      <svg width="0" height="0" className="absolute pointer-events-none" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <defs>
+          <filter id="remove-white" colorInterpolationFilters="sRGB">
+            <feColorMatrix 
+              type="matrix" 
+              values="1 0 0 0 0  
+                      0 1 0 0 0  
+                      0 0 1 0 0  
+                      -4 -4 -4 12 0" 
+              result="keyed"
+            />
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="4" intercept="-2.4" />
+            </feComponentTransfer>
+          </filter>
+        </defs>
+      </svg>
 
     </div>
   );

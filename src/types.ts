@@ -3,6 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface SubLocation {
+  id: string;
+  name: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+  points: number;
+  isCheckedIn: boolean;
+  description: string;
+}
+
 export interface Location {
   id: string;
   name: string;
@@ -19,6 +30,7 @@ export interface Location {
   imageUrl: string;
   review: string[]; // Two paragraphs as requested
   isCheckedIn: boolean;
+  places: SubLocation[];
 }
 
 export interface UserStats {

@@ -13,9 +13,20 @@ import {
   Check, 
   Trash2, 
   ShieldCheck,
-  Award
+  Award,
+  Camera,
+  Upload
 } from 'lucide-react';
 import { UserProfile } from '../types';
+
+const PRESET_AVATARS = [
+  { name: 'Felix', url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80' },
+  { name: 'Sofia', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80' },
+  { name: 'Mateo', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80' },
+  { name: 'Camila', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80' },
+  { name: 'Diego', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' },
+  { name: 'Elena', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80' }
+];
 
 interface SettingsViewProps {
   user: UserProfile;
@@ -37,11 +48,32 @@ export default function SettingsView({
   const [email, setEmail] = useState(user.email);
   const [title, setTitle] = useState(user.title);
   const [wallet, setWallet] = useState(user.linkedWallet);
+  const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
   
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [walletCopied, setWalletCopied] = useState(false);
   const [showConfirmResetMock, setShowConfirmResetMock] = useState(false);
   const [showConfirmResetZero, setShowConfirmResetZero] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1.5 * 1024 * 1024) {
+        setErrorMsg("La imagen de avatar supera el límite de 1.5 MB recomendado para persistencia offline.");
+        setTimeout(() => setErrorMsg(null), 5000);
+        return;
+      }
+      setErrorMsg(null);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setAvatarUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -50,7 +82,8 @@ export default function SettingsView({
       name,
       email,
       title,
-      linkedWallet: wallet
+      linkedWallet: wallet,
+      avatarUrl
     });
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
@@ -77,6 +110,105 @@ export default function SettingsView({
           <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider border-b border-[#005049]/15 pb-2">
             Editar Cuenta e Información Personal
           </h3>
+
+          {/* Avatar & Photo Upload Section */}
+          <div className="bg-[#001c24]/50 border border-[#005049]/30 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row gap-5 items-center">
+            {/* Circular Preview with Drag & Drop or Camera icon overlay */}
+            <div className="relative group/avatar flex-shrink-0">
+              <div 
+                className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(67,229,212,0.15)] bg-[#001019] flex items-center justify-center relative cursor-pointer group-hover/avatar:border-secondary transition-all"
+                onClick={() => document.getElementById('avatar-upload')?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      if (typeof reader.result === 'string') {
+                        setAvatarUrl(reader.result);
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              >
+                {avatarUrl ? (
+                  <img 
+                    src={avatarUrl} 
+                    alt="Vista previa del avatar" 
+                    className="w-full h-full object-cover transition-transform group-hover/avatar:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <User className="w-8 h-8 text-on-surface-variant/40" />
+                )}
+                <div className="absolute inset-0 bg-[#001019]/75 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center text-[9px] text-secondary font-bold transition-all gap-1">
+                  <Camera className="w-4 h-4 text-secondary animate-pulse" />
+                  <span>Subir Foto</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Upload Buttons and Presets */}
+            <div className="flex-1 space-y-3 text-center sm:text-left">
+              <div>
+                <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1 justify-center sm:justify-start">
+                  <Camera className="w-3.5 h-3.5 text-secondary" /> Fotografía y Avatar del Viajero
+                </h4>
+                <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1">
+                  Carga una fotografía desde tu computadora o celular, o arrastra la imagen directamente aquí. O si prefieres, escoge uno de estos avatares oficiales de la red:
+                </p>
+              </div>
+
+              {/* Preset avatars list */}
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                {PRESET_AVATARS.map((p, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setAvatarUrl(p.url);
+                      setErrorMsg(null);
+                    }}
+                    title={p.name}
+                    className={`w-8 h-8 rounded-full overflow-hidden border-2 focus:outline-none transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                      avatarUrl === p.url ? 'border-secondary scale-105 ring-2 ring-secondary/25' : 'border-[#005049]/40 hover:border-secondary'
+                    }`}
+                  >
+                    <img src={p.url} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-0.5">
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  className="py-1.5 px-3 bg-[#0d2a29] border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#43e5d4] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Subir Fotografía Personalizada
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          {errorMsg && (
+            <div className="bg-error-container/15 border border-error/30 text-error rounded-xl p-3 text-xs font-semibold animate-in slide-in-from-top-1 duration-150">
+              ⚠️ {errorMsg}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Explorer Nickname */}

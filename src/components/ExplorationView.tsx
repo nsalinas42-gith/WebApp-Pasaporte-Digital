@@ -20,11 +20,14 @@ import {
   Award,
   BookOpen
 } from 'lucide-react';
-import { Location, UserProfile } from '../types';
+import { Location, SubLocation, UserProfile } from '../types';
 
 interface ExplorationViewProps {
   locations: Location[];
-  onCheckIn: (locationId: string) => void;
+  selectedRouteId: string;
+  onSelectRoute: (routeId: string) => void;
+  onCheckIn: (locationId: string, placeId: string) => void;
+  onResetPlaceCheckIn?: (locationId: string, placeId: string) => void;
   user: UserProfile;
   onTriggerPhoto: () => void;
 }
@@ -47,24 +50,26 @@ function getHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: nu
 
 export default function ExplorationView({
   locations,
+  selectedRouteId,
+  onSelectRoute,
   onCheckIn,
+  onResetPlaceCheckIn,
   user,
   onTriggerPhoto
 }: ExplorationViewProps) {
   // Let's start the simulated position at Madrid, Spain (Puerta del Sol)
-  // Coordinates of Madrid: 40.4168, -3.7038
   const [gpsSimLat, setGpsSimLat] = useState<number>(40.4168);
   const [gpsSimLng, setGpsSimLng] = useState<number>(-3.7038);
   
-  const [selectedLocId, setSelectedLocId] = useState<string>(locations[0]?.id || '');
-  const [isCheckingIn, setIsCheckingIn] = useState<boolean>(false);
-  const [justUnlockedLoc, setJustUnlockedLoc] = useState<Location | null>(null);
+  // Checking in state tracked per placeId
+  const [checkingInId, setCheckingInId] = useState<string | null>(null);
+  const [justUnlockedPlace, setJustUnlockedPlace] = useState<{ parentLoc: Location; place: SubLocation } | null>(null);
   
   // Real browser geolocation state
   const [browserGpsInUse, setBrowserGpsInUse] = useState<boolean>(false);
   const [browserGpsError, setBrowserGpsError] = useState<string | null>(null);
 
-  const selectedLoc = locations.find(loc => loc.id === selectedLocId) || locations[0];
+  const selectedLoc = locations.find(loc => loc.id === selectedRouteId) || locations[0];
 
   // Try to query real device GPS
   const useRealBrowserGps = () => {
@@ -94,361 +99,417 @@ export default function ExplorationView({
     );
   };
 
-  // Teleport helper to monument with random minor fluctuation (e.g., 5-15 meters)
-  const teleportToMonument = (loc: Location) => {
-    // Approx displacement of 0.00008 degrees ~ 8 meters in CDMX
-    const latFluct = (Math.random() - 0.5) * 0.00015;
-    const lngFluct = (Math.random() - 0.5) * 0.00015;
-    setGpsSimLat(Number((loc.latitude + latFluct).toFixed(5)));
-    setGpsSimLng(Number((loc.longitude + lngFluct).toFixed(5)));
+  // Teleport helper with minor fluctuation to simulate GPS inaccuracy
+  const teleportToPlace = (place: SubLocation) => {
+    const latFluct = (Math.random() - 0.5) * 0.0001;
+    const lngFluct = (Math.random() - 0.5) * 0.0001;
+    setGpsSimLat(Number((place.latitude + latFluct).toFixed(5)));
+    setGpsSimLng(Number((place.longitude + lngFluct).toFixed(5)));
     setBrowserGpsError(null);
   };
 
-  // Calculate distance from simulated position to selected landmark
-  const distanceToSelected = selectedLoc 
-    ? getHaversineDistance(gpsSimLat, gpsSimLng, selectedLoc.latitude, selectedLoc.longitude)
-    : 0;
+  const handlePerformCheckIn = (place: SubLocation) => {
+    if (!place || !selectedLoc) return;
 
-  // We consider that the physical colored card check-in holds a 100 meters range limit on phone GPS
-  const isWithinCheckInRadius = distanceToSelected <= 100;
-
-  const handlePerformCheckIn = () => {
-    if (!isWithinCheckInRadius || !selectedLoc) return;
-
-    setIsCheckingIn(true);
+    setCheckingInId(place.id);
     
     // Simulate radio communication wait for satellite sync & smart contract precheck
     setTimeout(() => {
-      onCheckIn(selectedLoc.id);
-      setIsCheckingIn(false);
-      setJustUnlockedLoc(selectedLoc);
+      onCheckIn(selectedLoc.id, place.id);
+      setCheckingInId(null);
+      setJustUnlockedPlace({
+        parentLoc: selectedLoc,
+        place: place
+      });
     }, 1800);
   };
 
+  // Calculations for route checkin counters
+  const getCompletedPlacesCount = (loc: Location) => {
+    return loc.places?.filter(p => p.isCheckedIn).length || 0;
+  };
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 text-left">
       
-      {/* Upper Status Banner with Active simulated coordinates */}
-      <div className="glass-panel border border-[#43e5d4]/20 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="space-y-1 text-left">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-secondary animate-ping"></span>
-            <span className="font-headline text-xs font-bold text-secondary uppercase tracking-wider">
-              Servicio de Geolocalización Activo
-            </span>
-          </div>
-          <h2 className="text-lg font-bold text-on-surface">
-            Tus coordenadas actuales (Simuladas)
-          </h2>
-          <p className="font-mono text-xs text-on-surface-variant font-medium">
-            Latitud: <span className="text-[#c8e7fb] font-extrabold select-all">{gpsSimLat}</span> | 
-            Longitud: <span className="text-[#c8e7fb] font-extrabold select-all">{gpsSimLng}</span>
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <button
-            onClick={useRealBrowserGps}
-            disabled={browserGpsInUse}
-            className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-secondary/20 bg-secondary/10 hover:bg-secondary/15 transition-all text-xs font-bold text-secondary flex items-center justify-center gap-1.5"
-          >
-            {browserGpsInUse ? (
-              <div className="w-3.5 h-3.5 border-2 border-secondary border-t-transparent animate-spin rounded-full"></div>
-            ) : (
-              <Navigation className="w-3.5 h-3.5" />
-            )}
-            Obtener GPS del Teléfono
-          </button>
-          
-          <button
-            onClick={() => {
-              // Quick reset to central Mexico CDMX coords
-              setGpsSimLat(19.4326);
-              setGpsSimLng(-99.1332);
-              setBrowserGpsError(null);
-            }}
-            className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-on-surface-variant/20 hover:bg-surface-container-high transition-all text-xs font-semibold text-on-surface-variant flex items-center justify-center"
-          >
-            Resetear al Zócalo
-          </button>
-        </div>
-      </div>
-
       {browserGpsError && (
-        <div className="bg-error-container/35 border border-error/25 text-error p-3 rounded-xl text-xs flex items-center gap-2 animate-bounce">
+        <div className="bg-error-container/35 border border-error/25 text-error p-3 rounded-xl text-xs flex items-center gap-2">
           <span className="font-bold">Aviso GPS:</span> {browserGpsError}
           <span className="text-on-surface-variant">(Se ha mantenido la simulación manual para que puedas jugar sin problemas)</span>
         </div>
       )}
 
-      {/* Main Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Sub Menu / Horizontal Tabs list of Routes (Ruta 1, Ruta 2, ...) */}
+      <div className="space-y-3">
+        <h3 className="font-headline text-xs font-bold text-secondary uppercase tracking-wider pl-1 flex items-center gap-1.5">
+          <Compass className="w-4 h-4 text-secondary animate-pulse" /> Sub-menú de Rutas Disponibles
+        </h3>
         
-        {/* Left pane: Monument Selector List (5 Columns) */}
-        <div id="monument-list-sidebar" className="lg:col-span-4 space-y-4">
-          <h3 className="font-headline text-xs font-bold text-secondary uppercase tracking-wider pb-1">
-            Lugares Disponibles
-          </h3>
+        {/* Horizontal tabs list of Routes */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {locations.map((loc, idx) => {
+            const isSelected = selectedRouteId === loc.id;
+            const completedCount = getCompletedPlacesCount(loc);
+            const totalCount = loc.places?.length || 8;
+            const percentage = Math.round((completedCount / totalCount) * 100);
 
-          <div className="space-y-3">
-            {locations.map((loc) => {
-              const isSelected = selectedLocId === loc.id;
-              
-              return (
-                <div
-                  id={`monument-card-${loc.id}`}
-                  key={loc.id}
-                  onClick={() => {
-                    setSelectedLocId(loc.id);
-                    setBrowserGpsError(null);
-                  }}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                    isSelected 
-                      ? 'bg-surface-container-high border-secondary shadow-[0_0_12px_rgba(67,229,212,0.1)] scale-[1.02]' 
-                      : 'bg-surface-container border-outline-variant/20 hover:border-[#005049]/50 hover:bg-surface-container/80'
-                  }`}
-                >
-                  <div className="flex gap-3">
-                    {/* Tiny visual thumbnail preview */}
-                    <div className="w-14 h-14 rounded-lg bg-background border border-[#005049]/20 overflow-hidden flex-shrink-0 relative">
-                      <img 
-                        src={loc.imageUrl} 
-                        alt={loc.name} 
-                        className={`w-full h-full object-cover ${loc.isCheckedIn ? '' : 'brightness-75'}`} 
-                      />
-                      {loc.isCheckedIn && (
-                        <div className="absolute inset-0 bg-tertiary/10 flex items-center justify-center text-tertiary">
-                          <CheckCircle2 className="w-5 h-5 fill-background" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 text-left min-w-0">
-                      <span className="text-[9px] uppercase font-extrabold text-secondary tracking-wider block">
-                        {loc.category}
-                      </span>
-                      <h4 className="font-headline text-sm font-bold text-on-surface truncate">
-                        {loc.name}
-                      </h4>
-                      <p className="text-[11px] text-on-surface-variant font-medium truncate">
-                        {loc.city}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 pt-2.5 border-t border-[#005049]/15 flex justify-between items-center text-[10px]">
-                    <span className="text-on-surface-variant font-semibold">
-                      Recompensa: <strong className="text-secondary font-bold">+{loc.points} XP</strong>
+            return (
+              <button
+                key={loc.id}
+                onClick={() => {
+                  onSelectRoute(loc.id);
+                  setBrowserGpsError(null);
+                }}
+                className={`p-3.5 rounded-xl border text-left transition-all relative overflow-hidden group flex flex-col justify-between h-[90px] ${
+                  isSelected 
+                    ? 'bg-surface-container border-secondary shadow-[0_0_15px_rgba(67,229,212,0.12)] scale-[1.03] z-10' 
+                    : 'bg-surface-container-low border-outline-variant/20 hover:border-secondary/40 hover:bg-surface-container transition-all cursor-pointer'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start gap-1">
+                    <span className="text-[10px] uppercase font-black text-secondary tracking-wider block">
+                      Ruta {idx + 1}
                     </span>
-                    
-                    {loc.isCheckedIn ? (
-                      <span className="text-tertiary font-bold flex items-center gap-0.5">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Stamp Canjeado
-                      </span>
-                    ) : (
-                      <span className="text-secondary font-bold flex items-center gap-0.5 animate-pulse">
-                        <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span> Pendiente
-                      </span>
+                    {percentage === 100 && (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-tertiary fill-background shrink-0" />
                     )}
                   </div>
+                  <h4 className="font-headline text-xs font-bold text-on-surface truncate group-hover:text-secondary mt-0.5">
+                    {loc.name}
+                  </h4>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Right pane: Selected Monument Ficha & GPS Simulator (7 Columns) */}
-        <div id="monument-details-fiche" className="lg:col-span-8 bg-surface-container rounded-2xl border border-[#005049]/20 overflow-hidden shadow-lg flex flex-col">
-          {/* Top cover image of monument */}
-          <div className="h-48 md:h-60 relative overflow-hidden">
-            <img 
-              src={selectedLoc.imageUrl} 
-              alt={selectedLoc.name} 
-              className="w-full h-full object-cover"
-            />
-            {/* Dark gradient overlap */}
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent z-10" />
-            
-            {/* Floating state badge inside image */}
-            <div className="absolute top-4 left-4 z-20">
-              <span className="inline-block bg-background/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-secondary/25 text-xs text-secondary font-bold">
-                {selectedLoc.category}
-              </span>
-            </div>
-
-            {selectedLoc.isCheckedIn && (
-              <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-tertiary text-on-tertiary px-3 py-1.5 rounded-full font-bold text-xs shadow-md">
-                <CheckCircle2 className="w-4 h-4 fill-on-tertiary" /> Desbloqueado
-              </div>
-            )}
-          </div>
-
-          {/* Deep Ficha details */}
-          <div className="p-6 md:p-8 space-y-6 flex-1 text-left">
-            <div>
-              <span className="text-xs text-secondary font-bold uppercase tracking-wider">
-                {selectedLoc.city} &bull; Coordinadas: {selectedLoc.latitude}, {selectedLoc.longitude}
-              </span>
-              <h2 className="font-headline text-xl md:text-2xl font-black text-[#c8e7fb] mt-1">
-                {selectedLoc.name}
-              </h2>
-            </div>
-
-            {/* Two short educational review paragraphs */}
-            <div className="space-y-4 text-sm text-on-surface-variant leading-relaxed">
-              <p>{selectedLoc.review[0]}</p>
-              <p>{selectedLoc.review[1]}</p>
-            </div>
-
-            {/* GPS Range Validation Box */}
-            <div className="mt-8 bg-background/50 p-5 rounded-xl border border-[#005049]/20 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#005049]/15 pb-3">
-                <div className="flex items-center gap-2">
-                  <Compass className="w-5 h-5 text-secondary animate-spin" style={{ animationDuration: '6s' }} />
-                  <span className="font-headline text-xs font-bold text-on-surface uppercase tracking-wider">
-                    Filtro de Proximidad GPS
-                  </span>
-                </div>
-                
-                {/* Distance visual warning */}
-                <div className="text-right">
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded ${
-                    isWithinCheckInRadius 
-                      ? 'bg-tertiary/15 text-tertiary border border-tertiary/25'
-                      : 'bg-error/10 text-error border border-error/20'
-                  }`}>
-                    {distanceToSelected > 1000 
-                      ? `${(distanceToSelected / 1000).toFixed(1)} km de distancia`
-                      : `${Math.round(distanceToSelected)} metros de distancia`
-                    }
-                  </span>
-                </div>
-              </div>
-
-              {selectedLoc.isCheckedIn ? (
-                // Successfully unlocked and Checked-in state
-                <div className="p-4 bg-tertiary/10 border border-tertiary/30 rounded-lg flex items-center gap-3.5 text-tertiary">
-                  <Sparkles className="w-6 h-6 text-tertiary shrink-0 animate-bounce" />
-                  <div className="text-xs">
-                    <p className="font-bold text-sm">¡Puntos e Insignia Desbloqueados!</p>
-                    <p className="mt-0.5">Ya has validado tu presencia geofísica en este monumento. Ganaste <strong className="font-bold underline">{selectedLoc.points} XP</strong> y el sello <strong className="font-bold">"{selectedLoc.badgeName}"</strong> brilla en tu pasaporte.</p>
+                <div className="w-full space-y-1">
+                  <div className="flex justify-between items-center text-[9px] text-on-surface-variant font-mono">
+                    <span>Progreso</span>
+                    <span className="font-bold text-secondary">{completedCount}/{totalCount}</span>
+                  </div>
+                  <div className="w-full h-1 bg-[#001521] rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-300 ${percentage === 100 ? 'bg-tertiary' : 'bg-secondary'}`}
+                      style={{ width: `${percentage}%` }}
+                    />
                   </div>
                 </div>
+
+                {isSelected && (
+                  <div className="absolute right-0 top-0 h-full w-1 bg-secondary" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Selected Route Information Card Block */}
+      <div className="bg-surface-container rounded-2xl border border-[#005049]/20 overflow-hidden shadow-lg flex flex-col md:flex-row">
+         {/* Cover image of monument */}
+        <div className="w-full md:w-72 aspect-[16/10] relative overflow-hidden shrink-0">
+          <img 
+            src={selectedLoc.imageUrl} 
+            alt={selectedLoc.name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Ficha details */}
+        <div className="p-5 md:p-6 flex-1 flex flex-col justify-between gap-4">
+          <div>
+            <div className="flex justify-between items-start gap-2">
+              <span className="text-xs text-secondary font-bold uppercase tracking-wider block">
+                8 Fichas Históricas
+              </span>
+              
+              {getCompletedPlacesCount(selectedLoc) === 8 ? (
+                <span className="bg-tertiary/10 border border-tertiary/25 text-tertiary px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Ruta Certificada
+                </span>
               ) : (
-                // Locked, can simulate or try check-in
-                <div className="space-y-4">
-                  {/* Info panel */}
-                  <div className="text-xs text-on-surface-variant/90 leading-relaxed md:flex md:items-center md:gap-4">
-                    <div className="bg-surface-container-high/60 p-3 rounded-lg border border-secondary/15 flex-1 space-y-1">
-                      <p className="font-bold text-on-surface flex items-center gap-1 text-secondary">
-                        <Target className="w-3.5 h-3.5" /> Distancia Requerida: &lt; 100 metros
-                      </p>
-                      <p>Para canjear, debes estar físicamente cerca de las coordenadas con tu teléfono. Desde la comodidad de tu casa, usa el botón de abajo para "Teletransportarte".</p>
+                <span className="bg-secondary/10 border border-secondary/25 text-secondary px-3 py-1 rounded-full text-[11px] font-bold">
+                  {getCompletedPlacesCount(selectedLoc)}/8 Completados
+                </span>
+              )}
+            </div>
+
+            <h2 className="font-headline text-xl md:text-2xl font-black text-[#c8e7fb] mt-1.5">
+              {selectedLoc.name}
+            </h2>
+            
+            <p className="text-xs text-on-surface-variant leading-relaxed mt-2.5 max-w-2xl whitespace-pre-line">
+              {selectedLoc.review[0]}
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-[#005049]/15 flex flex-wrap gap-4 items-center justify-between text-xs text-on-surface-variant">
+            <span className="flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-secondary" />
+              Suma total: <strong className="text-on-surface font-bold">{selectedLoc.points} XP</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Grid: Render the 8 historical cards (fichas) synchronously as requested! */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center px-1">
+          <div>
+            <h3 className="font-headline text-base font-bold text-on-surface">
+              Las 8 Fichas Históricas de la Ruta
+            </h3>
+            <p className="text-xs text-on-surface-variant">
+              Telesimula tu posición para cada una de las fichas y clica en validar para fichar el lugar.
+            </p>
+          </div>
+          <span className="bg-[#002732] border border-secondary/25 text-secondary font-mono text-xs py-1 px-3 rounded-full font-bold">
+            {getCompletedPlacesCount(selectedLoc)} / 8 Listas
+          </span>
+        </div>
+
+        {/* 8 Fichas grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+          {selectedLoc.places?.map((place, idx) => {
+            const isCompleted = place.isCheckedIn;
+            const dist = getHaversineDistance(gpsSimLat, gpsSimLng, place.latitude, place.longitude);
+            const isWithinCheckIn = dist <= 150;
+            const isCheckingThisOne = checkingInId === place.id;
+
+            return (
+              <div 
+                key={place.id}
+                id={`ficha-historica-${place.id}`}
+                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between min-h-[300px] relative ${
+                  isCompleted
+                    ? 'bg-gradient-to-br from-[#012623]/25 to-[#001019] border-tertiary/40 shadow-[0_0_12px_rgba(0,180,140,0.05)]'
+                    : 'bg-surface-container border-outline-variant/15 hover:border-[#005049]/50'
+                }`}
+              >
+                {/* Visual verified watermark */}
+                {isCompleted && (
+                  <div className="absolute top-0 right-0 overflow-hidden rounded-tr-2xl w-20 h-20 pointer-events-none select-none">
+                    <div className="bg-tertiary text-on-tertiary text-[9px] font-black uppercase tracking-wider text-center py-1 absolute top-4 -right-6 w-24 rotate-45 border-y border-[#c8e7fb]/20 shadow-md">
+                      OK
+                    </div>
+                  </div>
+                )}
+
+                {/* Header Segment */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-mono text-xs font-black text-secondary bg-secondary/10 w-6 h-6 rounded-full flex items-center justify-center border border-secondary/15 shrink-0">
+                      {idx + 1}
+                    </span>
+                    <span className="text-[10px] font-bold bg-[#001e2c] border border-secondary/15 text-secondary px-2.5 py-0.5 rounded font-mono">
+                      +{place.points} XP
+                    </span>
+                  </div>
+
+                  <div className="text-left space-y-1 pr-14">
+                    <span className="text-[10px] text-secondary font-black uppercase tracking-wider block">
+                      {place.category}
+                    </span>
+                    <h4 className="font-headline text-base font-black text-[#c8e7fb] leading-snug">
+                      {place.name}
+                    </h4>
+                  </div>
+
+                  <p className="text-xs text-on-surface-variant leading-relaxed text-left">
+                    {place.description}
+                  </p>
+                </div>
+
+                {/* Distance & GPS information */}
+                <div className="space-y-4 pt-4 border-t border-[#005049]/15 mt-4">
+                  <div className="flex justify-between items-center text-[11px] font-mono text-on-surface-variant">
+                    <span>Coordenadas Ficha:</span>
+                    <span className="text-on-surface font-semibold">{place.latitude}, {place.longitude}</span>
+                  </div>
+
+                  {/* Servicio de Geolocalización Integrado */}
+                  <div className="bg-[#001c27] border border-[#43e5d4]/10 p-3 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#43e5d4] animate-ping"></span>
+                        <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
+                          GPS Activo
+                        </span>
+                      </div>
+                      <span className="font-mono text-[9px] text-on-surface-variant">
+                        Tus Coordenadas
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] font-mono bg-background/50 px-2 py-1 rounded">
+                      <span className="text-on-surface-variant">Lat: <strong className="text-secondary select-all">{gpsSimLat}</strong></span>
+                      <span className="text-on-surface-variant">Lng: <strong className="text-secondary select-all">{gpsSimLng}</strong></span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={useRealBrowserGps}
+                        disabled={browserGpsInUse}
+                        className="flex-1 py-1 px-2 rounded bg-secondary/10 hover:bg-secondary/15 border border-secondary/15 transition-all text-[9.5px] font-bold text-secondary flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        {browserGpsInUse ? (
+                          <div className="w-2.5 h-2.5 border border-secondary border-t-transparent animate-spin rounded-full"></div>
+                        ) : (
+                          <Navigation className="w-2.5 h-2.5" />
+                        )}
+                        GPS Real
+                      </button>
+                      <button
+                        onClick={() => {
+                          setGpsSimLat(40.4168);
+                          setGpsSimLng(-3.7038);
+                          setBrowserGpsError(null);
+                          if (onResetPlaceCheckIn) {
+                            onResetPlaceCheckIn(selectedLoc.id, place.id);
+                          }
+                        }}
+                        className="py-1 px-2 rounded hover:bg-surface-container-high border border-on-surface-variant/10 transition-all text-[9.5px] font-semibold text-on-surface-variant cursor-pointer"
+                      >
+                        Resetear
+                      </button>
                     </div>
                   </div>
 
-                  {/* Teleport simulated GPS button of custom app */}
-                  <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                    <button
-                      id="btn-teleport-simulator"
-                      onClick={() => teleportToMonument(selectedLoc)}
-                      className="flex-1 py-3 bg-[#43e5d4]/10 border border-secondary/35 text-secondary font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-[#43e5d4]/20 transition-all cursor-pointer transform active:scale-95"
-                    >
-                      <Zap className="w-4 h-4 fill-secondary/10" />
-                      Simular Visita Física (Teletransportarse)
-                    </button>
+                  {/* Geolocation visual telemetry */}
+                  {isCompleted ? (
+                    <div className="p-3 bg-tertiary/10 border border-tertiary/25 text-tertiary text-xs rounded-xl flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 fill-background" />
+                      <div className="leading-tight">
+                        <p className="font-bold">Lugar Historico Validado</p>
+                        <p className="text-[10px] opacity-80 mt-0.5">Certificado emitido en blockchain correctamente.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`p-3 rounded-xl border text-xs flex flex-col gap-1.5 font-sans ${
+                      isWithinCheckIn
+                        ? 'bg-tertiary/10 border-tertiary/30 text-tertiary'
+                        : 'bg-error-container/10 border-error/20 text-error'
+                    }`}>
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold flex items-center gap-1 shrink-0">
+                          <Target className="w-3.5 h-3.5" /> 
+                          {isWithinCheckIn ? '¡Posición Geográfica Correcta!' : 'Se requiere Presencia Física'}
+                        </span>
+                        <span className="font-mono text-[10px] bg-background/50 px-1.5 py-0.5 rounded border border-current/15 shrink-0">
+                          {dist > 1000 
+                            ? `${(dist / 1000).toFixed(2)} km`
+                            : `${Math.round(dist)} metros`
+                          }
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-on-surface-variant opacity-85 leading-normal">
+                        {isWithinCheckIn 
+                          ? 'Estás en el radio de presencia permitido (< 150m). Procede a fichar el lugar.' 
+                          : 'Para certificar esta ficha, debes teletransportarte o usar tu GPS cerca de las coordenadas.'
+                        }
+                      </p>
+                    </div>
+                  )}
 
-                    <button
-                      id="btn-perform-checkin"
-                      disabled={!isWithinCheckInRadius || isCheckingIn}
-                      onClick={handlePerformCheckIn}
-                      className={`flex-1 py-3 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all ${
-                        isWithinCheckInRadius
-                          ? isCheckingIn
-                            ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                            : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_15px_rgba(67,229,212,0.25)] cursor-pointer'
-                          : 'bg-[#43e5d4]/5 border border-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed opacity-50'
-                      }`}
-                    >
-                      {isCheckingIn ? (
-                        <>
-                          <div className="w-3.5 h-3.5 border-2 border-secondary border-t-transparent animate-spin rounded-full"></div>
-                          <span>Validando Satélite GPS...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>Fichar en Pasaporte (Check-In)</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  {/* Dynamic control actions for simulation & Satellite verification */}
+                  {!isCompleted && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <button
+                        onClick={() => teleportToPlace(place)}
+                        className="py-2 px-3 bg-secondary/10 border border-secondary/35 text-secondary font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-secondary/20 transition-all cursor-pointer active:scale-95"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        Simular Visita
+                      </button>
+
+                      <button
+                        disabled={!isWithinCheckIn || isCheckingThisOne}
+                        onClick={() => handlePerformCheckIn(place)}
+                        className={`py-2 px-3 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center ${
+                          isWithinCheckIn
+                            ? isCheckingThisOne
+                              ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
+                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_8px_rgba(67,229,212,0.2)] cursor-pointer'
+                            : 'bg-background/20 border border-on-surface-variant/15 text-on-surface-variant/40 cursor-not-allowed opacity-50'
+                        }`}
+                      >
+                        {isCheckingThisOne ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-secondary border-t-transparent animate-spin rounded-full"></div>
+                            <span>Validando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Fichar Lugar</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+            );
+          })}
         </div>
-
       </div>
 
-      {/* Pop Up Banner when a stamp is unlocked! */}
-      {justUnlockedLoc && (
+      {/* Pop Up Banner when a location/place is unlocked! */}
+      {justUnlockedPlace && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md">
-          <div className="w-full max-w-sm bg-surface-container border-2 border-secondary p-8 rounded-2xl text-center space-y-6 glow-cyan animate-in zoom-in duration-300">
-            <div className="relative w-32 h-32 mx-auto rounded-full bg-secondary/15 flex items-center justify-center text-secondary border-2 border-secondary animate-bounce overflow-hidden">
-              {justUnlockedLoc.badgeImageUrl ? (
+          <div className="w-full max-w-sm bg-surface-container border-2 border-secondary p-8 rounded-2xl text-center space-y-6 glow-cyan animate-in zoom-in duration-300 text-left">
+            <div className="relative w-28 h-28 mx-auto flex items-center justify-center animate-bounce">
+              {justUnlockedPlace.parentLoc.badgeImageUrl ? (
                 <img 
-                  src={justUnlockedLoc.badgeImageUrl} 
-                  alt={justUnlockedLoc.badgeName} 
+                  src={justUnlockedPlace.parentLoc.badgeImageUrl} 
+                  alt={justUnlockedPlace.parentLoc.badgeName} 
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover" 
+                  style={{ filter: "url(#remove-white)" }}
+                  className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(67,229,212,0.6)]" 
                 />
               ) : (
-                <span className="text-6xl select-none">
-                  {justUnlockedLoc.badgeIcon === 'castle' && '🏰'}
-                  {justUnlockedLoc.badgeIcon === 'forest' && '🌲'}
-                  {justUnlockedLoc.badgeIcon === 'museum' && '🏛️'}
-                  {justUnlockedLoc.badgeIcon === 'landscape' && '🏔️'}
-                  {justUnlockedLoc.badgeIcon === 'waves' && '🌊'}
-                  {justUnlockedLoc.badgeIcon === 'night_sight_auto' && '💫'}
+                <span className="text-5xl select-none">
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'castle' && '🏰'}
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'forest' && '🌲'}
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'museum' && '🏛️'}
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'landscape' && '🏔️'}
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'waves' && '🌊'}
+                  {justUnlockedPlace.parentLoc.badgeIcon === 'night_sight_auto' && '💫'}
                 </span>
               )}
-              <div className="absolute -bottom-2 right-0 bg-tertiary text-on-tertiary text-[10px] font-black px-2.5 py-0.5 rounded-full">
-                ¡NUEVO SELLO!
+              <div className="absolute -bottom-1.5 right-0 bg-tertiary text-on-tertiary text-[9px] font-black px-2 py-0.5 rounded-full z-10">
+                UBICACIÓN OK
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 text-center">
               <span className="text-[10px] text-secondary font-black uppercase tracking-widest block bg-secondary/10 w-fit mx-auto px-2.5 py-0.5 rounded-full border border-secondary/15">
-                {justUnlockedLoc.badgeTitle} Unlocked
+                {justUnlockedPlace.place.category}
               </span>
-              <h3 className="font-headline text-2xl font-black text-on-surface">
-                {justUnlockedLoc.badgeName}
+              <h3 className="font-headline text-xl font-black text-on-surface leading-tight">
+                {justUnlockedPlace.place.name}
               </h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                ¡Check-in GPS verificado correctamente a {justUnlockedLoc.latitude}, {justUnlockedLoc.longitude}! Has sumado <strong className="text-secondary font-bold">+{justUnlockedLoc.points} de XP</strong> a tu bitácora de viaje.
+                ¡Check-in verificado para el lugar de interés ({justUnlockedPlace.parentLoc.name})! Has obtenido <strong className="text-secondary font-bold">+{justUnlockedPlace.place.points} de XP</strong> en tu bitácora de viaje.
               </p>
             </div>
 
             {/* Fast Photo button integrated for premium micro-experience */}
             <div className="bg-background/40 p-3 rounded-xl border border-secondary/10 flex items-center justify-between text-xs text-on-surface-variant">
-              <span>¿Quieres guardar este recuerdo?</span>
+              <span>¿Registrar foto del lugar?</span>
               <button
                 onClick={() => {
                   onTriggerPhoto();
-                  // Trigger small simulated notification
                 }}
-                className="bg-secondary text-on-secondary py-1.5 px-3 rounded font-bold text-[10px] flex items-center gap-1 uppercase"
+                className="bg-secondary text-on-secondary py-1.5 px-3 rounded font-bold text-[10px] flex items-center gap-1 uppercase cursor-pointer"
               >
-                <Camera className="w-3.5 h-3.5" /> Foto instantánea
+                <Camera className="w-3.5 h-3.5" /> Foto Instantánea
               </button>
             </div>
 
             <button
-              onClick={() => setJustUnlockedLoc(null)}
-              className="w-full py-3 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wide glow-mint hover:brightness-105 transition-all"
+              onClick={() => setJustUnlockedPlace(null)}
+              className="w-full py-3 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wide glow-mint hover:brightness-105 transition-all text-center block cursor-pointer"
             >
-              Continuar Explorando
+              Continuar la Ruta
             </button>
           </div>
         </div>

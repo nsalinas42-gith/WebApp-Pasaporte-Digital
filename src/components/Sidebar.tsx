@@ -14,7 +14,7 @@ import {
   LogOut, 
   Sparkles 
 } from 'lucide-react';
-import { UserProfile } from '../types';
+import { UserProfile, Location } from '../types';
 
 interface SidebarProps {
   user: UserProfile;
@@ -25,6 +25,9 @@ interface SidebarProps {
   onReset: () => void;
   onUnlockNewRegion: () => void;
   onLogout: () => void;
+  locations: Location[];
+  selectedRouteId: string;
+  onSelectRoute: (routeId: string) => void;
 }
 
 export default function Sidebar({
@@ -35,7 +38,10 @@ export default function Sidebar({
   totalCount,
   onReset,
   onUnlockNewRegion,
-  onLogout
+  onLogout,
+  locations,
+  selectedRouteId,
+  onSelectRoute
 }: SidebarProps) {
   // Simple calculation of progress width for level up
   const percentageToNextLevel = Math.min(100, Math.round((user.xp / user.xpToNextLevel) * 100));
@@ -79,24 +85,57 @@ export default function Sidebar({
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
-            <button
-              id={`nav-link-${item.id}`}
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all relative ${
-                isActive
-                  ? 'text-secondary font-bold bg-[#01262d] border-l-4 border-secondary shadow-[inset_0_0_12px_rgba(67,229,212,0.03)]'
-                  : 'text-on-surface-variant hover:bg-surface-container-high hover:text-secondary'
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-secondary' : 'text-on-surface-variant'}`} />
-              <span className="font-sans text-sm font-medium">{item.label}</span>
-              {item.id === 'exploration' && unlockedCount < totalCount && (
-                <span className="absolute right-3 bg-secondary/15 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
-                  {totalCount - unlockedCount}
-                </span>
+            <div key={item.id} className="space-y-1">
+              <button
+                id={`nav-link-${item.id}`}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all relative ${
+                  isActive
+                    ? 'text-secondary font-bold bg-[#01262d] border-l-4 border-secondary shadow-[inset_0_0_12px_rgba(67,229,212,0.03)]'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-secondary'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-secondary' : 'text-on-surface-variant'}`} />
+                <span className="font-sans text-sm font-medium">{item.label}</span>
+                {item.id === 'exploration' && unlockedCount < totalCount && (
+                  <span className="absolute right-3 bg-secondary/15 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
+                    {totalCount - unlockedCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Exploration nested sub-menu for Route pages */}
+              {item.id === 'exploration' && (
+                <div className="pl-5 pr-1 py-1 space-y-1 border-l border-[#005049]/20 ml-6 animate-in slide-in-from-top-1 duration-150">
+                  {locations.map((loc, idx) => {
+                    const isSubActive = activeTab === 'exploration' && selectedRouteId === loc.id;
+                    const completedPlaces = loc.places?.filter(p => p.isCheckedIn).length || 0;
+                    const totalPlaces = loc.places?.length || 0;
+
+                    return (
+                      <button
+                        key={loc.id}
+                        id={`submenu-route-${loc.id}`}
+                        onClick={() => {
+                          setActiveTab('exploration');
+                          onSelectRoute(loc.id);
+                        }}
+                        className={`w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] leading-tight transition-all flex justify-between items-center ${
+                          isSubActive
+                            ? 'text-secondary bg-[#001e2c] border border-secondary/35 shadow-[0_0_8px_rgba(67,229,212,0.1)] font-bold'
+                            : 'text-on-surface-variant hover:text-secondary hover:bg-surface-container-high/50'
+                        }`}
+                      >
+                        <span className="truncate pr-1">Ruta {idx + 1}: {loc.name}</span>
+                        <span className="text-[9px] font-mono opacity-80 shrink-0">
+                          ({completedPlaces}/{totalPlaces})
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               )}
-            </button>
+            </div>
           );
         })}
       </nav>
