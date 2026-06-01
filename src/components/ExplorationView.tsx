@@ -59,7 +59,7 @@ export default function ExplorationView({
   onTriggerPhoto
 }: ExplorationViewProps) {
   const { t, translateLocation } = useLanguage();
-  const translatedLocations = locations.map(translateLocation);
+  const translatedLocations = locations.map(translateLocation) as Location[];
 
   // Let's start the simulated position at Madrid, Spain (Puerta del Sol)
   const [gpsSimLat, setGpsSimLat] = useState<number>(40.4168);

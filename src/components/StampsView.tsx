@@ -61,7 +61,7 @@ interface StampsViewProps {
 
 export default function StampsView({ locations, onExploreLocation, onToggleCheckIn }: StampsViewProps) {
   const { t, translateLocation } = useLanguage();
-  const translatedLocations = locations.map(translateLocation);
+  const translatedLocations = locations.map(translateLocation) as Location[];
 
   const [selectedBadge, setSelectedBadge] = useState<Location | null>(null);
   const [showShareMenu, setShowShareMenu] = useState(false);

@@ -464,7 +464,7 @@ export default function SettingsView({
 
             <div className="p-4 bg-background/35 rounded-xl border border-secondary/10 flex items-center justify-center text-center mt-4">
               <span className="text-[10px] text-on-surface-variant font-mono">
-                Passport Pro MVP &bull; Solana cNFT v1.0
+                PASAPORTE DIGITAL PINTA MAPAS MVP &bull; Solana cNFT v1.0
               </span>
             </div>
           </aside>

@@ -27,7 +27,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cerrar_sesion_title': 'Cerrar sesión e ir a Inicio',
 
     // Landing View Hero
-    'descubre_mundo': 'Descubre el Mundo,',
+    'descubre_mundo': 'Descubre tu Ciudad,',
     'colecciona_historia': 'Colecciona Historia',
     'hero_desc': 'Transforma tus viajes en una aventura digital. Visita monumentos, completa tu mapa y desbloquea activos digitales únicos.',
     'saber_mas': 'Saber más',
@@ -37,11 +37,11 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // Landing How It Works
     'como_funciona': '¿Cómo funciona?',
     'physical_map_title': 'Adquiere tu Mapa Físico',
-    'physical_map_desc': 'Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu pasaporte digital Pro.',
+    'physical_map_desc': 'Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu pasaporte digital.',
     'visit_sites_title': 'Visita los Sitios',
     'visit_sites_desc': 'Explora monumentos históricos y maravillas naturales. Cada ubicación es un nuevo hito en tu carrera como Explorador Digital.',
     'gps_checkin_title': 'GPS Check-in',
-    'gps_checkin_desc': 'Nuestra tecnología de geovallado valida tu presencia. Solo los verdaderos viajeros obtienen el sello.',
+    'gps_checkin_desc': 'Nuestra tecnología de geolocalización valida tu presencia. Solo los verdaderos viajeros obtienen su insignia.',
     'realtime_validation': 'VALIDACIÓN EN TIEMPO REAL',
     'earn_cnft_title': 'Gana cNFTs Exclusivos',
     'earn_cnft_desc': 'Cada visita desbloquea un Compressed NFT único que vive en la blockchain. Son coleccionables, transferibles y demuestran tu historial viajero.',
@@ -56,7 +56,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Política de Cookies',
     'centro_ayuda': 'Centro de Ayuda',
     'contacto': 'Contacto',
-    'derechos_reservados': '© 2024 Passport Pro. Todos los derechos reservados.',
+    'derechos_reservados': '© 2024 PASAPORTE DIGITAL PINTA MAPAS. Todos los derechos reservados.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
@@ -209,7 +209,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // New keys for complete visual translation
     // DashboardView:
     'explorador_digital': 'Explorador Digital',
-    'tu_pasaporte_al_mundo': 'Tu Pasaporte al Mundo',
+    'tu_pasaporte_al_mundo': 'Tu Pasaporte a tu Ciudad',
     'tu_pasaporte_desc': 'Descubre el patrimonio histórico como nunca antes. Colecciona sellos digitales, desbloquea insignias exclusivas y forja tu propio camino a través de la historia.',
     'empezar_aventura': 'Empezar Aventura',
     'hola_explorador': 'Hola, Explorador',
@@ -345,7 +345,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cerrar_sesion_title': 'Log out and return to Home',
 
     // Landing View Hero
-    'descubre_mundo': 'Discover the World,',
+    'descubre_mundo': 'Discover your City,',
     'colecciona_historia': 'Collect History',
     'hero_desc': 'Transform your travels into a digital adventure. Visit monuments, complete your map, and unlock unique digital assets.',
     'saber_mas': 'Learn more',
@@ -355,11 +355,11 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // Landing How It Works
     'como_funciona': 'How it works',
     'physical_map_title': 'Acquire your Physical Map',
-    'physical_map_desc': 'Start your journey with our high-quality premium map. It contains the secret markers and QR codes required to activate your digital Pro Passport.',
+    'physical_map_desc': 'Start your journey with our high-quality premium map. It contains the secret markers and QR codes required to activate your digital Passport.',
     'visit_sites_title': 'Visit the Sites',
     'visit_sites_desc': 'Explore historic monuments and natural wonders. Each location is a new milestone in your career as a Digital Explorer.',
     'gps_checkin_title': 'GPS Check-In',
-    'gps_checkin_desc': 'Our geofencing technology validates your presence. Only real travelers get the stamp.',
+    'gps_checkin_desc': 'Our geolocalization technology validates your presence. Only real travelers get their badge.',
     'realtime_validation': 'REAL-TIME VALIDATION',
     'earn_cnft_title': 'Earn Exclusive cNFTs',
     'earn_cnft_desc': 'Each visit unlocks a unique Compressed NFT that lives on the blockchain. They are collectible, transferable, and prove your travel history.',
@@ -374,7 +374,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Cookie Policy',
     'centro_ayuda': 'Help Center',
     'contacto': 'Contact Us',
-    'derechos_reservados': '© 2024 Passport Pro. All rights reserved.',
+    'derechos_reservados': '© 2024 PASAPORTE DIGITAL PINTA MAPAS. All rights reserved.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
@@ -527,7 +527,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // New keys for complete visual translation
     // DashboardView:
     'explorador_digital': 'Digital Explorer',
-    'tu_pasaporte_al_mundo': 'Your passport to the World',
+    'tu_pasaporte_al_mundo': 'Your passport to your City',
     'tu_pasaporte_desc': 'Discover historical heritage like never before. Collect digital stamps, unlock exclusive badges and forge your own path through history.',
     'empezar_aventura': 'Start Adventure',
     'hola_explorador': 'Hello, Explorer',

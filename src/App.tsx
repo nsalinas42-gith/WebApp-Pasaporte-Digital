@@ -485,7 +485,7 @@ export default function App() {
             <span className="text-xl select-none">🧭</span>
           </div>
           <span className="font-headline text-base md:text-lg font-extrabold text-secondary uppercase tracking-wider select-none">
-            Passport Pro
+            PASAPORTE DIGITAL PINTA MAPAS
           </span>
         </div>
 

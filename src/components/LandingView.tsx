@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { motion } from 'motion/react';
 import { UserProfile } from '../types';
 import { 
   Compass, 
@@ -23,6 +24,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../translations';
 import LanguageSelector from './LanguageSelector';
+import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
+import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
+import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
+import stampSagrada from '../assets/images/05E_Guia_Local.png';
+import stampOlite from '../assets/images/06F_guia_local_experto.png';
 
 interface LandingViewProps {
   onEnter: () => void;
@@ -48,7 +55,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             <span className="text-secondary text-base">🧭</span>
           </div>
           <span className="font-headline text-lg font-extrabold text-[#43e5d4] uppercase tracking-wider">
-            Passport Pro
+            PASAPORTE DIGITAL PINTA MAPAS
           </span>
         </div>
 
@@ -274,6 +281,147 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
 
           </div>
 
+          {/* CARD 5: Insignias Digitales (Badges) (col-span-12) */}
+          <div className="col-span-12 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl hover:border-[#43e5d4]/40 transition-colors text-left space-y-6">
+            <div className="space-y-2">
+              <h3 className="font-headline text-lg sm:text-xl font-extrabold text-on-surface">
+                Insignias Digitales (Badges)
+              </h3>
+              <p className="text-xs sm:text-sm text-[#8c9f9e]/90 leading-relaxed">
+                estas son las insignias que podrás ir obteniendo a medida que desbloqueas los sitios históricos sucesivamente hasta completar las (6) insignias.
+              </p>
+            </div>
+
+            {/* Badges list */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4">
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampAlhambra} 
+                  alt="Explorador Principiante" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR PRINCIPIANTE</span>
+              </motion.div>
+
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampCordoba} 
+                  alt="Explorador Intermedio" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR INTERMEDIO</span>
+              </motion.div>
+
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampSegovia} 
+                  alt="Explorador Avanzado" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR AVANZADO</span>
+              </motion.div>
+
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampSevilla} 
+                  alt="Cazador de rutas" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">CAZADOR DE RUTAS</span>
+              </motion.div>
+
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampSagrada} 
+                  alt="Guia Local" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL</span>
+              </motion.div>
+
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.5 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={stampOlite} 
+                  alt="guia local experto" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL EXPERTO</span>
+              </motion.div>
+            </div>
+          </div>
+
         </div>
 
       </section>
@@ -299,7 +447,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             <div className="flex items-center gap-2 select-none">
               <span className="text-xl">🧭</span>
               <span className="font-headline text-base font-extrabold text-[#43e5d4] tracking-wider uppercase">
-                Passport Pro
+                PASAPORTE DIGITAL PINTA MAPAS
               </span>
             </div>
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
