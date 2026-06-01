@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { Trophy, Medal, Search, Star, Award, Compass } from 'lucide-react';
 import { LeaderboardEntry, UserProfile } from '../types';
+import { useLanguage } from '../translations';
 
 interface LeaderboardViewProps {
   entries: LeaderboardEntry[];
@@ -19,21 +20,37 @@ export default function LeaderboardView({
   user,
   userPoints,
   unlockedCount
-}: LeaderboardViewProps) {
+  }: LeaderboardViewProps) {
+  const { t, translateUser, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Update original entries array with dynamic user points and badge unlocks in real time!
   const updatedEntries = entries.map(entry => {
+    let title = entry.title;
+    if (language === 'en') {
+      if (entry.title === 'Explorador Supremo') title = 'Supreme Explorer';
+      if (entry.title === 'Explorador Novato') title = 'Novice Explorer';
+      if (entry.title === 'Iniciado del Templo') title = 'Temple Initiate';
+      if (entry.title === 'Custodio del Olimpo') title = 'Olympus Warden';
+      if (entry.title === 'Embajador del Desierto') title = 'Desert Ambassador';
+      if (entry.title === 'Sabio Forestal') title = 'Forest Sage';
+      if (entry.title === 'Cazador Marino') title = 'Marine Hunter';
+    }
+
     if (entry.isCurrentUser) {
+      const translatedUser = translateUser(user);
       return {
         ...entry,
-        name: user.name,
-        title: user.title,
+        name: translatedUser.name,
+        title: translatedUser.title,
         points: userPoints,
         badgesUnlocked: unlockedCount
       };
     }
-    return entry;
+    return {
+      ...entry,
+      title
+    };
   }).sort((a, b) => b.points - a.points); // Resort dynamically based on checks!
 
   // Re-map ranks after sorting to reward real-time climbers!
@@ -54,10 +71,10 @@ export default function LeaderboardView({
       <div className="text-left space-y-2">
         <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface flex items-center gap-2">
           <Trophy className="w-6 h-6 text-secondary" />
-          Ranking Global de Exploradores
+          {t('ranking_global_title')}
         </h2>
         <p className="text-sm text-on-surface-variant max-w-2xl leading-relaxed font-sans">
-          Aquí convergen los mejores exploradores locales de la región. Haz check-in geográfico en más monumentos, sube de nivel y escala posiciones para presumir tus medallas Web3.
+          {t('ranking_global_desc')}
         </p>
       </div>
 
@@ -68,7 +85,7 @@ export default function LeaderboardView({
         {rankedEntries[1] && (
           <div className="bg-surface-container/60 border border-[#005049]/15 rounded-2xl p-6 text-center order-2 md:order-1 h-fit transform hover:translate-y-[-4px] transition-all relative">
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 bg-on-surface-variant/25 text-on-surface-variant font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full">
-              Puesto 2
+              {t('puesto_index').replace('{num}', '2')}
             </div>
             <div className="w-16 h-16 rounded-full border-2 border-slate-400 overflow-hidden mx-auto mt-3">
               <img src={rankedEntries[1].avatarUrl} alt={rankedEntries[1].name} className="w-full h-full object-cover" />
@@ -78,7 +95,7 @@ export default function LeaderboardView({
               <p className="text-[10px] text-on-surface-variant">{rankedEntries[1].title}</p>
             </div>
             <div className="mt-3 py-1.5 px-3 bg-surface-container-high rounded-lg border border-[#005049]/10 text-xs font-bold text-secondary">
-              {rankedEntries[1].points} Pts &bull; {rankedEntries[1].badgesUnlocked} Sellos
+              {t('pts_suffix').replace('{points}', String(rankedEntries[1].points)).replace('{badges}', String(rankedEntries[1].badgesUnlocked))}
             </div>
           </div>
         )}
@@ -87,7 +104,7 @@ export default function LeaderboardView({
         {rankedEntries[0] && (
           <div className="bg-gradient-to-t from-surface-container-high to-[#0d2d3d]/80 border-2 border-secondary rounded-2xl p-8 text-center order-1 md:order-2 glow-cyan transform hover:translate-y-[-8px] transition-all relative md:bottom-2">
             <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-secondary text-on-secondary font-black text-[11px] uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md flex items-center gap-1">
-              <Star className="w-3 h-3 fill-on-secondary" /> Rey del Mapa
+              <Star className="w-3 h-3 fill-on-secondary" /> {t('rey_del_mapapodium')}
             </div>
             <div className="w-20 h-20 rounded-full border-4 border-secondary overflow-hidden mx-auto mt-4">
               <img src={rankedEntries[0].avatarUrl} alt={rankedEntries[0].name} className="w-full h-full object-cover animate-pulse" style={{ animationDuration: '3s' }} />
@@ -98,7 +115,7 @@ export default function LeaderboardView({
             </div>
             <div className="mt-4 py-2 px-4 bg-secondary/15 rounded-xl border border-secondary/20 text-sm font-black text-secondary flex items-center justify-center gap-1.5 shadow-sm">
               <Star className="w-4 h-4 fill-secondary" />
-              {rankedEntries[0].points} Pts &bull; {rankedEntries[0].badgesUnlocked} Sellos
+              {t('pts_suffix').replace('{points}', String(rankedEntries[0].points)).replace('{badges}', String(rankedEntries[0].badgesUnlocked))}
             </div>
           </div>
         )}
@@ -107,7 +124,7 @@ export default function LeaderboardView({
         {rankedEntries[2] && (
           <div className="bg-surface-container/60 border border-[#005049]/15 rounded-2xl p-6 text-center order-3 md:order-3 h-fit transform hover:translate-y-[-4px] transition-all relative">
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 bg-[#005049]/45 text-secondary font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full">
-              Puesto 3
+              {t('puesto_index').replace('{num}', '3')}
             </div>
             <div className="w-16 h-16 rounded-full border-2 border-amber-600/50 overflow-hidden mx-auto mt-3">
               <img src={rankedEntries[2].avatarUrl} alt={rankedEntries[2].name} className="w-full h-full object-cover" />
@@ -117,7 +134,7 @@ export default function LeaderboardView({
               <p className="text-[10px] text-on-surface-variant truncate">{rankedEntries[2].title}</p>
             </div>
             <div className="mt-3 py-1.5 px-3 bg-surface-container-high rounded-lg border border-[#005049]/10 text-xs font-bold text-secondary">
-              {rankedEntries[2].points} Pts &bull; {rankedEntries[2].badgesUnlocked} Sellos
+              {t('pts_suffix').replace('{points}', String(rankedEntries[2].points)).replace('{badges}', String(rankedEntries[2].badgesUnlocked))}
             </div>
           </div>
         )}
@@ -128,7 +145,7 @@ export default function LeaderboardView({
       <div className="bg-surface-container rounded-2xl border border-[#005049]/20 p-6 space-y-4 shadow-lg max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider">
-            Exploradores de la Comunidad ({filteredEntries.length})
+            {t('exploradores_comunidad_title').replace('{num}', String(filteredEntries.length))}
           </h3>
 
           {/* Search bar inputs */}
@@ -138,7 +155,7 @@ export default function LeaderboardView({
             </span>
             <input
               type="text"
-              placeholder="Buscar explorador..."
+              placeholder={t('buscar_explorador')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-background/60 border border-[#005049]/20 rounded-full py-1.5 pl-9 pr-4 text-xs text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 placeholder-on-surface-variant/50"
@@ -177,7 +194,7 @@ export default function LeaderboardView({
 
                     <div className="text-left min-w-0">
                       <h4 className={`text-sm font-bold truncate ${isSelf ? 'text-secondary' : 'text-on-surface'}`}>
-                        {player.name} {isSelf && <span className="text-[9px] font-black uppercase text-tertiary ml-1.5 bg-tertiary/10 border border-tertiary/20 px-1.5 py-0.5 rounded-full select-none">Tú</span>}
+                        {player.name} {isSelf && <span className="text-[9px] font-black uppercase text-tertiary ml-1.5 bg-tertiary/10 border border-tertiary/20 px-1.5 py-0.5 rounded-full select-none">{t('tu_label')}</span>}
                       </h4>
                       <p className="text-[10px] text-on-surface-variant truncate font-semibold">
                         {player.title}
@@ -189,12 +206,12 @@ export default function LeaderboardView({
                     {/* Badge counts */}
                     <div className="hidden sm:flex items-center gap-1 bg-surface-container-highest/60 px-2 py-1 rounded border border-secondary/10 text-[10px] font-bold text-on-surface-variant">
                       <Award className="w-3.5 h-3.5 text-secondary" />
-                      <span>{player.badgesUnlocked}/6 Sellos</span>
+                      <span>{t('sellos_label').replace('{num}', String(player.badgesUnlocked))}</span>
                     </div>
 
                     {/* XP Points */}
                     <span className="font-headline text-sm font-extrabold text-[#c8e7fb] tracking-tight">
-                      {player.points} Pts
+                      {t('pts_label').replace('{num}', String(player.points))}
                     </span>
                   </div>
                 </div>
@@ -203,7 +220,7 @@ export default function LeaderboardView({
           ) : (
             <div className="text-center py-10 space-y-2">
               <Search className="w-8 h-8 text-on-surface-variant/40 mx-auto" />
-              <p className="text-sm text-on-surface-variant">No se encontraron exploradores que coincidan con tu búsqueda.</p>
+              <p className="text-sm text-on-surface-variant">{t('no_se_encontraron_usuarios')}</p>
             </div>
           )}
         </div>

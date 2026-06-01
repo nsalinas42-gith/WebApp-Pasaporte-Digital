@@ -29,8 +29,12 @@ import StampsView from './components/StampsView';
 import LeaderboardView from './components/LeaderboardView';
 import SettingsView from './components/SettingsView';
 import LandingView from './components/LandingView';
+import { useLanguage } from './translations';
+import LanguageSelector from './components/LanguageSelector';
 
 export default function App() {
+  const { t, translateLocation, translateUser, language } = useLanguage();
+
   // Landing and Onboarding State
   const [showLanding, setShowLanding] = useState<boolean>(() => {
     return localStorage.getItem('passport_landing_entered') !== 'true';
@@ -97,6 +101,11 @@ export default function App() {
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
   const [leveledUpTo, setLeveledUpTo] = useState<number>(12);
   const [showClaimSuccessPopup, setShowClaimSuccessPopup] = useState<boolean>(false);
+
+  // Dynamic on-the-fly translated entities
+  const translatedLocations = locations.map(loc => translateLocation(loc));
+  const translatedUser = translateUser(user);
+
   
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [showPhotoNotification, setShowPhotoNotification] = useState<boolean>(false);
@@ -457,7 +466,7 @@ export default function App() {
   if (showLanding) {
     return (
       <LandingView 
-        user={user}
+        user={translatedUser}
         onEnter={() => {
           setShowLanding(false);
           localStorage.setItem('passport_landing_entered', 'true');
@@ -490,7 +499,7 @@ export default function App() {
                 activeTab === 'dashboard' ? 'text-secondary font-bold' : 'text-on-surface-variant hover:text-secondary'
               }`}
             >
-              Dashboard
+              {t('dashboard')}
             </button>
             <button
               onClick={() => setActiveTab('exploration')}
@@ -498,7 +507,7 @@ export default function App() {
                 activeTab === 'exploration' ? 'text-secondary font-bold' : 'text-on-surface-variant hover:text-secondary'
               }`}
             >
-              Exploration
+              {t('exploration')}
             </button>
             <button
               onClick={() => setActiveTab('stamps')}
@@ -506,7 +515,7 @@ export default function App() {
                 activeTab === 'stamps' ? 'text-secondary font-bold' : 'text-on-surface-variant hover:text-secondary'
               }`}
             >
-              My Stamps
+              {t('my_stamps')}
             </button>
           </nav>
 
@@ -535,13 +544,15 @@ export default function App() {
               </div>
             </div>
 
+            <LanguageSelector />
+
             {/* Logout button in header for fast navigation to home */}
             <button
               onClick={handleLogout}
-              title="Cerrar sesión e ir a Inicio"
+              title={t('cerrar_sesion_title')}
               className="px-3.5 py-2 rounded-xl bg-red-950/15 border border-rose-500/25 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 hover:border-rose-500/55 transition-all text-xs font-bold font-sans flex items-center gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(244,63,94,0.05)] select-none h-10 shrink-0"
             >
-              <span>Salir</span>
+              <span>{t('salir_btn')}</span>
             </button>
           </div>
         </div>
@@ -549,7 +560,7 @@ export default function App() {
 
       {/* Persistence Left Sidebar Drawer for monitors (displays & xl screens) */}
       <Sidebar 
-        user={user}
+        user={translatedUser}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         unlockedCount={unlockedCount}
@@ -557,7 +568,7 @@ export default function App() {
         onReset={handleResetToMockupState}
         onUnlockNewRegion={() => setShowRegionAlert(true)}
         onLogout={handleLogout}
-        locations={locations}
+        locations={translatedLocations}
         selectedRouteId={selectedRouteId}
         onSelectRoute={setSelectedRouteId}
       />
@@ -568,8 +579,8 @@ export default function App() {
         {/* Route Render Toggles */}
         {activeTab === 'dashboard' && (
           <DashboardView 
-            user={user}
-            locations={locations}
+            user={translatedUser}
+            locations={translatedLocations}
             stats={stats}
             onExploreLocation={handleSelectAndExploreLocation}
             onClaimNFT={handleClaimSolanacNFT}
@@ -583,19 +594,19 @@ export default function App() {
 
         {activeTab === 'exploration' && (
           <ExplorationView 
-            locations={locations}
+            locations={translatedLocations}
             selectedRouteId={selectedRouteId}
             onSelectRoute={setSelectedRouteId}
             onCheckIn={handlePerformCheckIn}
             onResetPlaceCheckIn={handleResetPlaceCheckIn}
-            user={user}
+            user={translatedUser}
             onTriggerPhoto={handleTriggerSelfiePhoto}
           />
         )}
 
         {activeTab === 'stamps' && (
           <StampsView 
-            locations={locations}
+            locations={translatedLocations}
             onExploreLocation={handleSelectAndExploreLocation}
             onToggleCheckIn={handleToggleLocationCheckIn}
           />
@@ -604,7 +615,7 @@ export default function App() {
         {activeTab === 'leaderboard' && (
           <LeaderboardView 
             entries={LEADERBOARD_DATA}
-            user={user}
+            user={translatedUser}
             userPoints={locations.filter(l => l.isCheckedIn).reduce((acc, curr) => acc + curr.points, 0)}
             unlockedCount={unlockedCount}
           />
@@ -612,7 +623,7 @@ export default function App() {
 
         {activeTab === 'settings' && (
           <SettingsView 
-            user={user}
+            user={translatedUser}
             onUpdateUser={handleUpdateUserProfile}
             onResetToMockupState={handleResetToMockupState}
             onResetToZeroState={handleResetToZeroState}
@@ -633,7 +644,7 @@ export default function App() {
           }`}
         >
           <LayoutDashboard className="w-5 h-5" />
-          <span>Dashboard</span>
+          <span>{t('dashboard')}</span>
         </button>
 
         {/* Mobile Tab link Exploration */}
@@ -644,7 +655,7 @@ export default function App() {
           }`}
         >
           <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: activeTab === 'exploration' ? '12s' : '0s' }} />
-          <span>Explorar</span>
+          <span>{t('exploration')}</span>
           {unlockedCount < totalCount && (
             <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary text-[8px] font-bold px-1.5 py-0.5 rounded-full">
               {totalCount - unlockedCount}
@@ -660,7 +671,7 @@ export default function App() {
           }`}
         >
           <Layers className="w-5 h-5" />
-          <span>Estampas</span>
+          <span>{t('my_stamps')}</span>
         </button>
 
         {/* Mobile Tab link Rank */}
@@ -671,7 +682,7 @@ export default function App() {
           }`}
         >
           <Trophy className="w-5 h-5" />
-          <span>Ranking</span>
+          <span>{t('leaderboard')}</span>
         </button>
 
         {/* Mobile Tab link Profile (Settings) */}
@@ -682,9 +693,10 @@ export default function App() {
           }`}
         >
           <Settings className="w-5 h-5" />
-          <span>Perfil</span>
+          <span>{t('settings')}</span>
         </button>
       </nav>
+
 
       {/* LEVEL UP POP UP OVERLAY SCREEN */}
       {showLevelUp && (

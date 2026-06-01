@@ -21,6 +21,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { Location, SubLocation, UserProfile } from '../types';
+import { useLanguage } from '../translations';
 
 interface ExplorationViewProps {
   locations: Location[];
@@ -57,6 +58,9 @@ export default function ExplorationView({
   user,
   onTriggerPhoto
 }: ExplorationViewProps) {
+  const { t, translateLocation } = useLanguage();
+  const translatedLocations = locations.map(translateLocation);
+
   // Let's start the simulated position at Madrid, Spain (Puerta del Sol)
   const [gpsSimLat, setGpsSimLat] = useState<number>(40.4168);
   const [gpsSimLng, setGpsSimLng] = useState<number>(-3.7038);
@@ -69,12 +73,12 @@ export default function ExplorationView({
   const [browserGpsInUse, setBrowserGpsInUse] = useState<boolean>(false);
   const [browserGpsError, setBrowserGpsError] = useState<string | null>(null);
 
-  const selectedLoc = locations.find(loc => loc.id === selectedRouteId) || locations[0];
+  const selectedLoc = translatedLocations.find(loc => loc.id === selectedRouteId) || translatedLocations[0];
 
   // Try to query real device GPS
   const useRealBrowserGps = () => {
     if (!navigator.geolocation) {
-      setBrowserGpsError('La geolocalización no está soportada por tu navegador o iFrame.');
+      setBrowserGpsError(t('geolocalizacion_no_soportada'));
       return;
     }
 
@@ -88,10 +92,10 @@ export default function ExplorationView({
         setBrowserGpsInUse(false);
       },
       (error) => {
-        let msg = 'Error desconocido al leer GPS.';
-        if (error.code === 1) msg = 'Permiso denegado por el usuario o iFrame.';
-        else if (error.code === 2) msg = 'Posición no disponible.';
-        else if (error.code === 3) msg = 'Tiempo de espera agotado al conectar.';
+        let msg = t('gps_error_unknown');
+        if (error.code === 1) msg = t('gps_permiso_denegado');
+        else if (error.code === 2) msg = t('gps_no_disponible');
+        else if (error.code === 3) msg = t('gps_timeout');
         setBrowserGpsError(msg);
         setBrowserGpsInUse(false);
       },
@@ -134,20 +138,20 @@ export default function ExplorationView({
       
       {browserGpsError && (
         <div className="bg-error-container/35 border border-error/25 text-error p-3 rounded-xl text-xs flex items-center gap-2">
-          <span className="font-bold">Aviso GPS:</span> {browserGpsError}
-          <span className="text-on-surface-variant">(Se ha mantenido la simulación manual para que puedas jugar sin problemas)</span>
+          <span className="font-bold">{t('aviso_gps_title')}</span> {browserGpsError}
+          <span className="text-on-surface-variant">{t('aviso_gps_desc')}</span>
         </div>
       )}
 
       {/* Sub Menu / Horizontal Tabs list of Routes (Ruta 1, Ruta 2, ...) */}
       <div className="space-y-3">
         <h3 className="font-headline text-xs font-bold text-secondary uppercase tracking-wider pl-1 flex items-center gap-1.5">
-          <Compass className="w-4 h-4 text-secondary animate-pulse" /> Sub-menú de Rutas Disponibles
+          <Compass className="w-4 h-4 text-secondary animate-pulse" /> {t('sub_menu_rutas')}
         </h3>
         
         {/* Horizontal tabs list of Routes */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {locations.map((loc, idx) => {
+          {translatedLocations.map((loc, idx) => {
             const isSelected = selectedRouteId === loc.id;
             const completedCount = getCompletedPlacesCount(loc);
             const totalCount = loc.places?.length || 8;
@@ -169,7 +173,7 @@ export default function ExplorationView({
                 <div>
                   <div className="flex justify-between items-start gap-1">
                     <span className="text-[10px] uppercase font-black text-secondary tracking-wider block">
-                      Ruta {idx + 1}
+                      {t('ruta_label').replace('{num}', String(idx + 1))}
                     </span>
                     {percentage === 100 && (
                       <CheckCircle2 className="w-3.5 h-3.5 text-tertiary fill-background shrink-0" />
@@ -182,7 +186,7 @@ export default function ExplorationView({
 
                 <div className="w-full space-y-1">
                   <div className="flex justify-between items-center text-[9px] text-on-surface-variant font-mono">
-                    <span>Progreso</span>
+                    <span>{t('progreso_label')}</span>
                     <span className="font-bold text-secondary">{completedCount}/{totalCount}</span>
                   </div>
                   <div className="w-full h-1 bg-[#001521] rounded-full overflow-hidden">
@@ -218,16 +222,16 @@ export default function ExplorationView({
           <div>
             <div className="flex justify-between items-start gap-2">
               <span className="text-xs text-secondary font-bold uppercase tracking-wider block">
-                8 Fichas Históricas
+                {t('fichas_historicas_label')}
               </span>
               
               {getCompletedPlacesCount(selectedLoc) === 8 ? (
                 <span className="bg-tertiary/10 border border-tertiary/25 text-tertiary px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Ruta Certificada
+                  <CheckCircle2 className="w-3.5 h-3.5" /> {t('ruta_certificada')}
                 </span>
               ) : (
                 <span className="bg-secondary/10 border border-secondary/25 text-secondary px-3 py-1 rounded-full text-[11px] font-bold">
-                  {getCompletedPlacesCount(selectedLoc)}/8 Completados
+                  {t('completados_label').replace('{num}', String(getCompletedPlacesCount(selectedLoc)))}
                 </span>
               )}
             </div>
@@ -244,7 +248,7 @@ export default function ExplorationView({
           <div className="pt-3 border-t border-[#005049]/15 flex flex-wrap gap-4 items-center justify-between text-xs text-on-surface-variant">
             <span className="flex items-center gap-1.5">
               <Award className="w-4 h-4 text-secondary" />
-              Suma total: <strong className="text-on-surface font-bold">{selectedLoc.points} XP</strong>
+              {t('suma_total_xp').replace('{xp}', '4000')}
             </span>
           </div>
         </div>
@@ -255,14 +259,14 @@ export default function ExplorationView({
         <div className="flex justify-between items-center px-1">
           <div>
             <h3 className="font-headline text-base font-bold text-on-surface">
-              Las 8 Fichas Históricas de la Ruta
+              {t('fichas_historicas_title')}
             </h3>
             <p className="text-xs text-on-surface-variant">
-              Telesimula tu posición para cada una de las fichas y clica en validar para fichar el lugar.
+              {t('fichas_historicas_desc')}
             </p>
           </div>
           <span className="bg-[#002732] border border-secondary/25 text-secondary font-mono text-xs py-1 px-3 rounded-full font-bold">
-            {getCompletedPlacesCount(selectedLoc)} / 8 Listas
+            {t('completados_listas_label').replace('{num}', String(getCompletedPlacesCount(selectedLoc)))}
           </span>
         </div>
 
@@ -321,7 +325,7 @@ export default function ExplorationView({
                 {/* Distance & GPS information */}
                 <div className="space-y-4 pt-4 border-t border-[#005049]/15 mt-4">
                   <div className="flex justify-between items-center text-[11px] font-mono text-on-surface-variant">
-                    <span>Coordenadas Ficha:</span>
+                    <span>{t('coordenadas_ficha')}</span>
                     <span className="text-on-surface font-semibold">{place.latitude}, {place.longitude}</span>
                   </div>
 
@@ -331,11 +335,11 @@ export default function ExplorationView({
                       <div className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#43e5d4] animate-ping"></span>
                         <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
-                          GPS Activo
+                          {t('gps_activo')}
                         </span>
                       </div>
                       <span className="font-mono text-[9px] text-on-surface-variant">
-                        Tus Coordenadas
+                        {t('tus_coordenadas')}
                       </span>
                     </div>
 
@@ -355,7 +359,7 @@ export default function ExplorationView({
                         ) : (
                           <Navigation className="w-2.5 h-2.5" />
                         )}
-                        GPS Real
+                        {t('gps_real_btn')}
                       </button>
                       <button
                         onClick={() => {
@@ -368,7 +372,7 @@ export default function ExplorationView({
                         }}
                         className="py-1 px-2 rounded hover:bg-surface-container-high border border-on-surface-variant/10 transition-all text-[9.5px] font-semibold text-on-surface-variant cursor-pointer"
                       >
-                        Resetear
+                        {t('resetear_btn')}
                       </button>
                     </div>
                   </div>
@@ -378,8 +382,8 @@ export default function ExplorationView({
                     <div className="p-3 bg-tertiary/10 border border-tertiary/25 text-tertiary text-xs rounded-xl flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 shrink-0 fill-background" />
                       <div className="leading-tight">
-                        <p className="font-bold">Lugar Historico Validado</p>
-                        <p className="text-[10px] opacity-80 mt-0.5">Certificado emitido en blockchain correctamente.</p>
+                        <p className="font-bold">{t('lugar_validado_title')}</p>
+                        <p className="text-[10px] opacity-80 mt-0.5">{t('lugar_validado_desc')}</p>
                       </div>
                     </div>
                   ) : (
@@ -391,19 +395,19 @@ export default function ExplorationView({
                       <div className="flex justify-between items-center">
                         <span className="font-bold flex items-center gap-1 shrink-0">
                           <Target className="w-3.5 h-3.5" /> 
-                          {isWithinCheckIn ? '¡Posición Geográfica Correcta!' : 'Se requiere Presencia Física'}
+                          {isWithinCheckIn ? t('posicion_correcta_title') : t('presencia_fisica_title')}
                         </span>
                         <span className="font-mono text-[10px] bg-background/50 px-1.5 py-0.5 rounded border border-current/15 shrink-0">
                           {dist > 1000 
                             ? `${(dist / 1000).toFixed(2)} km`
-                            : `${Math.round(dist)} metros`
+                            : t('metros_number').replace('{num}', String(Math.round(dist)))
                           }
                         </span>
                       </div>
                       <p className="text-[10px] text-on-surface-variant opacity-85 leading-normal">
                         {isWithinCheckIn 
-                          ? 'Estás en el radio de presencia permitido (< 150m). Procede a fichar el lugar.' 
-                          : 'Para certificar esta ficha, debes teletransportarte o usar tu GPS cerca de las coordenadas.'
+                          ? t('posicion_correcta_desc') 
+                          : t('presencia_fisica_desc')
                         }
                       </p>
                     </div>
@@ -417,7 +421,7 @@ export default function ExplorationView({
                         className="py-2 px-3 bg-secondary/10 border border-secondary/35 text-secondary font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-secondary/20 transition-all cursor-pointer active:scale-95"
                       >
                         <Zap className="w-3.5 h-3.5" />
-                        Simular Visita
+                        {t('simular_visita_btn')}
                       </button>
 
                       <button
@@ -434,12 +438,12 @@ export default function ExplorationView({
                         {isCheckingThisOne ? (
                           <>
                             <div className="w-3 h-3 border-2 border-secondary border-t-transparent animate-spin rounded-full"></div>
-                            <span>Validando...</span>
+                            <span>{t('validando_btn')}</span>
                           </>
                         ) : (
                           <>
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Fichar Lugar</span>
+                            <span>{t('fichar_lugar_btn')}</span>
                           </>
                         )}
                       </button>
@@ -476,7 +480,7 @@ export default function ExplorationView({
                 </span>
               )}
               <div className="absolute -bottom-1.5 right-0 bg-tertiary text-on-tertiary text-[9px] font-black px-2 py-0.5 rounded-full z-10">
-                UBICACIÓN OK
+                {t('ubicacion_ok')}
               </div>
             </div>
 
@@ -488,20 +492,20 @@ export default function ExplorationView({
                 {justUnlockedPlace.place.name}
               </h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                ¡Check-in verificado para el lugar de interés ({justUnlockedPlace.parentLoc.name})! Has obtenido <strong className="text-secondary font-bold">+{justUnlockedPlace.place.points} de XP</strong> en tu bitácora de viaje.
+                {t('checkin_verificado_desc').replace('{name}', justUnlockedPlace.place.name).replace('{points}', String(justUnlockedPlace.place.points))}
               </p>
             </div>
 
             {/* Fast Photo button integrated for premium micro-experience */}
             <div className="bg-background/40 p-3 rounded-xl border border-secondary/10 flex items-center justify-between text-xs text-on-surface-variant">
-              <span>¿Registrar foto del lugar?</span>
+              <span>{t('registrar_foto')}</span>
               <button
                 onClick={() => {
                   onTriggerPhoto();
                 }}
                 className="bg-secondary text-on-secondary py-1.5 px-3 rounded font-bold text-[10px] flex items-center gap-1 uppercase cursor-pointer"
               >
-                <Camera className="w-3.5 h-3.5" /> Foto Instantánea
+                <Camera className="w-3.5 h-3.5" /> {t('foto_instantanea_btn')}
               </button>
             </div>
 
@@ -509,7 +513,7 @@ export default function ExplorationView({
               onClick={() => setJustUnlockedPlace(null)}
               className="w-full py-3 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wide glow-mint hover:brightness-105 transition-all text-center block cursor-pointer"
             >
-              Continuar la Ruta
+              {t('continuar_ruta_btn')}
             </button>
           </div>
         </div>

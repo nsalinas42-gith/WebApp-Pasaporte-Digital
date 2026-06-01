@@ -4,13 +4,13 @@
  */
 
 import { Location, UserProfile, LeaderboardEntry } from './types';
-import stampAlhambra from './assets/images/01-Badge explorador principiante.png';
-import stampCordoba from './assets/images/02-explorador intermedio.png';
-import stampSegovia from './assets/images/03- explorador avanzado.png';
-import stampSevilla from './assets/images/04-Cazador de rutas.png';
-import stampSagrada from './assets/images/05-Guia Local.png';
-import stampOlite from './assets/images/06-Guia Local Experto.png';
-import simonBolivarHero from './assets/images/estatua_ecuestre_1.png';
+import stampAlhambra from './assets/images/01A_explorador_principiante.png';
+import stampCordoba from './assets/images/02B_explorador_intermedio.png';
+import stampSegovia from './assets/images/03C_explorador_avanzado.png';
+import stampSevilla from './assets/images/04D_Cazador_de_rutas.png';
+import stampSagrada from './assets/images/05E_Guia_Local.png';
+import stampOlite from './assets/images/06F_guia_local_experto.png';
+import mapaCaracasHero from './assets/images/Mapa Caracas.png';
 
 export const INITIAL_LOCATIONS: Location[] = [
   {
@@ -26,7 +26,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador Bolivariano',
     badgeIcon: 'castle',
     badgeImageUrl: stampAlhambra,
-    imageUrl: simonBolivarHero,
+    imageUrl: mapaCaracasHero,
     review: [
       'Mapa casco histórico de Caracas vol.1 ver. 1.0'
     ],
@@ -116,12 +116,12 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'mezquita_cordoba',
-    name: 'Mezquita de Córdoba',
-    city: 'Córdoba, España',
+    name: 'Mapa casco histórico de Caracas vol.2 ver. 2.0',
+    city: 'Caracas, Venezuela',
     category: 'Arte Mezquita-Catedral',
     latitude: 37.8789,
     longitude: -4.7794,
-    points: 400,
+    points: 4000,
     badgeId: 'mezquita_badge',
     badgeName: 'Explorador Intermedio',
     badgeTitle: 'Explorador Omeya',
@@ -129,8 +129,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampCordoba,
     imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
     review: [
-      'La Mezquita-Catedral de Córdoba es un monumento único que amalgama influencias islámicas y cristianas en una estructura sin precedentes. Famosa por su inmenso bosque de más de 850 columnas de mármol y jaspe coronadas por arcos dobles de herradura bicolores.',
-      'En el corazón de este antiguo templo andalusí se erigió posteriormente una majestuosa catedral gótico-renacentista. El Mihrab, revestido con hermosos mosaicos dorados obsequiados por el imperio bizantino, brilla con una suntuosidad espiritual incomparable.'
+      'Mapa casco histórico de Caracas vol.2 ver. 2.0'
     ],
     isCheckedIn: false,
     places: [
@@ -218,12 +217,12 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'acueducto_segovia',
-    name: 'Acueducto Segovia',
-    city: 'Segovia, España',
+    name: 'Mapa casco histórico de Caracas vol.3 ver. 3.0',
+    city: 'Caracas, Venezuela',
     category: 'Ingeniería Romana',
     latitude: 40.9478,
     longitude: -4.1184,
-    points: 400,
+    points: 4000,
     badgeId: 'acueducto_badge',
     badgeName: 'Explorador Avanzado',
     badgeTitle: 'Explorador Flavio',
@@ -231,8 +230,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampSegovia,
     imageUrl: 'https://images.unsplash.com/photo-1518638150341-f706e86654de?auto=format&fit=crop&w=800&q=80',
     review: [
-      'El Acueducto de Segovia es una de las obras de ingeniería civil romana más soberbias y mejor conservadas del planeta. Construido a finales del siglo I d.C., transportaba agua desde la sierra de Guadarrama hasta la ciudad de Segovia sin una sola gota de mortero.',
-      'Sus imponentes dos pisos de arcos entrelazados se sostienen firmemente gracias a un equilibrio perfecto de fuerzas físicas y bloques tallados de granito. Destaca como el gran símbolo identitario de la ciudad de Segovia dominando la plaza del Azoguejo.'
+      'Mapa casco histórico de Caracas vol.3 ver. 3.0'
     ],
     isCheckedIn: false,
     places: [
@@ -320,12 +318,12 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'alcazar_sevilla',
-    name: 'Alcázar de Sevilla',
-    city: 'Sevilla, España',
+    name: 'Mapa casco histórico de Caracas vol.4 ver. 4.0',
+    city: 'Caracas, Venezuela',
     category: 'Fortaleza Mudéjar',
     latitude: 37.3831,
     longitude: -5.9902,
-    points: 400,
+    points: 4000,
     badgeId: 'alcazar_badge',
     badgeName: 'Cazador de Rutas',
     badgeTitle: 'Explorador de Reinos',
@@ -333,8 +331,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampSevilla,
     imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
     review: [
-      'El Real Alcázar de Sevilla es el palacio real activo más antiguo de Europa. Sus edificaciones constituyen una fastuosa muestra del mestizaje cultural mudéjar, combinando arcos islámicos con patios renacentistas y salones decorados en tiempos góticos.',
-      'Sus deslumbrantes jardines repletos de naranjos, laberintos de setos y fuentes cantarinas han sido escenario de múltiples rodajes cinematográficos internacionales. Subir este peldaño reconoce el paso del caminante por los patios reales más opulentos de Andalucía.'
+      'Mapa casco histórico de Caracas vol.4 ver. 4.0'
     ],
     isCheckedIn: false,
     places: [
@@ -422,12 +419,12 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'sagrada_familia',
-    name: 'Sagrada Familia',
-    city: 'Barcelona, España',
+    name: 'Mapa casco histórico de Caracas vol.5 ver. 5.0',
+    city: 'Caracas, Venezuela',
     category: 'Arquitectura Catalana',
     latitude: 41.4036,
     longitude: 2.1744,
-    points: 400,
+    points: 4000,
     badgeId: 'sagrada_badge',
     badgeName: 'Guía Local',
     badgeTitle: 'Explorador Modernista',
@@ -435,8 +432,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampSagrada,
     imageUrl: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=800&q=80',
     review: [
-      'La Basílica y Templo Expiatorio de la Sagrada Familia de Antoni Gaudí es la obra cumbre del modernismo catalán. Una estructura colosal que busca imitar las formas orgánicas de la naturaleza, convirtiendo las columnas interiores en troncos de un bosque místico pétreo.',
-      'El caleidoscopio de luz que se filtra por sus vitrales de vivos colores baña el espacio interior de una atmósfera onírica y celestial. Cada una de sus fachadas talladas y torres ascendentes narra detalladamente pasajes teológicos de un simbolismo asombroso.'
+      'Mapa casco histórico de Caracas vol.5 ver. 5.0'
     ],
     isCheckedIn: false,
     places: [
@@ -524,12 +520,12 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'castillo_olite',
-    name: 'Castillo de Olite',
-    city: 'Navarra, España',
+    name: 'Mapa casco histórico de Caracas vol.6 ver. 6.0',
+    city: 'Caracas, Venezuela',
     category: 'Palacio de Reyes de Navarra',
     latitude: 42.4841,
     longitude: -1.6483,
-    points: 400,
+    points: 4000,
     badgeId: 'olite_badge',
     badgeName: 'Guía Local Experto',
     badgeTitle: 'Explorador de Navarra',
@@ -537,8 +533,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampOlite,
     imageUrl: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=800&q=80',
     review: [
-      'El Palacio Real de Olite es una joya imponente de la arquitectura gótica ubicada en Navarra, España. Construido entre los siglos XIV y XV como una de las sedes de la corte del Reino de Navarra, destaca por su fisonomía caprichosa repleta de torres, jardines colgantes y miradores de película.',
-      'Pasear por sus galerías reales y subir sus empinadas escaleras de caracol ofrece un retorno directo al imaginario de los caballeros medievales. Su delicado relieve sobre las llanuras circundantes lo convierte en uno de los castillos con silueta más bellas y fantásticas del mundo.'
+      'Mapa casco histórico de Caracas vol.6 ver. 6.0'
     ],
     isCheckedIn: false,
     places: [

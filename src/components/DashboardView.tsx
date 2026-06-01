@@ -26,13 +26,14 @@ import {
   Tv
 } from 'lucide-react';
 import { Location, UserProfile, UserStats } from '../types';
+import { useLanguage } from '../translations';
 
-import stampAlhambra from '../assets/images/01-Badge explorador principiante.png';
-import stampCordoba from '../assets/images/02-explorador intermedio.png';
-import stampSegovia from '../assets/images/03- explorador avanzado.png';
-import stampSevilla from '../assets/images/04-Cazador de rutas.png';
-import stampSagrada from '../assets/images/05-Guia Local.png';
-import stampOlite from '../assets/images/06-Guia Local Experto.png';
+import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
+import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
+import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
+import stampSagrada from '../assets/images/05E_Guia_Local.png';
+import stampOlite from '../assets/images/06F_guia_local_experto.png';
 
 const badgeImageMap: Record<string, string> = {
   castle: stampAlhambra,
@@ -83,6 +84,7 @@ export default function DashboardView({
   onIncrementShare,
   onTriggerPhoto
 }: DashboardViewProps) {
+  const { t } = useLanguage();
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -109,11 +111,11 @@ export default function DashboardView({
   // Teasers for dynamic locations mapped inside "Inicia tu exploración"
   const teaserMap: Record<string, string> = {
     alhambra: 'Mapa casco histórico de Caracas vol.1 ver. 1.0',
-    mezquita_cordoba: 'Explora la asombrosa arquitectura de la Mezquita-Catedral.',
-    acueducto_segovia: 'Un viaje a través del majestuoso acueducto romano.',
-    alcazar_sevilla: 'Admira la fortaleza mudéjar y los bellos jardines.',
-    sagrada_familia: 'Sumérgete en la silueta orgánica del modernismo catalán.',
-    castillo_olite: 'Visita el castillo gótico real más fantástico de Navarra.'
+    mezquita_cordoba: 'Mapa casco histórico de Caracas vol.2 ver. 2.0',
+    acueducto_segovia: 'Mapa casco histórico de Caracas vol.3 ver. 3.0',
+    alcazar_sevilla: 'Mapa casco histórico de Caracas vol.4 ver. 4.0',
+    sagrada_familia: 'Mapa casco histórico de Caracas vol.5 ver. 5.0',
+    castillo_olite: 'Mapa casco histórico de Caracas vol.6 ver. 6.0'
   };
 
   // SVG Progress circle values
@@ -154,21 +156,21 @@ export default function DashboardView({
           <div className="flex items-center gap-2 mb-4">
             <span className="h-[2px] w-12 bg-secondary/85"></span>
             <span className="text-[11px] font-black leading-none text-secondary tracking-[0.2em] uppercase font-sans">
-              Explorador Digital
+              {t('explorador_digital')}
             </span>
           </div>
           <h1 className="font-headline text-3xl md:text-5xl font-extrabold text-white mb-4 drop-shadow-md tracking-tight leading-tight">
-            Tu Pasaporte al Mundo
+            {t('tu_pasaporte_al_mundo')}
           </h1>
           <p className="text-sm md:text-base text-on-surface-variant max-w-md leading-relaxed">
-            Descubre el patrimonio histórico como nunca antes. Colecciona sellos digitales, desbloquea insignias exclusivas y forja tu propio camino a través de la historia.
+            {t('tu_pasaporte_desc')}
           </p>
           <div className="flex gap-4 mt-8">
             <button 
               onClick={() => onExploreLocation(nextDestination.id)}
               className="px-6 py-3 bg-secondary text-on-secondary rounded-xl font-extrabold flex items-center gap-2 hover:bg-secondary-fixed active:scale-95 transition-all glow-secondary cursor-pointer border-none outline-none"
             >
-              <span>Empezar Aventura</span>
+              <span>{t('empezar_aventura')}</span>
               <Compass className="w-4 h-4 animate-spin-slow" />
             </button>
           </div>
@@ -186,10 +188,10 @@ export default function DashboardView({
         {/* Title block */}
         <div className="w-full mb-8 text-left">
           <h2 className="font-headline text-2xl md:text-3.5xl font-extrabold text-on-surface mb-2">
-            Hola, Explorador
+            {t('hola_explorador')}
           </h2>
           <p className="text-sm md:text-base text-on-surface-variant">
-            Tu viaje digital continúa. Revisa tus estadísticas y próximos objetivos.
+            {t('tu_viaje_continua')}
           </p>
         </div>
 
@@ -202,7 +204,7 @@ export default function DashboardView({
             </div>
             <div>
               <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest leading-none pb-2">
-                Puntos Totales
+                {t('puntos_totales')}
               </p>
               <p className="font-headline text-4xl md:text-5xl font-black text-secondary tracking-tight">
                 15,400
@@ -248,16 +250,16 @@ export default function DashboardView({
             
             <div className="flex-1 space-y-3">
               <h3 className="font-headline text-lg md:text-xl font-bold text-on-surface leading-none">
-                Tu Progreso
+                {t('tu_progreso')}
               </h3>
               <p className="text-sm text-on-surface-variant leading-relaxed">
                 {unlockedCount === totalCount ? (
                   <span>
-                    ¡Felicitaciones! Has completado todas las insignias del mapa actual. Reclama tu <strong className="text-secondary font-bold">cNFT Colectivo</strong> de Solana abajo para sellar tu gesta.
+                    {t('progreso_completo_desc')}
                   </span>
                 ) : (
                   <span>
-                    ¡A mitad de camino! Completa el reto en <span className="text-tertiary font-bold">{nextDestination.name}</span> para alcanzar el siguiente nivel. Sigue explorando para desbloquear nuevas regiones y recompensas exclusivas.
+                    {t('progreso_incompleto_desc').replace('{dest}', nextDestination.name)}
                   </span>
                 )}
               </p>
@@ -270,10 +272,10 @@ export default function DashboardView({
       <section className="w-full space-y-6">
         <div className="text-left">
           <h2 className="font-headline text-xl md:text-2xl font-black text-on-surface">
-            Inicia tu exploración
+            {t('inicia_tu_exploracion')}
           </h2>
           <p className="text-xs md:text-sm text-on-surface-variant mt-1">
-            Lista de rutas habilitadas en tu viaje digital. Haz click en iniciar para ver los monumentos en el mapa:
+            {t('inicia_tu_exploracion_desc')}
           </p>
         </div>
 
@@ -293,7 +295,7 @@ export default function DashboardView({
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
                 <div className="absolute bottom-3 left-4 right-4">
                   <h4 className="font-headline font-bold text-white text-base md:text-lg tracking-tight">
-                    Ruta {idx + 1}: {loc.name}
+                    {t('ruta_label').replace('{num}', String(idx + 1))}: {loc.name}
                   </h4>
                   <p className="text-xs text-on-surface-variant/90 font-medium mt-1 truncate">
                     {teaserMap[loc.id] || loc.category}
@@ -308,7 +310,7 @@ export default function DashboardView({
                   }}
                   className="w-full py-2.5 bg-secondary/15 hover:bg-secondary text-secondary hover:text-on-secondary rounded-lg font-bold flex items-center justify-center gap-2 transition-all outline-none"
                 >
-                  <span>Iniciar Ruta</span>
+                  <span>{t('iniciar_ruta')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -322,13 +324,13 @@ export default function DashboardView({
         <div className="flex justify-between items-center text-left">
           <h3 className="font-headline text-lg md:text-xl font-bold text-on-surface flex items-center gap-2">
             <Award className="w-6 h-6 text-secondary" />
-            Insignias Recientes
+            {t('insignias_recientes')}
           </h3>
           <button 
             onClick={() => onExploreLocation(locations[0].id)}
             className="text-secondary font-bold text-xs uppercase tracking-wider flex items-center gap-1 hover:underline cursor-pointer outline-none bg-transparent border-none"
           >
-            <span>Ver Colección Completa</span>
+            <span>{t('ver_coleccion_completa')}</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -357,15 +359,15 @@ export default function DashboardView({
                   />
                 </div>
                 <p className="font-headline font-bold text-on-surface text-center text-xs truncate max-w-full leading-tight">
-                  Insignia: {loc.badgeName}
+                  {t('insignia_prefix').replace('{name}', loc.badgeName)}
                 </p>
                 <p className="font-sans text-[10px] text-on-surface-variant/70 text-center leading-normal">
-                  {completedCount} de {requiredCount} fichas
+                  {t('de_fichas').replace('{completed}', String(completedCount)).replace('{required}', String(requiredCount))}
                 </p>
                 <p className={`font-sans font-bold text-[10px] uppercase tracking-wider mt-1.5 ${
                   isUnlocked ? 'text-tertiary' : 'text-on-surface-variant/60'
                 }`}>
-                  {isUnlocked ? 'DESBLOQUEADO' : 'BLOQUEADO'}
+                  {isUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}
                 </p>
               </div>
             );
@@ -384,13 +386,13 @@ export default function DashboardView({
           </div>
           <div>
             <span className="bg-secondary/15 text-secondary text-[9px] font-black px-2.5 py-0.5 rounded-full border border-secondary/20 uppercase tracking-widest block max-w-max mb-1.5">
-              Solana Web3 Ledger Reward
+              {t('solana_reward')}
             </span>
             <h4 className="font-headline text-lg font-bold text-on-surface">
-              Completa las 6 Insignias y Reclama tu cNFT Colectivo
+              {t('completa_cnft_title')}
             </h4>
             <p className="text-xs text-on-surface-variant/80 leading-relaxed mt-0.5">
-              Por tu espíritu andador urbano, la red Solana grabará tu estatus inmortal de embajador. Acuñado de forma segura con bajos costos de compresión directo a tu billetera personal vinculada.
+              {t('completa_cnft_desc')}
             </p>
           </div>
         </div>
@@ -406,7 +408,7 @@ export default function DashboardView({
                 className="inline-flex w-full md:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
               >
                 <ExternalLink className="w-4 h-4" />
-                <span>Verificar Solscan Receipt</span>
+                <span>{t('verificar_receipt')}</span>
               </a>
               <p className="text-[10px] text-center text-on-surface-variant/60 italic font-mono select-all">
                 TX: {txHash?.slice(0, 8)}...{txHash?.slice(-8)}
@@ -427,12 +429,12 @@ export default function DashboardView({
               {isLoadingClaim ? (
                 <>
                   <div className="w-3.5 h-3.5 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
-                  <span>Acuñando cNFT Colectivo...</span>
+                  <span>{t('acuñando_cnft')}</span>
                 </>
               ) : (
                 <>
                   {isEligibleForNFT ? <Sparkles className="w-3.5 h-3.5 animate-bounce" /> : <Lock className="w-3.5 h-3.5" />}
-                  <span>Reclamar cNFT Colectivo ({unlockedCount}/6)</span>
+                  <span>{t('reclamar_cnft_btn').replace('{unlocked}', String(unlockedCount))}</span>
                 </>
               )}
             </button>
@@ -443,7 +445,7 @@ export default function DashboardView({
       {/* 6. STATS METRICS BLOCK */}
       <section className="bg-surface-container border border-[#005049]/20 p-6 rounded-3xl text-left">
         <h4 className="font-headline text-xs font-bold text-on-surface-variant/80 uppercase tracking-widest border-b border-on-surface/10 pb-2.5">
-          Estadísticas de Exploración de Viaje
+          {t('estadisticas_exploracion')}
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-5">
           {/* Item 1 */}
@@ -452,7 +454,7 @@ export default function DashboardView({
               <Compass className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">REGIONES VISITADAS</p>
+              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">{t('regiones_visitadas_uppercase')}</p>
               <p className="text-xl font-headline font-black text-on-surface">0{stats.regionsVisited}</p>
             </div>
           </div>
@@ -462,7 +464,7 @@ export default function DashboardView({
               <Camera className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">MOMENTOS CAPTURADOS</p>
+              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">{t('momentos_capturados_uppercase')}</p>
               <p className="text-xl font-headline font-black text-on-surface">
                 {stats.momentsCaptured < 10 ? `0${stats.momentsCaptured}` : stats.momentsCaptured} 📸
               </p>
@@ -474,7 +476,7 @@ export default function DashboardView({
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">LOGROS COMPARTIDOS</p>
+              <p className="text-[10px] font-bold text-on-surface-variant/50 tracking-widest uppercase mb-0.5">{t('logros_compartidos_uppercase')}</p>
               <p className="text-xl font-headline font-black text-on-surface">
                 {stats.sharedAchievements < 10 ? `0${stats.sharedAchievements}` : stats.sharedAchievements}
               </p>
@@ -493,10 +495,10 @@ export default function DashboardView({
             
             <div className="space-y-1.5">
               <h3 className="font-headline text-lg font-bold text-on-surface">
-                Compartir Pasaporte
+                {t('compartir_pasaporte_title')}
               </h3>
               <p className="text-xs text-on-surface-variant/80 leading-relaxed">
-                Presume a tus amigos de tu avance histórico. Llevas <strong className="text-secondary">{unlockedCount} insignias de {totalCount}</strong> desbloqueadas con éxito.
+                {t('compartir_pasaporte_desc').replace('{unlocked}', String(unlockedCount)).replace('{total}', String(totalCount))}
               </p>
             </div>
 
@@ -506,7 +508,7 @@ export default function DashboardView({
                 onClick={copyShareLink}
                 className="bg-secondary text-on-secondary px-3 py-1 rounded font-sans font-black text-[10px] uppercase outline-none select-none shrink-0"
               >
-                {copiedLink ? 'Copiado' : 'Copiar'}
+                {copiedLink ? t('copiado') : t('copiar')}
               </button>
             </div>
 
@@ -514,7 +516,7 @@ export default function DashboardView({
               onClick={() => setShowShareModal(false)}
               className="w-full py-2.5 bg-[#001019] border border-on-surface-variant/20 hover:border-secondary/20 text-on-surface-variant hover:text-on-surface font-semibold rounded-lg text-xs transition-colors uppercase tracking-wide cursor-pointer"
             >
-              Cerrar
+              {t('cerrar_modal')}
             </button>
           </div>
         </div>

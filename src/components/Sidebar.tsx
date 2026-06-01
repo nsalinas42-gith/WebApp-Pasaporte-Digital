@@ -15,6 +15,7 @@ import {
   Sparkles 
 } from 'lucide-react';
 import { UserProfile, Location } from '../types';
+import { useLanguage } from '../translations';
 
 interface SidebarProps {
   user: UserProfile;
@@ -43,15 +44,17 @@ export default function Sidebar({
   selectedRouteId,
   onSelectRoute
 }: SidebarProps) {
+  const { t, translateLocation } = useLanguage();
+  
   // Simple calculation of progress width for level up
   const percentageToNextLevel = Math.min(100, Math.round((user.xp / user.xpToNextLevel) * 100));
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'exploration', label: 'Exploration', icon: Compass },
-    { id: 'stamps', label: 'My Stamps', icon: Layers },
-    { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { id: 'exploration', label: t('exploration'), icon: Compass },
+    { id: 'stamps', label: t('my_stamps'), icon: Layers },
+    { id: 'leaderboard', label: t('leaderboard'), icon: Trophy },
+    { id: 'settings', label: t('settings'), icon: Settings },
   ];
 
   return (
@@ -60,13 +63,13 @@ export default function Sidebar({
       <div className="px-6 mb-8 space-y-2 text-left">
         <div className="space-y-1">
           <p className="font-sans text-[10px] font-bold text-secondary/60 uppercase tracking-widest leading-none">
-            STATUS
+            {t('status')}
           </p>
           <h4 className="font-headline text-sm font-extrabold text-on-surface tracking-tight">
-            Explorer Level {user.level}
+            {t('explorer_level').replace('{level}', String(user.level))}
           </h4>
           <p className="font-sans text-[11px] text-on-surface-variant/80 font-medium pb-1">
-            {user.xpToNextLevel - user.xp} XP to Level Up
+            {t('xp_to_level_up').replace('{xp}', String(user.xpToNextLevel - user.xp))}
           </p>
         </div>
         
@@ -108,6 +111,7 @@ export default function Sidebar({
               {item.id === 'exploration' && (
                 <div className="pl-5 pr-1 py-1 space-y-1 border-l border-[#005049]/20 ml-6 animate-in slide-in-from-top-1 duration-150">
                   {locations.map((loc, idx) => {
+                    const transLoc = translateLocation(loc);
                     const isSubActive = activeTab === 'exploration' && selectedRouteId === loc.id;
                     const completedPlaces = loc.places?.filter(p => p.isCheckedIn).length || 0;
                     const totalPlaces = loc.places?.length || 0;
@@ -126,7 +130,7 @@ export default function Sidebar({
                             : 'text-on-surface-variant hover:text-secondary hover:bg-surface-container-high/50'
                         }`}
                       >
-                        <span className="truncate pr-1">Ruta {idx + 1}: {loc.name}</span>
+                        <span className="truncate pr-1">{t('ruta_prefix')} {idx + 1}: {transLoc.name}</span>
                         <span className="text-[9px] font-mono opacity-80 shrink-0">
                           ({completedPlaces}/{totalPlaces})
                         </span>
@@ -148,7 +152,7 @@ export default function Sidebar({
           className="w-full bg-[#43e5d4] text-[#003732] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 glow-mint hover:opacity-90 transform active:scale-95 transition-all text-xs uppercase tracking-wide cursor-pointer"
         >
           <Rocket className="w-4 h-4 fill-on-secondary/10" />
-          Unlock New Region
+          {t('unlock_new_region')}
         </button>
         
         <button
@@ -156,7 +160,7 @@ export default function Sidebar({
           className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface-variant hover:text-secondary transition-all text-left text-sm font-sans"
         >
           <HelpCircle className="w-5 h-5 text-on-surface-variant/80" />
-          <span>Support</span>
+          <span>{t('support')}</span>
         </button>
         
         <button
@@ -164,7 +168,7 @@ export default function Sidebar({
           className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface-variant hover:text-error transition-all text-left text-sm font-sans cursor-pointer"
         >
           <LogOut className="w-5 h-5 text-on-surface-variant/80" />
-          <span>Cerrar Sesión</span>
+          <span>{t('cerrar_sesion')}</span>
         </button>
       </div>
     </aside>

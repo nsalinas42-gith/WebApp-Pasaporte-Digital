@@ -21,6 +21,8 @@ import {
   ShieldAlert,
   ArrowUpRight
 } from 'lucide-react';
+import { useLanguage } from '../translations';
+import LanguageSelector from './LanguageSelector';
 
 interface LandingViewProps {
   onEnter: () => void;
@@ -28,6 +30,8 @@ interface LandingViewProps {
 }
 
 export default function LandingView({ onEnter, user }: LandingViewProps) {
+  const { t } = useLanguage();
+  
   // Smooth scroll helper
   const scrollToHowItWorks = () => {
     document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
@@ -50,8 +54,11 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-4">
+          <LanguageSelector />
+          
           {/* Ingresar con Gmail Action Button */}
           <button 
+            id="login-gmail-btn"
             onClick={onEnter}
             className="px-5 py-2.5 rounded-xl bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.15)]"
           >
@@ -67,7 +74,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                 G
               </span>
             )}
-            <span>{user?.name ? `Entrar como ${user.name.split(' ')[0]}` : 'Ingresar con Gmail'}</span>
+            <span>{user?.name ? t('entrar_como').replace('{name}', user.name.split(' ')[0]) : t('ingresar_gmail')}</span>
           </button>
         </div>
       </header>
@@ -98,14 +105,14 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           
           <div className="space-y-4">
             <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-black text-on-surface tracking-tight leading-none leading-[1.05]">
-              Descubre el Mundo,<br />
+              {t('descubre_mundo')}<br />
               <span className="text-secondary bg-clip-text bg-gradient-to-r from-[#43e5d4] to-[#c7ffd3] glow-text shadow-glow">
-                Colecciona Historia
+                {t('colecciona_historia')}
               </span>
             </h1>
 
             <p className="text-xs sm:text-sm md:text-base text-on-surface-variant/85 max-w-xl mx-auto leading-relaxed">
-              Transforma tus viajes en una aventura digital. Visita monumentos, completa tu mapa y desbloquea activos digitales únicos.
+              {t('hero_desc')}
             </p>
           </div>
 
@@ -132,14 +139,14 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   G
                 </span>
               )}
-              <span>{user?.name ? `Iniciar Sesión (${user.name})` : 'Ingresar con Gmail'}</span>
+              <span>{user?.name ? `${t('entrar_como').replace('{name}', user.name.split(' ')[0])}` : t('ingresar_gmail')}</span>
             </button>
 
             <button
               onClick={scrollToHowItWorks}
               className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-white/5 border border-[#43e5d4]/40 text-[#43e5d4] font-bold rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer"
             >
-              Saber más
+              {t('saber_mas')}
             </button>
           </div>
         </div>
@@ -151,7 +158,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
         {/* Underlined Section Header */}
         <div className="text-center space-y-3">
           <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface uppercase tracking-wider relative inline-block">
-            ¿Cómo funciona?
+            {t('como_funciona')}
           </h2>
           <div className="w-16 h-1 bg-[#43e5d4] mx-auto rounded-full"></div>
         </div>
@@ -166,10 +173,10 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                 <Map className="w-5 h-5 text-[#43e5d4]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
-                Adquiere tu Mapa Físico
+                {t('physical_map_title')}
               </h3>
               <p className="text-xs text-on-surface-variant/80 leading-relaxed">
-                Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu pasaporte digital Pro.
+                {t('physical_map_desc')}
               </p>
             </div>
 
@@ -191,10 +198,10 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                 <Compass className="w-5 h-5 text-[#43e5d4]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
-                Visita los Sitios
+                {t('visit_sites_title')}
               </h3>
               <p className="text-xs text-on-surface-variant/80 leading-relaxed">
-                Explora monumentos históricos y maravillas naturales. Cada ubicación es un nuevo hito en tu carrera como Explorador Digital.
+                {t('visit_sites_desc')}
               </p>
             </div>
             
@@ -209,10 +216,10 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                 <MapPin className="w-5 h-5 text-[#43e5d4]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
-                GPS Check-in
+                {t('gps_checkin_title')}
               </h3>
               <p className="text-xs text-on-surface-variant/80 leading-relaxed">
-                Nuestra tecnología de geovallado valida tu presencia. Solo los verdaderos viajeros obtienen el sello.
+                {t('gps_checkin_desc')}
               </p>
             </div>
 
@@ -220,7 +227,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             <div className="flex items-center gap-2 pt-2 border-t border-[#1a3848]/40">
               <CheckCircle className="w-4 h-4 text-secondary" />
               <span className="text-[10px] font-black tracking-widest text-[#43e5d4] uppercase">
-                VALIDACIÓN EN TIEMPO REAL
+                {t('realtime_validation')}
               </span>
             </div>
           </div>
@@ -244,10 +251,10 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   <Sparkles className="w-5 h-5 text-[#43e5d4]" />
                 </div>
                 <h3 className="font-headline text-lg font-extrabold text-on-surface">
-                  Gana cNFTs Exclusivos
+                  {t('earn_cnft_title')}
                 </h3>
                 <p className="text-xs text-on-surface-variant/80 leading-relaxed mt-2">
-                  Cada visita desbloquea un Compressed NFT único que vive en la blockchain. Son coleccionables, transferibles y demuestran tu historial viajero.
+                  {t('earn_cnft_desc')}
                 </p>
               </div>
 
@@ -274,13 +281,13 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
       {/* 4. CALL TO ACTION SECTION */}
       <section className="py-20 bg-[#001d2c]/40 border-y border-[#005049]/20 text-center space-y-6 px-4">
         <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface max-w-xl mx-auto leading-tight">
-          ¿Listo para comenzar tu colección?
+          {t('listo_comenzar_coleccion')}
         </h2>
         <button
           onClick={onEnter}
           className="px-10 py-5 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(67,229,212,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
         >
-          Empieza Ahora Gratis
+          {t('empieza_ahora_gratis')}
         </button>
       </section>
 
@@ -296,7 +303,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
               </span>
             </div>
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
-              Digitalizando el patrimonio cultural a través de experiencias gamificadas y tecnología blockchain.
+              {t('footer_manifesto')}
             </p>
             
             {/* Relocated Login to Backend Action */}
@@ -305,14 +312,14 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
               className="px-4 py-2 text-left rounded-xl bg-transparent border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#43e5d4]/10 text-[#43e5d4] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider outline-none cursor-pointer flex items-center gap-2 w-max shadow-[0_0_15px_rgba(67,229,212,0.05)]"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Login to Backend</span>
+              <span>{t('ingresar_gmail')}</span>
             </button>
           </div>
 
           {/* Comunidad Column */}
           <div className="col-span-1 md:col-span-2 md:ml-auto space-y-3.5">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              COMUNIDAD
+              {t('comunidad')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
               <a href="#instagram" className="hover:text-[#43e5d4] hover:underline transition-all">Instagram</a>
@@ -324,30 +331,30 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           {/* Legal Column */}
           <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              LEGAL
+              {t('legal')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
-              <a href="#terms" className="hover:text-[#43e5d4] hover:underline transition-all">Términos de Servicio</a>
-              <a href="#privacy" className="hover:text-[#43e5d4] hover:underline transition-all">Privacidad</a>
-              <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">Política de Cookies</a>
+              <a href="#terms" className="hover:text-[#43e5d4] hover:underline transition-all">{t('terminos')}</a>
+              <a href="#privacy" className="hover:text-[#43e5d4] hover:underline transition-all">{t('privacidad')}</a>
+              <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">{t('cookies_policy')}</a>
             </div>
           </div>
 
           {/* Soporte Column */}
           <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              SOPORTE
+              {t('soporte')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
-              <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">Centro de Ayuda</a>
-              <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">Contacto</a>
+              <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">{t('centro_ayuda')}</a>
+              <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
             </div>
           </div>
         </div>
 
         {/* Footnote Copyright block */}
         <div className="max-w-6xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-medium text-on-surface-variant/50">
-          <p>© 2024 Passport Pro. Todos los derechos reservados.</p>
+          <p>{t('derechos_reservados')}</p>
           <div className="flex items-center gap-4 text-xs">
             <Globe className="w-4 h-4 text-on-surface-variant/40" />
             <span className="w-1 h-1 rounded-full bg-on-surface-variant/20 inline-block"></span>
@@ -361,3 +368,4 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
     </div>
   );
 }
+

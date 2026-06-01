@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { 
   Settings, 
   User, 
@@ -18,6 +18,7 @@ import {
   Upload
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { useLanguage } from '../translations';
 
 const PRESET_AVATARS = [
   { name: 'Felix', url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80' },
@@ -43,6 +44,8 @@ export default function SettingsView({
   onResetToZeroState,
   onLogout
 }: SettingsViewProps) {
+  const { t, translateUser } = useLanguage();
+
   // Local form states
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
@@ -56,11 +59,21 @@ export default function SettingsView({
   const [showConfirmResetZero, setShowConfirmResetZero] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Sync profile data dynamically when switching languages or resetting profile
+  useEffect(() => {
+    const translatedUser = translateUser(user);
+    setName(translatedUser.name);
+    setEmail(translatedUser.email);
+    setTitle(translatedUser.title);
+    setWallet(translatedUser.linkedWallet);
+    setAvatarUrl(translatedUser.avatarUrl);
+  }, [user, translateUser]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 1.5 * 1024 * 1024) {
-        setErrorMsg("La imagen de avatar supera el límite de 1.5 MB recomendado para persistencia offline.");
+        setErrorMsg(t('avatar_limit_msg'));
         setTimeout(() => setErrorMsg(null), 5000);
         return;
       }
@@ -96,10 +109,10 @@ export default function SettingsView({
       <div className="text-left space-y-2">
         <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface flex items-center gap-2">
           <Settings className="w-6 h-6 text-secondary" style={{ animation: 'spin 12s linear infinite' }} />
-          Configuración del Explorador
+          {t('config_explorador_title')}
         </h2>
         <p className="text-sm text-on-surface-variant max-w-2xl leading-relaxed font-sans">
-          Administra las credenciales de tu perfil físico-digital. Los cambios realizados se guardan localmente en la caché de tu dispositivo y se sincronizan al instante en todo el tablero.
+          {t('config_explorador_desc')}
         </p>
       </div>
 
@@ -108,7 +121,7 @@ export default function SettingsView({
         {/* Left Form Panel: Edit Profile (7 cols) */}
         <form onSubmit={handleSubmit} className="lg:col-span-8 bg-surface-container rounded-2xl border border-[#005049]/20 p-6 md:p-8 space-y-6 shadow-lg text-left">
           <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider border-b border-[#005049]/15 pb-2">
-            Editar Cuenta e Información Personal
+            {t('editar_cuenta_section')}
           </h3>
 
           {/* Avatar & Photo Upload Section */}
@@ -147,7 +160,7 @@ export default function SettingsView({
                 )}
                 <div className="absolute inset-0 bg-[#001019]/75 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center text-[9px] text-secondary font-bold transition-all gap-1">
                   <Camera className="w-4 h-4 text-secondary animate-pulse" />
-                  <span>Subir Foto</span>
+                  <span>{t('subir_foto_overlay')}</span>
                 </div>
               </div>
             </div>
@@ -156,10 +169,10 @@ export default function SettingsView({
             <div className="flex-1 space-y-3 text-center sm:text-left">
               <div>
                 <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1 justify-center sm:justify-start">
-                  <Camera className="w-3.5 h-3.5 text-secondary" /> Fotografía y Avatar del Viajero
+                  <Camera className="w-3.5 h-3.5 text-secondary" /> {t('avatar_viajero_title')}
                 </h4>
                 <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1">
-                  Carga una fotografía desde tu computadora o celular, o arrastra la imagen directamente aquí. O si prefieres, escoge uno de estos avatares oficiales de la red:
+                  {t('avatar_viajero_desc')}
                 </p>
               </div>
 
@@ -197,7 +210,7 @@ export default function SettingsView({
                   className="py-1.5 px-3 bg-[#0d2a29] border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#43e5d4] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  Subir Fotografía Personalizada
+                  {t('subir_foto_btn')}
                 </button>
               </div>
 
@@ -214,14 +227,14 @@ export default function SettingsView({
             {/* Explorer Nickname */}
             <div className="space-y-2">
               <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-secondary" /> Nombre de Explorador
+                <User className="w-3.5 h-3.5 text-secondary" /> {t('nombre_explorador_lbl')}
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/25"
+                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder='Ej. Felix "The Voyager"'
               />
             </div>
@@ -229,13 +242,13 @@ export default function SettingsView({
             {/* Explorer Title */}
             <div className="space-y-2">
               <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 text-secondary" /> Título Honorífico
+                <Award className="w-3.5 h-3.5 text-secondary" /> {t('titulo_honorifico_lbl')}
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/25"
+                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="Ej. Explorador Supremo"
               />
             </div>
@@ -243,14 +256,14 @@ export default function SettingsView({
             {/* Email Address */}
             <div className="space-y-2">
               <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-secondary" /> Correo vinculado (Privy/Google)
+                <Mail className="w-3.5 h-3.5 text-secondary" /> {t('correo_vinculado_lbl')}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/25"
+                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="ejemplo@correo.com"
               />
             </div>
@@ -258,14 +271,14 @@ export default function SettingsView({
             {/* Linked Wallet Address */}
             <div className="space-y-2">
               <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
-                <Wallet className="w-3.5 h-3.5 text-secondary" /> Billetera de Destino (Solana Hash)
+                <Wallet className="w-3.5 h-3.5 text-secondary" /> {t('billetera_destino_lbl')}
               </label>
               <input
                 type="text"
                 value={wallet}
                 onChange={(e) => setWallet(e.target.value)}
                 required
-                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-xs font-mono text-secondary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/25"
+                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-xs font-mono text-secondary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="Solana public address..."
               />
             </div>
@@ -274,11 +287,11 @@ export default function SettingsView({
           <div className="pt-4 border-t border-[#005049]/15 flex items-center justify-between gap-4">
             {saveSuccess ? (
               <span className="text-xs text-tertiary font-bold flex items-center gap-1 animate-bounce">
-                <ShieldCheck className="w-4 h-4 fill-surface-container" /> Sincronización Exitosa
+                <ShieldCheck className="w-4 h-4 fill-surface-container" /> {t('sincronizacion_exitosa')}
               </span>
             ) : (
               <span className="text-xs text-on-surface-variant/70 italic">
-                La wallet invisible se asocia a tu correo de forma encriptada bajo Solana.
+                {t('wallet_implicit_msg')}
               </span>
             )}
             
@@ -287,12 +300,12 @@ export default function SettingsView({
               type="submit"
               className="py-3 px-6 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wider hover:brightness-105 active:scale-95 transition-all outline-none"
             >
-              Guardar Cambios
+              {t('guardar_cambios_btn')}
             </button>
           </div>
         </form>
 
-        {/* Right Panel: Wallet Card & Admin Actions (5 cols) */}
+        {/* Right Panel: Wallet Card & Admin Actions (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* SECURE BLOCKCHAIN WALLET CARD */}
@@ -303,7 +316,7 @@ export default function SettingsView({
             <div className="flex items-center gap-2 border-b border-secondary/15 pb-3 justify-between">
               <h3 className="font-headline text-sm font-extrabold text-secondary uppercase tracking-wider flex items-center gap-2">
                 <Wallet className="w-4 h-4 text-[#43e5d4]" />
-                Mi Cartera Solana
+                {t('mi_cartera_title')}
               </h3>
               <span className="text-[9px] font-black uppercase text-[#43e5d4] bg-[#43e5d4]/10 px-2 py-0.5 rounded-full border border-[#43e5d4]/20">
                 ACTIVE
@@ -313,10 +326,10 @@ export default function SettingsView({
             <div className="space-y-4">
               <div className="bg-[#000f16]/80 border border-secondary/15 rounded-xl p-3.5 space-y-1.5 font-mono relative">
                 <p className="text-[9px] text-on-surface-variant/50 uppercase font-bold tracking-widest leading-none">
-                  Dirección de Destino cNFT
+                  {t('direccion_destino_cnft')}
                 </p>
                 <p className="text-xs text-[#c8e7fb] truncate font-bold select-all" title={wallet}>
-                  {wallet || 'No vinculada'}
+                  {wallet || t('no_vinculada')}
                 </p>
               </div>
 
@@ -342,7 +355,7 @@ export default function SettingsView({
                 className="w-full py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] text-xs font-black rounded-xl uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer shadow-[0_0_12px_rgba(67,229,212,0.15)]"
               >
                 <Check className={`w-3.5 h-3.5 transition-transform ${walletCopied ? 'scale-110' : 'scale-100'}`} />
-                <span>{walletCopied ? '¡Copiado con Éxito!' : 'Copiar Dirección Wallet'}</span>
+                <span>{walletCopied ? t('copiado_exito') : t('copiar_wallet_btn')}</span>
               </button>
             </div>
           </div>
@@ -350,11 +363,11 @@ export default function SettingsView({
           {/* ADMIN & RESET SYSTEM CARD */}
           <aside className="bg-surface-container rounded-2xl border border-error/15 p-6 space-y-6 shadow-lg text-left">
             <h3 className="font-headline text-sm font-bold text-error uppercase tracking-wider border-b border-error/10 pb-2 flex items-center gap-1.5">
-              <Trash2 className="w-4 h-4" /> Zona de Pruebas y Reseteo
+              <Trash2 className="w-4 h-4" /> {t('pruebas_reseteo_title')}
             </h3>
 
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Utiliza estas opciones para restablecer los estados de check-in del mapa de datos virtuales para testing. Esto permite simular los recorridos múltiples veces.
+              {t('pruebas_reseteo_desc')}
             </p>
 
             <div className="space-y-4 pt-1">
@@ -368,7 +381,7 @@ export default function SettingsView({
                     onClick={onLogout}
                     className="w-full py-3 bg-[#0d1e2a] border border-[#43e5d4]/40 hover:border-[#43e5d4] text-[#43e5d4] text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#112635] transition-all text-center cursor-pointer shadow-sm"
                   >
-                    🚪 Cerrar Sesión e Ir a Inicio
+                    {t('cerrar_sesion_btn')}
                   </button>
                 </div>
               )}
@@ -381,29 +394,29 @@ export default function SettingsView({
                     setShowConfirmResetMock(true);
                     setShowConfirmResetZero(false);
                   }}
-                  className="w-full py-2.5 bg-[#43e5d4]/10 border border-secondary/35 text-secondary text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#43e5d4]/15 transition-all text-center"
+                  className="w-full py-2.5 bg-[#43e5d4]/10 border border-secondary/35 text-secondary text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#43e5d4]/15 transition-all text-center cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  Regresar a Modo Mockup (4 / 6 Completado)
+                  {t('regresar_mockup_btn')}
                 </button>
                 {showConfirmResetMock && (
                   <div className="bg-background p-3 rounded-lg border border-secondary/20 text-[11px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
-                    <p className="text-on-surface-variant">¿Deseas restablecer al estado original de la foto (4 sellos desbloqueados y 2 por canjear)?</p>
+                    <p className="text-on-surface-variant">{t('regresar_mockup_confirm')}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
                           onResetToMockupState();
                           setShowConfirmResetMock(false);
                         }}
-                        className="bg-secondary text-on-secondary font-bold px-3 py-1 rounded text-[10px]"
+                        className="bg-secondary text-on-secondary font-bold px-3 py-1 rounded text-[10px] cursor-pointer"
                       >
-                        Sí, Restablecer
+                        {t('si_restablecer_btn')}
                       </button>
                       <button
                         onClick={() => setShowConfirmResetMock(false)}
-                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px]"
+                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
                       >
-                        Cancelar
+                        {t('cancelar_btn')}
                       </button>
                     </div>
                   </div>
@@ -418,29 +431,29 @@ export default function SettingsView({
                     setShowConfirmResetZero(true);
                     setShowConfirmResetMock(false);
                   }}
-                  className="w-full py-2.5 bg-error-container/20 border border-error/30 text-error text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-error-container/30 transition-all text-center"
+                  className="w-full py-2.5 bg-error-container/20 border border-error/30 text-error text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-error-container/30 transition-all text-center cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  Reiniciar desde Cero (0 / 6 Completados)
+                  {t('reiniciar_cero_btn')}
                 </button>
                 {showConfirmResetZero && (
                   <div className="bg-background p-3 rounded-lg border border-error/25 text-[11px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
-                    <p className="text-on-surface-variant">¿Confirmas borrar todos tus check-ins de GPS y comenzar tu viaje de 0/6 sellos?</p>
+                    <p className="text-on-surface-variant">{t('reiniciar_cero_confirm')}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
                           onResetToZeroState();
                           setShowConfirmResetZero(false);
                         }}
-                        className="bg-error border border-error text-on-error font-bold px-3 py-1 rounded text-[10px]"
+                        className="bg-error border border-error text-on-error font-bold px-3 py-1 rounded text-[10px] cursor-pointer"
                       >
-                        Sí, Borrar Todo
+                        {t('si_borrar_todo_btn')}
                       </button>
                       <button
                         onClick={() => setShowConfirmResetZero(false)}
-                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px]"
+                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
                       >
-                        Cancelar
+                        {t('cancelar_btn')}
                       </button>
                     </div>
                   </div>
