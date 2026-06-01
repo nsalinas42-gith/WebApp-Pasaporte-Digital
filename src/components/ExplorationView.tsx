@@ -32,7 +32,7 @@ interface ExplorationViewProps {
   onResetPlaceCheckIn?: (locationId: string, placeId: string) => void;
   user: UserProfile;
   onTriggerPhoto: () => void;
-  routesLocked?: boolean;
+  lockedRouteIds?: string[];
 }
 
 // Haversine formula to compute geodesic distance in meters
@@ -59,7 +59,7 @@ export default function ExplorationView({
   onResetPlaceCheckIn,
   user,
   onTriggerPhoto,
-  routesLocked = true
+  lockedRouteIds = []
 }: ExplorationViewProps) {
   const { t, translateLocation } = useLanguage();
   const translatedLocations = locations.map(translateLocation) as Location[];
@@ -159,7 +159,7 @@ export default function ExplorationView({
             const completedCount = getCompletedPlacesCount(loc);
             const totalCount = loc.places?.length || 8;
             const percentage = Math.round((completedCount / totalCount) * 100);
-            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+            const isLockedRouteState = lockedRouteIds.includes(loc.id);
 
             return (
               <button

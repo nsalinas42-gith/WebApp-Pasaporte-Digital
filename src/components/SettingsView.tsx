@@ -20,7 +20,7 @@ import {
   Unlock,
   Key
 } from 'lucide-react';
-import { UserProfile } from '../types';
+import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
 
 const PRESET_AVATARS = [
@@ -38,8 +38,9 @@ interface SettingsViewProps {
   onResetToMockupState: () => void;
   onResetToZeroState: () => void;
   onLogout?: () => void;
-  routesLocked: boolean;
-  setRoutesLocked: (locked: boolean) => void;
+  lockedRouteIds: string[];
+  setLockedRouteIds: (ids: string[]) => void;
+  locations: Location[];
 }
 
 export default function SettingsView({
@@ -48,8 +49,9 @@ export default function SettingsView({
   onResetToMockupState,
   onResetToZeroState,
   onLogout,
-  routesLocked,
-  setRoutesLocked
+  lockedRouteIds,
+  setLockedRouteIds,
+  locations
 }: SettingsViewProps) {
   const { t, translateUser } = useLanguage();
 
@@ -69,27 +71,41 @@ export default function SettingsView({
   const [adminPassword, setAdminPassword] = useState('');
   const [adminPasswordError, setAdminPasswordError] = useState<string | null>(null);
   const [adminSuccessMsg, setAdminSuccessMsg] = useState<string | null>(null);
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  const handleToggleRoutesLock = () => {
+  const handleVerifyAdminPassword = () => {
     if (adminPassword !== '009286') {
       setAdminPasswordError('Contraseña incorrecta. Se requiere autorización de administrador.');
-      setAdminSuccessMsg(null);
       return;
     }
-    
     setAdminPasswordError(null);
-    const newLockState = !routesLocked;
-    setRoutesLocked(newLockState);
-    setAdminSuccessMsg(
-      newLockState 
-        ? 'Rutas 3-6 Bloqueadas con éxito' 
-        : 'Rutas 3-6 Desbloqueadas con éxito'
-    );
+    setIsAdminUnlocked(true);
     setAdminPassword('');
-    
-    setTimeout(() => {
-      setAdminSuccessMsg(null);
-    }, 4000);
+    setAdminSuccessMsg('Panel de administrador desbloqueado con éxito');
+    setTimeout(() => setAdminSuccessMsg(null), 3000);
+  };
+
+  const handleToggleIndividualRoute = (routeId: string) => {
+    if (lockedRouteIds.includes(routeId)) {
+      setLockedRouteIds(lockedRouteIds.filter(id => id !== routeId));
+      setAdminSuccessMsg('Ruta configurada como Activa');
+    } else {
+      setLockedRouteIds([...lockedRouteIds, routeId]);
+      setAdminSuccessMsg('Ruta configurada como Bloqueada');
+    }
+    setTimeout(() => setAdminSuccessMsg(null), 3000);
+  };
+
+  const handleLockAllRoutes = () => {
+    setLockedRouteIds(locations.map(loc => loc.id));
+    setAdminSuccessMsg('Todas las rutas bloqueadas');
+    setTimeout(() => setAdminSuccessMsg(null), 3000);
+  };
+
+  const handleUnlockAllRoutes = () => {
+    setLockedRouteIds([]);
+    setAdminSuccessMsg('Todas las rutas desbloqueadas');
+    setTimeout(() => setAdminSuccessMsg(null), 3000);
   };
 
   // Sync profile data dynamically when switching languages or resetting profile
@@ -399,61 +415,136 @@ export default function SettingsView({
               <Lock className="w-4 h-4 text-secondary" /> PANEL DE ADMINISTRADOR
             </h3>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Controla el acceso global a los mapas de la aplicación de forma segura. Ingresa la contraseña de administrador establecida para cambiar el estado de las Rutas 3, 4, 5 y 6 al instante.
+              Controla de forma individual el acceso a cada una de las rutas de exploración de Caracas. Autentícate con la contraseña para desbloquear el control de rutas.
             </p>
             
-            <div className="space-y-3 pt-1">
-              <div>
-                <label className="block text-[10px] uppercase font-black tracking-wider text-secondary mb-1 flex items-center gap-1">
-                  <Key className="w-4 h-4 text-secondary shrink-0" /> CONTRASEÑA DE ADMINISTRADOR
-                </label>
-                <input
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => {
-                    setAdminPassword(e.target.value);
-                    setAdminPasswordError(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleToggleRoutesLock();
-                    }
-                  }}
-                  placeholder="Introduce la clave de seguridad para cambiar estado (009286)..."
-                  className="w-full bg-[#001420] border border-secondary/20 rounded-xl text-on-surface px-4 py-2.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-secondary transition-all"
-                />
+            {!isAdminUnlocked ? (
+              <div className="space-y-3 pt-1">
+                <div>
+                  <label className="block text-[10px] uppercase font-black tracking-wider text-secondary mb-1 flex items-center gap-1">
+                    <Key className="w-4 h-4 text-secondary shrink-0" /> CONTRASEÑA DE ACCESO
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      value={adminPassword}
+                      onChange={(e) => {
+                        setAdminPassword(e.target.value);
+                        setAdminPasswordError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyAdminPassword();
+                        }
+                      }}
+                      placeholder="Introduce la contraseña (009286)..."
+                      className="flex-1 bg-[#001420] border border-secondary/20 rounded-xl text-on-surface px-4 py-2.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-secondary transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleVerifyAdminPassword}
+                      className="px-4 py-2.5 bg-secondary text-on-secondary text-xs font-black rounded-xl hover:brightness-105 active:scale-95 transition-all outline-none uppercase cursor-pointer"
+                    >
+                      Acceder
+                    </button>
+                  </div>
+                </div>
+
+                {adminPasswordError && (
+                  <p className="text-xs text-red-400 font-medium flex items-center gap-1.5 mt-1 animate-pulse">
+                    <span>⚠️</span> {adminPasswordError}
+                  </p>
+                )}
               </div>
+            ) : (
+              <div className="space-y-4 pt-1">
+                <div className="flex items-center justify-between bg-secondary/10 border border-secondary/25 p-3 rounded-xl">
+                  <span className="text-xs font-bold text-secondary flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-secondary animate-ping" />
+                    Sesión de Administrador Activa
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAdminUnlocked(false);
+                      setAdminSuccessMsg('Sesión cerrada');
+                      setTimeout(() => setAdminSuccessMsg(null), 2000);
+                    }}
+                    className="text-[10px] uppercase font-black text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                  >
+                    Salir
+                  </button>
+                </div>
 
-              {adminPasswordError && (
-                <p className="text-xs text-red-400 font-medium flex items-center gap-1.5 mt-1">
-                  <span>⚠️</span> {adminPasswordError}
-                </p>
-              )}
+                {adminSuccessMsg && (
+                  <p className="text-xs text-tertiary font-bold flex items-center gap-1.5 animate-bounce">
+                    <span>✅</span> {adminSuccessMsg}
+                  </p>
+                )}
 
-              {adminSuccessMsg && (
-                <p className="text-xs text-tertiary font-bold flex items-center gap-1.5 mt-1">
-                  <span>✅</span> {adminSuccessMsg}
-                </p>
-              )}
+                <div className="space-y-2">
+                  <label className="block text-[10px] uppercase font-black tracking-wider text-secondary mb-2">
+                    SELECCIONA QUÉ RUTAS BLOQUEAR / DESBLOQUEAR
+                  </label>
+                  
+                  <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+                    {locations.map((loc, idx) => {
+                      const isLocked = lockedRouteIds.includes(loc.id);
+                      return (
+                        <div 
+                          key={loc.id} 
+                          className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                            isLocked 
+                              ? 'bg-red-950/10 border-red-500/20 text-rose-400/90' 
+                              : 'bg-[#001c27] border-secondary/20 text-[#c8e7fb]'
+                          }`}
+                        >
+                          <div className="flex flex-col text-left max-w-[70%]">
+                            <span className="text-[9px] font-bold text-secondary uppercase tracking-wider">
+                              Ruta {idx + 1}
+                            </span>
+                            <span className="text-xs font-bold truncate" title={loc.name}>
+                              {loc.name}
+                            </span>
+                          </div>
+                          
+                          <button
+                            type="button"
+                            onClick={() => handleToggleIndividualRoute(loc.id)}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                              isLocked
+                                ? 'bg-rose-950/40 text-rose-400 border border-rose-500/30 hover:bg-rose-900/40 font-mono font-bold'
+                                : 'bg-secondary/10 text-secondary border border-secondary/30 hover:bg-secondary/20 font-mono font-bold'
+                            }`}
+                          >
+                            {isLocked ? '🔒 Bloqueada' : '🔓 Activa'}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between bg-[#001420] border border-[#005049]/30 rounded-xl p-3 mt-2 gap-2">
-                <span className="text-[11px] font-bold text-[#c8e7fb] flex items-center gap-1 leading-none">
-                  {routesLocked ? '🔒 Rutas 3-6 Bloqueadas' : '🔓 Rutas 3-6 Activas'}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleToggleRoutesLock}
-                  className={`w-full sm:w-auto px-4 py-2 text-xs font-black rounded-lg transition-all uppercase tracking-wider cursor-pointer font-sans ${
-                    routesLocked
-                      ? 'bg-secondary text-on-secondary shadow-[0_0_10px_rgba(67,229,212,0.3)] hover:brightness-105'
-                      : 'bg-[#112635] text-secondary border border-secondary/35 hover:bg-[#163042]'
-                  }`}
-                >
-                  {routesLocked ? 'Desbloquear' : 'Bloquear'}
-                </button>
+                {/* Quick actions for all locks */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-secondary/10">
+                  <button
+                    type="button"
+                    onClick={handleLockAllRoutes}
+                    className="py-2 px-3 bg-red-950/25 hover:bg-red-950/40 border border-rose-500/25 text-rose-400 font-bold rounded-xl text-[10px] uppercase text-center transition-all cursor-pointer"
+                  >
+                    Bloquear Todas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUnlockAllRoutes}
+                    className="py-2 px-3 bg-[#0d2a29] hover:bg-[#113837] border border-secondary/35 text-secondary font-bold rounded-xl text-[10px] uppercase text-center transition-all cursor-pointer"
+                  >
+                    Habilitar Todas
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* ADMIN & RESET SYSTEM CARD */}

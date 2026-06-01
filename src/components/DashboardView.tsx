@@ -70,7 +70,7 @@ interface DashboardViewProps {
   txHash: string | null;
   onIncrementShare: () => void;
   onTriggerPhoto: () => void;
-  routesLocked?: boolean;
+  lockedRouteIds?: string[];
 }
 
 export default function DashboardView({
@@ -84,7 +84,7 @@ export default function DashboardView({
   txHash,
   onIncrementShare,
   onTriggerPhoto,
-  routesLocked = true
+  lockedRouteIds = []
 }: DashboardViewProps) {
   const { t } = useLanguage();
   const [showShareModal, setShowShareModal] = useState(false);
@@ -283,7 +283,7 @@ export default function DashboardView({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {locations.map((loc, idx) => {
-            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+            const isLockedRouteState = lockedRouteIds.includes(loc.id);
             return (
               <div 
                 key={loc.id} 
@@ -373,7 +373,7 @@ export default function DashboardView({
         {/* Badges Grid displaying correct asset icons or fallbacks */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {locations.map((loc, idx) => {
-            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+            const isLockedRouteState = lockedRouteIds.includes(loc.id);
             const isUnlocked = loc.isCheckedIn && !isLockedRouteState;
             const completedCount = isLockedRouteState ? 0 : (loc.places?.filter(p => p.isCheckedIn).length || 0);
             const requiredCount = getRequiredPlacesLimit(loc.id);

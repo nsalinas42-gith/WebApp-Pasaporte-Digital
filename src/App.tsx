@@ -52,23 +52,29 @@ export default function App() {
     localStorage.setItem('passport_selected_route_id', selectedRouteId);
   }, [selectedRouteId]);
 
-  // Administrator lock state for Routes 3, 4, 5, 6
-  const [routesLocked, setRoutesLocked] = useState<boolean>(() => {
-    const saved = localStorage.getItem('passport_routes_locked');
-    return saved === 'false' ? false : true; // Locked by default (true)
+  // Administrator multi-select individual locked routes state list
+  const [lockedRouteIds, setLockedRouteIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('passport_locked_route_ids');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // Fallback
+      }
+    }
+    // Backward compatibility or default state: routes 3,4,5,6 locked initially
+    const legacyRoutesLocked = localStorage.getItem('passport_routes_locked');
+    if (legacyRoutesLocked === 'false') {
+      return [];
+    }
+    return ['acueducto_segovia', 'alcazar_sevilla', 'sagrada_familia', 'castillo_olite'];
   });
 
   useEffect(() => {
-    localStorage.setItem('passport_routes_locked', String(routesLocked));
-  }, [routesLocked]);
+    localStorage.setItem('passport_locked_route_ids', JSON.stringify(lockedRouteIds));
+    localStorage.setItem('passport_routes_locked', String(lockedRouteIds.length > 0));
+  }, [lockedRouteIds]);
 
-  // If routes are locked and the selected route is a locked one, reset it back to alhambra
-  useEffect(() => {
-    if (routesLocked && ['acueducto_segovia', 'alcazar_sevilla', 'sagrada_familia', 'castillo_olite'].includes(selectedRouteId)) {
-      setSelectedRouteId('alhambra');
-    }
-  }, [routesLocked, selectedRouteId]);
-  
   // App States with LocalStorage Hydration
   const [locations, setLocations] = useState<Location[]>(() => {
     const saved = localStorage.getItem('passport_locations');
@@ -87,6 +93,14 @@ export default function App() {
       return INITIAL_LOCATIONS;
     }
   });
+
+  // If currently active route gets locked, revert to first available unlocked route
+  useEffect(() => {
+    if (lockedRouteIds.includes(selectedRouteId)) {
+      const firstUnlocked = locations.find(loc => !lockedRouteIds.includes(loc.id))?.id || 'alhambra';
+      setSelectedRouteId(firstUnlocked);
+    }
+  }, [lockedRouteIds, selectedRouteId, locations]);
 
   const [user, setUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('passport_user');
@@ -588,7 +602,7 @@ export default function App() {
         locations={translatedLocations}
         selectedRouteId={selectedRouteId}
         onSelectRoute={setSelectedRouteId}
-        routesLocked={routesLocked}
+        lockedRouteIds={lockedRouteIds}
       />
 
       {/* Main Responsive Canvas Content wrapper */}
@@ -607,7 +621,7 @@ export default function App() {
             txHash={txHash}
             onIncrementShare={handleShareAchievementIncrement}
             onTriggerPhoto={handleTriggerSelfiePhoto}
-            routesLocked={routesLocked}
+            lockedRouteIds={lockedRouteIds}
           />
         )}
 
@@ -620,7 +634,7 @@ export default function App() {
             onResetPlaceCheckIn={handleResetPlaceCheckIn}
             user={translatedUser}
             onTriggerPhoto={handleTriggerSelfiePhoto}
-            routesLocked={routesLocked}
+            lockedRouteIds={lockedRouteIds}
           />
         )}
 
@@ -648,8 +662,9 @@ export default function App() {
             onResetToMockupState={handleResetToMockupState}
             onResetToZeroState={handleResetToZeroState}
             onLogout={handleLogout}
-            routesLocked={routesLocked}
-            setRoutesLocked={setRoutesLocked}
+            lockedRouteIds={lockedRouteIds}
+            setLockedRouteIds={setLockedRouteIds}
+            locations={translatedLocations}
           />
         )}
 

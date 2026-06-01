@@ -30,7 +30,7 @@ interface SidebarProps {
   locations: Location[];
   selectedRouteId: string;
   onSelectRoute: (routeId: string) => void;
-  routesLocked?: boolean;
+  lockedRouteIds?: string[];
 }
 
 export default function Sidebar({
@@ -45,7 +45,7 @@ export default function Sidebar({
   locations,
   selectedRouteId,
   onSelectRoute,
-  routesLocked = true
+  lockedRouteIds = []
 }: SidebarProps) {
   const { t, translateLocation } = useLanguage();
   
@@ -118,7 +118,7 @@ export default function Sidebar({
                     const isSubActive = activeTab === 'exploration' && selectedRouteId === loc.id;
                     const completedPlaces = loc.places?.filter(p => p.isCheckedIn).length || 0;
                     const totalPlaces = loc.places?.length || 0;
-                    const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+                    const isLockedRouteState = lockedRouteIds.includes(loc.id);
 
                     return (
                       <button
