@@ -30,6 +30,7 @@ import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
 import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 
 interface LandingViewProps {
   onEnter: () => void;
@@ -188,13 +189,13 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             </div>
 
             {/* Right render placeholder image inside card */}
-            <div className="relative w-full md:w-48 h-36 md:h-full rounded-2xl overflow-hidden self-center border border-[#1a3848]/50 shadow-sm shrink-0">
+            <div className="relative w-full md:w-72 aspect-video rounded-2xl overflow-hidden self-center border border-[#1a3848]/50 shadow-sm shrink-0 bg-[#000f16]/60">
               <img 
-                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80" 
+                src={mapaPintaMapas} 
                 alt="Physical World Map Vintage Render"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#001721] via-transparent to-transparent opacity-40"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#001721] via-transparent to-transparent opacity-45 pointer-events-none"></div>
             </div>
           </div>
 
