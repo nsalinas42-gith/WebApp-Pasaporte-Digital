@@ -51,6 +51,23 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('passport_selected_route_id', selectedRouteId);
   }, [selectedRouteId]);
+
+  // Administrator lock state for Routes 3, 4, 5, 6
+  const [routesLocked, setRoutesLocked] = useState<boolean>(() => {
+    const saved = localStorage.getItem('passport_routes_locked');
+    return saved === 'false' ? false : true; // Locked by default (true)
+  });
+
+  useEffect(() => {
+    localStorage.setItem('passport_routes_locked', String(routesLocked));
+  }, [routesLocked]);
+
+  // If routes are locked and the selected route is a locked one, reset it back to alhambra
+  useEffect(() => {
+    if (routesLocked && ['acueducto_segovia', 'alcazar_sevilla', 'sagrada_familia', 'castillo_olite'].includes(selectedRouteId)) {
+      setSelectedRouteId('alhambra');
+    }
+  }, [routesLocked, selectedRouteId]);
   
   // App States with LocalStorage Hydration
   const [locations, setLocations] = useState<Location[]>(() => {
@@ -571,6 +588,7 @@ export default function App() {
         locations={translatedLocations}
         selectedRouteId={selectedRouteId}
         onSelectRoute={setSelectedRouteId}
+        routesLocked={routesLocked}
       />
 
       {/* Main Responsive Canvas Content wrapper */}
@@ -589,6 +607,7 @@ export default function App() {
             txHash={txHash}
             onIncrementShare={handleShareAchievementIncrement}
             onTriggerPhoto={handleTriggerSelfiePhoto}
+            routesLocked={routesLocked}
           />
         )}
 
@@ -601,6 +620,7 @@ export default function App() {
             onResetPlaceCheckIn={handleResetPlaceCheckIn}
             user={translatedUser}
             onTriggerPhoto={handleTriggerSelfiePhoto}
+            routesLocked={routesLocked}
           />
         )}
 
@@ -628,6 +648,8 @@ export default function App() {
             onResetToMockupState={handleResetToMockupState}
             onResetToZeroState={handleResetToZeroState}
             onLogout={handleLogout}
+            routesLocked={routesLocked}
+            setRoutesLocked={setRoutesLocked}
           />
         )}
 

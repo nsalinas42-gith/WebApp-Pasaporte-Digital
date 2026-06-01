@@ -18,7 +18,8 @@ import {
   Camera,
   Layers,
   Award,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react';
 import { Location, SubLocation, UserProfile } from '../types';
 import { useLanguage } from '../translations';
@@ -31,6 +32,7 @@ interface ExplorationViewProps {
   onResetPlaceCheckIn?: (locationId: string, placeId: string) => void;
   user: UserProfile;
   onTriggerPhoto: () => void;
+  routesLocked?: boolean;
 }
 
 // Haversine formula to compute geodesic distance in meters
@@ -56,7 +58,8 @@ export default function ExplorationView({
   onCheckIn,
   onResetPlaceCheckIn,
   user,
-  onTriggerPhoto
+  onTriggerPhoto,
+  routesLocked = true
 }: ExplorationViewProps) {
   const { t, translateLocation } = useLanguage();
   const translatedLocations = locations.map(translateLocation) as Location[];
@@ -156,48 +159,59 @@ export default function ExplorationView({
             const completedCount = getCompletedPlacesCount(loc);
             const totalCount = loc.places?.length || 8;
             const percentage = Math.round((completedCount / totalCount) * 100);
+            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
 
             return (
               <button
                 key={loc.id}
+                disabled={isLockedRouteState}
                 onClick={() => {
+                  if (isLockedRouteState) return;
                   onSelectRoute(loc.id);
                   setBrowserGpsError(null);
                 }}
                 className={`p-3.5 rounded-xl border text-left transition-all relative overflow-hidden group flex flex-col justify-between h-[90px] ${
-                  isSelected 
-                    ? 'bg-surface-container border-secondary shadow-[0_0_15px_rgba(67,229,212,0.12)] scale-[1.03] z-10' 
-                    : 'bg-surface-container-low border-outline-variant/20 hover:border-secondary/40 hover:bg-surface-container transition-all cursor-pointer'
+                  isLockedRouteState
+                    ? 'opacity-40 cursor-not-allowed bg-black/25 border-[#005049]/10 text-on-surface-variant/40'
+                    : isSelected 
+                      ? 'bg-surface-container border-secondary shadow-[0_0_15px_rgba(67,229,212,0.12)] scale-[1.03] z-10' 
+                      : 'bg-surface-container-low border-outline-variant/20 hover:border-secondary/40 hover:bg-surface-container transition-all cursor-pointer'
                 }`}
               >
                 <div>
                   <div className="flex justify-between items-start gap-1">
-                    <span className="text-[10px] uppercase font-black text-secondary tracking-wider block">
+                    <span className="text-[10px] uppercase font-black text-secondary tracking-wider flex items-center gap-1">
+                      {isLockedRouteState && <Lock className="w-3 h-3 text-secondary" />}
                       {t('ruta_label').replace('{num}', String(idx + 1))}
                     </span>
-                    {percentage === 100 && (
+                    {percentage === 100 && !isLockedRouteState && (
                       <CheckCircle2 className="w-3.5 h-3.5 text-tertiary fill-background shrink-0" />
+                    )}
+                    {isLockedRouteState && (
+                      <span className="text-[10px]">🔒</span>
                     )}
                   </div>
                   <h4 className="font-headline text-xs font-bold text-on-surface truncate group-hover:text-secondary mt-0.5">
-                    {loc.name}
+                    {isLockedRouteState ? 'BLOQUEADO' : loc.name}
                   </h4>
                 </div>
 
                 <div className="w-full space-y-1">
                   <div className="flex justify-between items-center text-[9px] text-on-surface-variant font-mono">
                     <span>{t('progreso_label')}</span>
-                    <span className="font-bold text-secondary">{completedCount}/{totalCount}</span>
+                    <span className="font-bold text-secondary">
+                      {isLockedRouteState ? '🔒' : `${completedCount}/${totalCount}`}
+                    </span>
                   </div>
                   <div className="w-full h-1 bg-[#001521] rounded-full overflow-hidden">
                     <div 
-                      className={`h-full transition-all duration-300 ${percentage === 100 ? 'bg-tertiary' : 'bg-secondary'}`}
-                      style={{ width: `${percentage}%` }}
+                      className={`h-full transition-all duration-300 ${isLockedRouteState ? 'bg-[#01222b]' : percentage === 100 ? 'bg-tertiary' : 'bg-secondary'}`}
+                      style={{ width: `${isLockedRouteState ? 0 : percentage}%` }}
                     />
                   </div>
                 </div>
 
-                {isSelected && (
+                {isSelected && !isLockedRouteState && (
                   <div className="absolute right-0 top-0 h-full w-1 bg-secondary" />
                 )}
               </button>

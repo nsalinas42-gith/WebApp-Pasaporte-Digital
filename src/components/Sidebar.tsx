@@ -12,7 +12,8 @@ import {
   Rocket, 
   HelpCircle, 
   LogOut, 
-  Sparkles 
+  Sparkles,
+  Lock
 } from 'lucide-react';
 import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
@@ -29,6 +30,7 @@ interface SidebarProps {
   locations: Location[];
   selectedRouteId: string;
   onSelectRoute: (routeId: string) => void;
+  routesLocked?: boolean;
 }
 
 export default function Sidebar({
@@ -42,7 +44,8 @@ export default function Sidebar({
   onLogout,
   locations,
   selectedRouteId,
-  onSelectRoute
+  onSelectRoute,
+  routesLocked = true
 }: SidebarProps) {
   const { t, translateLocation } = useLanguage();
   
@@ -115,24 +118,32 @@ export default function Sidebar({
                     const isSubActive = activeTab === 'exploration' && selectedRouteId === loc.id;
                     const completedPlaces = loc.places?.filter(p => p.isCheckedIn).length || 0;
                     const totalPlaces = loc.places?.length || 0;
+                    const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
 
                     return (
                       <button
                         key={loc.id}
                         id={`submenu-route-${loc.id}`}
+                        disabled={isLockedRouteState}
                         onClick={() => {
+                          if (isLockedRouteState) return;
                           setActiveTab('exploration');
                           onSelectRoute(loc.id);
                         }}
                         className={`w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] leading-tight transition-all flex justify-between items-center ${
-                          isSubActive
-                            ? 'text-secondary bg-[#001e2c] border border-secondary/35 shadow-[0_0_8px_rgba(67,229,212,0.1)] font-bold'
-                            : 'text-on-surface-variant hover:text-secondary hover:bg-surface-container-high/50'
+                          isLockedRouteState
+                            ? 'opacity-40 cursor-not-allowed bg-black/10 text-on-surface-variant/50'
+                            : isSubActive
+                              ? 'text-secondary bg-[#001e2c] border border-secondary/35 shadow-[0_0_8px_rgba(67,229,212,0.1)] font-bold'
+                              : 'text-on-surface-variant hover:text-secondary hover:bg-surface-container-high/50'
                         }`}
                       >
-                        <span className="truncate pr-1">{t('ruta_prefix')} {idx + 1}: {transLoc.name}</span>
+                        <span className="truncate pr-1 flex items-center gap-1">
+                          {isLockedRouteState && <Lock className="w-3.5 h-3.5 text-secondary inline-block" />}
+                          {t('ruta_prefix')} {idx + 1}: {transLoc.name}
+                        </span>
                         <span className="text-[9px] font-mono opacity-80 shrink-0">
-                          ({completedPlaces}/{totalPlaces})
+                          {isLockedRouteState ? '🔒' : `(${completedPlaces}/${totalPlaces})`}
                         </span>
                       </button>
                     );

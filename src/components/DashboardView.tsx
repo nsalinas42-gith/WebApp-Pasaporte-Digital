@@ -70,6 +70,7 @@ interface DashboardViewProps {
   txHash: string | null;
   onIncrementShare: () => void;
   onTriggerPhoto: () => void;
+  routesLocked?: boolean;
 }
 
 export default function DashboardView({
@@ -82,7 +83,8 @@ export default function DashboardView({
   isLoadingClaim,
   txHash,
   onIncrementShare,
-  onTriggerPhoto
+  onTriggerPhoto,
+  routesLocked = true
 }: DashboardViewProps) {
   const { t } = useLanguage();
   const [showShareModal, setShowShareModal] = useState(false);
@@ -280,42 +282,75 @@ export default function DashboardView({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-          {locations.map((loc, idx) => (
-            <div 
-              key={loc.id} 
-              onClick={() => onExploreLocation(loc.id)}
-              className="glass-card rounded-xl overflow-hidden group cursor-pointer w-full flex flex-col hover:border-secondary/40 text-left"
-            >
-              <div className="h-44 relative overflow-hidden">
-                <img 
-                  alt={loc.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  src={loc.imageUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80'}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
-                <div className="absolute bottom-3 left-4 right-4">
-                  <h4 className="font-headline font-bold text-white text-base md:text-lg tracking-tight">
-                    {t('ruta_label').replace('{num}', String(idx + 1))}: {loc.name}
-                  </h4>
-                  <p className="text-xs text-on-surface-variant/90 font-medium mt-1 truncate">
-                    {teaserMap[loc.id] || loc.category}
-                  </p>
+          {locations.map((loc, idx) => {
+            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+            return (
+              <div 
+                key={loc.id} 
+                onClick={() => {
+                  if (isLockedRouteState) return;
+                  onExploreLocation(loc.id);
+                }}
+                className={`glass-card rounded-xl overflow-hidden group w-full flex flex-col text-left transition-all ${
+                  isLockedRouteState
+                    ? 'opacity-40 cursor-not-allowed bg-black/25 relative border-error/5'
+                    : 'cursor-pointer hover:border-secondary/40'
+                }`}
+              >
+                <div className="h-44 relative overflow-hidden">
+                  <img 
+                    alt={loc.name} 
+                    className={`w-full h-full object-cover transition-transform duration-700 ${!isLockedRouteState ? 'group-hover:scale-105' : ''}`} 
+                    src={loc.imageUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80'}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+                  
+                  {isLockedRouteState && (
+                    <div className="absolute top-3 right-3 bg-black/75 border border-[#8ba7b3]/40 p-2 rounded-full text-secondary shadow-md animate-pulse">
+                      <Lock className="w-5 h-5" />
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-3 left-4 right-4">
+                    <h4 className="font-headline font-bold text-white text-base md:text-lg tracking-tight flex items-center gap-1.5">
+                      {isLockedRouteState && <Lock className="w-4 h-4 text-secondary shrink-0" />}
+                      {t('ruta_label').replace('{num}', String(idx + 1))}: {isLockedRouteState ? 'BLOQUEADO' : loc.name}
+                    </h4>
+                    <p className="text-xs text-on-surface-variant/90 font-medium mt-1 truncate">
+                      {isLockedRouteState ? 'Sección bloqueada por administración' : (teaserMap[loc.id] || loc.category)}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-4 mt-auto">
+                  <button 
+                    disabled={isLockedRouteState}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isLockedRouteState) return;
+                      onExploreLocation(loc.id);
+                    }}
+                    className={`w-full py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all outline-none ${
+                      isLockedRouteState
+                        ? 'bg-black/25 text-on-surface-variant/40 cursor-not-allowed border border-on-surface-variant/10'
+                        : 'bg-secondary/15 hover:bg-secondary text-secondary hover:text-on-secondary cursor-pointer'
+                    }`}
+                  >
+                    {isLockedRouteState ? (
+                      <>
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>{t('bloqueado_caps')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{t('iniciar_ruta')}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
-              <div className="p-4 mt-auto">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onExploreLocation(loc.id);
-                  }}
-                  className="w-full py-2.5 bg-secondary/15 hover:bg-secondary text-secondary hover:text-on-secondary rounded-lg font-bold flex items-center justify-center gap-2 transition-all outline-none"
-                >
-                  <span>{t('iniciar_ruta')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -337,19 +372,25 @@ export default function DashboardView({
 
         {/* Badges Grid displaying correct asset icons or fallbacks */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {locations.map((loc) => {
-            const isUnlocked = loc.isCheckedIn;
-            const completedCount = loc.places?.filter(p => p.isCheckedIn).length || 0;
+          {locations.map((loc, idx) => {
+            const isLockedRouteState = routesLocked && idx >= 2 && idx <= 5;
+            const isUnlocked = loc.isCheckedIn && !isLockedRouteState;
+            const completedCount = isLockedRouteState ? 0 : (loc.places?.filter(p => p.isCheckedIn).length || 0);
             const requiredCount = getRequiredPlacesLimit(loc.id);
             return (
               <div 
                 key={loc.id}
-                onClick={() => onExploreLocation(loc.id)}
-                className={`glass-card p-6 rounded-xl flex flex-col items-center group cursor-pointer border ${
-                  isUnlocked ? 'border-tertiary/40' : 'opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all border-outline-variant/15'
+                onClick={() => {
+                  if (isLockedRouteState) return;
+                  onExploreLocation(loc.id);
+                }}
+                className={`glass-card p-6 rounded-xl flex flex-col items-center group border ${
+                  isLockedRouteState
+                    ? 'opacity-40 cursor-not-allowed bg-black/25 border-error/5'
+                    : isUnlocked ? 'border-tertiary/40 cursor-pointer' : 'opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all border-outline-variant/15 cursor-pointer'
                 }`}
               >
-                 <div className="w-20 h-20 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                 <div className="w-20 h-20 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 relative">
                   <img 
                     src={loc.badgeImageUrl || badgeImageMap[loc.badgeIcon] || stampAlhambra} 
                     alt={loc.badgeName} 
@@ -357,17 +398,27 @@ export default function DashboardView({
                     style={{ filter: isUnlocked ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
                     className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.5)]" 
                   />
+                  {isLockedRouteState && (
+                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-secondary">
+                      <Lock className="w-6 h-6 text-secondary" />
+                    </div>
+                  )}
                 </div>
-                <p className="font-headline font-bold text-on-surface text-center text-xs truncate max-w-full leading-tight">
-                  {t('insignia_prefix').replace('{name}', loc.badgeName)}
+                 <p className="font-headline font-bold text-on-surface text-center text-xs truncate max-w-full leading-tight">
+                  {isLockedRouteState ? 'BLOQUEADO' : t('insignia_prefix').replace('{name}', loc.badgeName)}
                 </p>
                 <p className="font-sans text-[10px] text-on-surface-variant/70 text-center leading-normal">
-                  {t('de_fichas').replace('{completed}', String(completedCount)).replace('{required}', String(requiredCount))}
+                  {isLockedRouteState ? '🔒' : t('de_fichas').replace('{completed}', String(completedCount)).replace('{required}', String(requiredCount))}
                 </p>
-                <p className={`font-sans font-bold text-[10px] uppercase tracking-wider mt-1.5 ${
-                  isUnlocked ? 'text-tertiary' : 'text-on-surface-variant/60'
+                <p className={`font-sans font-bold text-[10px] uppercase tracking-wider mt-1.5 flex items-center gap-1 ${
+                  isLockedRouteState ? 'text-[#8ba7b3]' : isUnlocked ? 'text-tertiary' : 'text-on-surface-variant/60'
                 }`}>
-                  {isUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}
+                  {isLockedRouteState ? (
+                    <>
+                      <Lock className="w-3.5 h-3.5 inline text-[#8ba7b3]" />
+                      <span>{t('bloqueado_caps')}</span>
+                    </>
+                  ) : isUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}
                 </p>
               </div>
             );

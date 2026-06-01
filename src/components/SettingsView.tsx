@@ -15,7 +15,10 @@ import {
   ShieldCheck,
   Award,
   Camera,
-  Upload
+  Upload,
+  Lock,
+  Unlock,
+  Key
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { useLanguage } from '../translations';
@@ -35,6 +38,8 @@ interface SettingsViewProps {
   onResetToMockupState: () => void;
   onResetToZeroState: () => void;
   onLogout?: () => void;
+  routesLocked: boolean;
+  setRoutesLocked: (locked: boolean) => void;
 }
 
 export default function SettingsView({
@@ -42,7 +47,9 @@ export default function SettingsView({
   onUpdateUser,
   onResetToMockupState,
   onResetToZeroState,
-  onLogout
+  onLogout,
+  routesLocked,
+  setRoutesLocked
 }: SettingsViewProps) {
   const { t, translateUser } = useLanguage();
 
@@ -58,6 +65,32 @@ export default function SettingsView({
   const [showConfirmResetMock, setShowConfirmResetMock] = useState(false);
   const [showConfirmResetZero, setShowConfirmResetZero] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminPasswordError, setAdminPasswordError] = useState<string | null>(null);
+  const [adminSuccessMsg, setAdminSuccessMsg] = useState<string | null>(null);
+
+  const handleToggleRoutesLock = () => {
+    if (adminPassword !== '009286') {
+      setAdminPasswordError('Contraseña incorrecta. Se requiere autorización de administrador.');
+      setAdminSuccessMsg(null);
+      return;
+    }
+    
+    setAdminPasswordError(null);
+    const newLockState = !routesLocked;
+    setRoutesLocked(newLockState);
+    setAdminSuccessMsg(
+      newLockState 
+        ? 'Rutas 3-6 Bloqueadas con éxito' 
+        : 'Rutas 3-6 Desbloqueadas con éxito'
+    );
+    setAdminPassword('');
+    
+    setTimeout(() => {
+      setAdminSuccessMsg(null);
+    }, 4000);
+  };
 
   // Sync profile data dynamically when switching languages or resetting profile
   useEffect(() => {
@@ -357,6 +390,69 @@ export default function SettingsView({
                 <Check className={`w-3.5 h-3.5 transition-transform ${walletCopied ? 'scale-110' : 'scale-100'}`} />
                 <span>{walletCopied ? t('copiado_exito') : t('copiar_wallet_btn')}</span>
               </button>
+            </div>
+          </div>
+
+          {/* PANEL DE ADMINISTRADOR CON CONTRASEÑA */}
+          <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 space-y-4 shadow-lg text-left">
+            <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider border-b border-secondary/15 pb-2 flex items-center gap-1.5">
+              <Lock className="w-4 h-4 text-secondary" /> PANEL DE ADMINISTRADOR
+            </h3>
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+              Controla el acceso global a los mapas de la aplicación de forma segura. Ingresa la contraseña de administrador establecida para cambiar el estado de las Rutas 3, 4, 5 y 6 al instante.
+            </p>
+            
+            <div className="space-y-3 pt-1">
+              <div>
+                <label className="block text-[10px] uppercase font-black tracking-wider text-secondary mb-1 flex items-center gap-1">
+                  <Key className="w-4 h-4 text-secondary shrink-0" /> CONTRASEÑA DE ADMINISTRADOR
+                </label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => {
+                    setAdminPassword(e.target.value);
+                    setAdminPasswordError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleToggleRoutesLock();
+                    }
+                  }}
+                  placeholder="Introduce la clave de seguridad para cambiar estado (009286)..."
+                  className="w-full bg-[#001420] border border-secondary/20 rounded-xl text-on-surface px-4 py-2.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-secondary transition-all"
+                />
+              </div>
+
+              {adminPasswordError && (
+                <p className="text-xs text-red-400 font-medium flex items-center gap-1.5 mt-1">
+                  <span>⚠️</span> {adminPasswordError}
+                </p>
+              )}
+
+              {adminSuccessMsg && (
+                <p className="text-xs text-tertiary font-bold flex items-center gap-1.5 mt-1">
+                  <span>✅</span> {adminSuccessMsg}
+                </p>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-center justify-between bg-[#001420] border border-[#005049]/30 rounded-xl p-3 mt-2 gap-2">
+                <span className="text-[11px] font-bold text-[#c8e7fb] flex items-center gap-1 leading-none">
+                  {routesLocked ? '🔒 Rutas 3-6 Bloqueadas' : '🔓 Rutas 3-6 Activas'}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleToggleRoutesLock}
+                  className={`w-full sm:w-auto px-4 py-2 text-xs font-black rounded-lg transition-all uppercase tracking-wider cursor-pointer font-sans ${
+                    routesLocked
+                      ? 'bg-secondary text-on-secondary shadow-[0_0_10px_rgba(67,229,212,0.3)] hover:brightness-105'
+                      : 'bg-[#112635] text-secondary border border-secondary/35 hover:bg-[#163042]'
+                  }`}
+                >
+                  {routesLocked ? 'Desbloquear' : 'Bloquear'}
+                </button>
+              </div>
             </div>
           </div>
 
