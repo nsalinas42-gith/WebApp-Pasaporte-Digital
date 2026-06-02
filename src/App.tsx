@@ -33,6 +33,7 @@ import LandingView from './components/LandingView';
 import AdminHiddenView from './components/AdminHiddenView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
+import { calculateUserProgress } from './components/GamificationEngine';
 
 export default function App() {
   const { t, translateLocation, translateUser, language } = useLanguage();
@@ -162,6 +163,22 @@ export default function App() {
     localStorage.setItem('passport_locations', JSON.stringify(locations));
   }, [locations]);
 
+  // Synchronize dynamic XP and level stats whenever locations are checked/unchecked
+  useEffect(() => {
+    const { totalXP, level, xpToNextLevel } = calculateUserProgress(locations);
+    setUser(prev => {
+      if (prev.xp === totalXP && prev.level === level) {
+        return prev;
+      }
+      return {
+        ...prev,
+        xp: totalXP,
+        level: level,
+        xpToNextLevel: xpToNextLevel
+      };
+    });
+  }, [locations]);
+
   useEffect(() => {
     localStorage.setItem('passport_user', JSON.stringify(user));
   }, [user]);
@@ -198,18 +215,6 @@ export default function App() {
     const place = targetLoc.places?.find(p => p.id === placeId);
     if (!place || place.isCheckedIn) return;
 
-    // Helper to evaluate progressive check-in rule:
-    // "para obtener la insignia explorador principiante deberá completar la primera geolocalización de la ficha de ruta, y así sucesivamente..."
-    const isRouteInsigniaUnlocked = (locId: string, completedCount: number): boolean => {
-      if (locId === 'alhambra') return completedCount >= 1;
-      if (locId === 'mezquita_cordoba') return completedCount >= 2;
-      if (locId === 'acueducto_segovia') return completedCount >= 3;
-      if (locId === 'alcazar_sevilla') return completedCount >= 4;
-      if (locId === 'sagrada_familia') return completedCount >= 6;
-      if (locId === 'castillo_olite') return completedCount >= 8;
-      return completedCount >= 8;
-    };
-
     // 2. Mark place as checked in
     const updatedLocations = locations.map(loc => {
       if (loc.id === locationId) {
@@ -220,36 +225,30 @@ export default function App() {
           return p;
         });
 
+        // A route is fully completed when all 8 places are checked in
         const completedCount = updatedPlaces.filter(p => p.isCheckedIn).length;
-        const isBadgeUnlocked = isRouteInsigniaUnlocked(loc.id, completedCount);
+        const isRouteFullyCompleted = completedCount === 8;
 
         return { 
           ...loc, 
           places: updatedPlaces,
-          isCheckedIn: isBadgeUnlocked
+          isCheckedIn: isRouteFullyCompleted
         };
       }
       return loc;
     });
+
+    // Calculate level up triggers dynamically
+    const previousCompletedCount = locations.reduce((sum, l) => sum + (l.places?.filter(p => p.isCheckedIn).length || 0), 0);
+    const newCompletedCount = updatedLocations.reduce((sum, l) => sum + (l.places?.filter(p => p.isCheckedIn).length || 0), 0);
+    
+    const previousXP = previousCompletedCount * 500;
+    const currentXP = newCompletedCount * 500;
+    
+    const oldLevel = Math.floor(previousXP / 2000) + 1;
+    const currentLvl = Math.floor(currentXP / 2000) + 1;
+
     setLocations(updatedLocations);
-
-    // 3. Compute score and XP increase, as well as levels
-    const pointsAwarded = place.points || 500;
-    let newXp = user.xp + pointsAwarded;
-    let currentLvl = user.level;
-    let didLevelUp = false;
-
-    if (newXp >= user.xpToNextLevel) {
-      newXp = newXp - user.xpToNextLevel;
-      currentLvl = currentLvl + 1;
-      didLevelUp = true;
-    }
-
-    setUser(prev => ({
-      ...prev,
-      xp: newXp,
-      level: currentLvl
-    }));
 
     // Check if the entire route was completed to increment regionsVisited
     const wasAlreadyCompleted = targetLoc.isCheckedIn;
@@ -263,7 +262,7 @@ export default function App() {
     }
 
     // Trigger level up animation overlay if state changed
-    if (didLevelUp) {
+    if (currentLvl > oldLevel) {
       setLeveledUpTo(currentLvl);
       setShowLevelUp(true);
     }
@@ -271,25 +270,11 @@ export default function App() {
 
   // Reset/Clear Geolocation check-in for a specific place within a route
   const handleResetPlaceCheckIn = (locationId: string, placeId: string) => {
-    let pointsAwarded = 500;
     const targetLoc = locations.find(loc => loc.id === locationId);
-    if (targetLoc) {
-       const place = targetLoc.places?.find(p => p.id === placeId);
-       if (place) {
-        pointsAwarded = place.points || 500;
-         if (!place.isCheckedIn) return; // Already unchecked
-       }
-     }
+    if (!targetLoc) return;
 
-    const isRouteInsigniaUnlocked = (locId: string, count: number): boolean => {
-      if (locId === 'alhambra') return count >= 1;
-      if (locId === 'mezquita_cordoba') return count >= 2;
-      if (locId === 'acueducto_segovia') return count >= 3;
-      if (locId === 'alcazar_sevilla') return count >= 4;
-      if (locId === 'sagrada_familia') return count >= 6;
-      if (locId === 'castillo_olite') return count >= 8;
-      return count >= 8;
-    };
+    const place = targetLoc.places?.find(p => p.id === placeId);
+    if (!place || !place.isCheckedIn) return; // Already unchecked
 
     const updatedLocations = locations.map(loc => {
       if (loc.id === locationId) {
@@ -301,39 +286,20 @@ export default function App() {
         });
 
         const completedCount = updatedPlaces.filter(p => p.isCheckedIn).length;
-        const isBadgeUnlocked = isRouteInsigniaUnlocked(loc.id, completedCount);
+        const isRouteFullyCompleted = completedCount === 8;
 
         return { 
           ...loc, 
           places: updatedPlaces,
-          isCheckedIn: isBadgeUnlocked
+          isCheckedIn: isRouteFullyCompleted
         };
       }
       return loc;
     });
     setLocations(updatedLocations);
 
-    // Deduct points since check-in has been cleared
-    setUser(prev => {
-      let newXp = prev.xp - pointsAwarded;
-      let currentLvl = prev.level;
-      if (newXp < 0) {
-        if (currentLvl > 1) {
-          currentLvl = currentLvl - 1;
-          newXp = prev.xpToNextLevel + newXp;
-        } else {
-          newXp = 0;
-        }
-      }
-      return {
-        ...prev,
-        xp: newXp,
-        level: currentLvl
-      };
-    });
-
     // Check if the entire route was completed before, and decrement regionsVisited
-    const wasAlreadyCompleted = targetLoc?.isCheckedIn;
+    const wasAlreadyCompleted = targetLoc.isCheckedIn;
     if (wasAlreadyCompleted) {
       setStats(prev => ({
         ...prev,
@@ -344,7 +310,8 @@ export default function App() {
 
   // Simulate crossmint Solana cNFT claim flow
   const handleClaimSolanacNFT = () => {
-    if (isNFTClaimed || locations.filter(loc => loc.isCheckedIn).length < locations.length) return;
+    const { completedRoutesCount } = calculateUserProgress(locations);
+    if (isNFTClaimed || completedRoutesCount < 6) return;
 
     setIsLoadingClaim(true);
 

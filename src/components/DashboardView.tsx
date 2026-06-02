@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { calculateUserProgress } from './GamificationEngine';
 import { 
   Trophy,
   Award, 
@@ -90,9 +91,21 @@ export default function DashboardView({
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Compute stats
-  const unlockedCount = locations.filter(loc => loc.isCheckedIn).length;
-  const totalCount = locations.length;
+  // Compute stats dynamically from the Gamification Engine
+  const { 
+    totalXP, 
+    level, 
+    xpInLevel, 
+    xpToNextLevel, 
+    percentageToNextLevel, 
+    unlockedBadges, 
+    totalUniqueUnlocked, 
+    overallCompletedPlaces,
+    completedRoutesCount 
+  } = calculateUserProgress(locations);
+
+  const unlockedCount = totalUniqueUnlocked;
+  const totalCount = 6;
   const globalProgressPercent = Math.round((unlockedCount / totalCount) * 100);
   const isEligibleForNFT = unlockedCount === totalCount;
 
@@ -209,7 +222,7 @@ export default function DashboardView({
                 {t('puntos_totales')}
               </p>
               <p className="font-headline text-4xl md:text-5xl font-black text-secondary tracking-tight">
-                15,400
+                {totalXP.toLocaleString()}
               </p>
             </div>
           </div>
@@ -372,53 +385,40 @@ export default function DashboardView({
 
         {/* Badges Grid displaying correct asset icons or fallbacks */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-          {locations.map((loc, idx) => {
-            const isLockedRouteState = lockedRouteIds.includes(loc.id);
-            const isUnlocked = loc.isCheckedIn && !isLockedRouteState;
-            const completedCount = isLockedRouteState ? 0 : (loc.places?.filter(p => p.isCheckedIn).length || 0);
-            const requiredCount = getRequiredPlacesLimit(loc.id);
+          {unlockedBadges.map((badgeState) => {
+            const { badge, isUnlocked, multiplier, progressPercent } = badgeState;
             return (
               <div 
-                key={loc.id}
-                onClick={() => {
-                  if (isLockedRouteState) return;
-                  onExploreLocation(loc.id);
-                }}
-                className={`glass-card p-4 sm:p-6 rounded-xl flex flex-col items-center group border ${
-                  isLockedRouteState
-                    ? 'opacity-40 cursor-not-allowed bg-black/25 border-error/5'
-                    : isUnlocked ? 'border-tertiary/40 cursor-pointer' : 'opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all border-outline-variant/15 cursor-pointer'
+                key={badge.id}
+                onClick={() => onExploreLocation(locations[0].id)}
+                className={`glass-card p-4 sm:p-5 rounded-xl flex flex-col items-center group border transition-all ${
+                  isUnlocked ? 'border-tertiary/40 cursor-pointer' : 'opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all border-outline-variant/15 cursor-pointer'
                 }`}
               >
                  <div className="w-20 h-20 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 relative">
                   <img 
-                    src={loc.badgeImageUrl || badgeImageMap[loc.badgeIcon] || stampAlhambra} 
-                    alt={loc.badgeName} 
+                    src={badge.imageUrl} 
+                    alt={t(badge.titleKey)} 
                     referrerPolicy="no-referrer"
                     style={{ filter: isUnlocked ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
                     className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.5)]" 
                   />
-                  {isLockedRouteState && (
-                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-secondary">
-                      <Lock className="w-6 h-6 text-secondary" />
+                  {isUnlocked && (
+                    <div className="absolute top-0 right-0 bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                      X{multiplier}
                     </div>
                   )}
                 </div>
                  <p className="font-headline font-bold text-on-surface text-center text-xs truncate max-w-full leading-tight">
-                  {isLockedRouteState ? 'BLOQUEADO' : t('insignia_prefix').replace('{name}', loc.badgeName)}
+                  {t(badge.titleKey)}
                 </p>
                 <p className="font-sans text-[10px] text-on-surface-variant/70 text-center leading-normal">
-                  {isLockedRouteState ? '🔒' : t('de_fichas').replace('{completed}', String(completedCount)).replace('{required}', String(requiredCount))}
+                  {isUnlocked ? `Certificado: X${multiplier}` : `${progressPercent}% completado`}
                 </p>
                 <p className={`font-sans font-bold text-[10px] uppercase tracking-wider mt-1.5 flex items-center gap-1 ${
-                  isLockedRouteState ? 'text-[#8ba7b3]' : isUnlocked ? 'text-tertiary' : 'text-on-surface-variant/60'
+                  isUnlocked ? 'text-tertiary' : 'text-on-surface-variant/60'
                 }`}>
-                  {isLockedRouteState ? (
-                    <>
-                      <Lock className="w-3.5 h-3.5 inline text-[#8ba7b3]" />
-                      <span>{t('bloqueado_caps')}</span>
-                    </>
-                  ) : isUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}
+                  {isUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}
                 </p>
               </div>
             );
