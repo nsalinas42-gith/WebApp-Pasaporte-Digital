@@ -87,7 +87,7 @@ export default function DashboardView({
   onTriggerPhoto,
   lockedRouteIds = []
 }: DashboardViewProps) {
-  const { t } = useLanguage();
+  const { t, translateLocation } = useLanguage();
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -197,92 +197,6 @@ export default function DashboardView({
           </div>
         </div>
       </section>
-
-      {/* 2. STATS & PROGRESS segment */}
-      <section className="w-full">
-        {/* Title block */}
-        <div className="w-full mb-8 text-left">
-          <h2 className="font-headline text-2xl md:text-3.5xl font-extrabold text-on-surface mb-2">
-            {t('hola_explorador')}
-          </h2>
-          <p className="text-sm md:text-base text-on-surface-variant">
-            {t('tu_viaje_continua')}
-          </p>
-        </div>
-
-        {/* 30/70 Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
-          {/* Puntos Totales Card (30%) */}
-          <div className="md:col-span-3 glass-card p-8 rounded-xl flex flex-col justify-center gap-6 text-left relative overflow-hidden">
-            <div className="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary border border-secondary/15">
-              <Trophy className="w-8 h-8 text-secondary fill-secondary/5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest leading-none pb-2">
-                {t('puntos_totales')}
-              </p>
-              <p className="font-headline text-4xl md:text-5xl font-black text-secondary tracking-tight">
-                {totalXP.toLocaleString()}
-              </p>
-            </div>
-          </div>
-
-          {/* Tu Progreso Card (70%) */}
-          <div className="md:col-span-7 glass-card p-8 rounded-xl flex flex-col md:flex-row items-center gap-8 relative overflow-hidden text-left">
-            <div className="absolute top-0 right-0 p-4 opacity-[0.03] select-none pointer-events-none">
-              <Shield className="w-32 h-32 text-on-surface" />
-            </div>
-            {/* SVG Progress Circle wrapper */}
-            <div className="relative w-40 h-40 flex-shrink-0 flex items-center justify-center select-none">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle 
-                  className="text-surface-container-highest" 
-                  cx="50" 
-                  cy="50" 
-                  fill="transparent" 
-                  r="40" 
-                  stroke="currentColor" 
-                  strokeWidth="8"
-                />
-                <circle 
-                  className="text-tertiary transition-transform duration-500" 
-                  cx="50" 
-                  cy="50" 
-                  fill="transparent" 
-                  r="40" 
-                  stroke="currentColor" 
-                  strokeWidth="8" 
-                  strokeDasharray={`${strokeDasharray}`}
-                  strokeDashoffset={`${strokeDashoffset}`}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-headline font-black text-3xl text-on-surface leading-none">{unlockedCount}/{totalCount}</span>
-                <span className="text-[10px] font-black text-tertiary tracking-widest mt-1">INSIGNIAS</span>
-              </div>
-            </div>
-            
-            <div className="flex-1 space-y-3">
-              <h3 className="font-headline text-lg md:text-xl font-bold text-on-surface leading-none">
-                {t('tu_progreso')}
-              </h3>
-              <p className="text-sm text-on-surface-variant leading-relaxed">
-                {unlockedCount === totalCount ? (
-                  <span>
-                    {t('progreso_completo_desc')}
-                  </span>
-                ) : (
-                  <span>
-                    {t('progreso_incompleto_desc').replace('{dest}', nextDestination.name)}
-                  </span>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 3. INICIA TU EXPLORACIÓN SECTION */}
       <section className="w-full space-y-6">
         <div className="text-left">
@@ -492,6 +406,216 @@ export default function DashboardView({
           )}
         </div>
       </section>
+      {/* Title block */}
+      <div className="w-full text-left mt-8 mb-6">
+        <h2 className="font-headline text-2xl md:text-3.5xl font-extrabold text-on-surface mb-2">
+          {t('hola_explorador')}
+        </h2>
+        <p className="text-sm md:text-base text-on-surface-variant">
+          {t('tu_viaje_continua')}
+        </p>
+      </div>
+
+      {/* Moved Stacked Row Layout (Puntos Totales & Tu Progreso) */}
+      <div className="flex flex-col gap-6 items-stretch w-full">
+        {/* Puntos Totales Card (Full Row) */}
+        <div className="glass-card p-6 sm:p-8 rounded-xl flex flex-row items-center gap-6 text-left relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-[0.02] select-none pointer-events-none">
+            <Trophy className="w-32 h-32 text-on-surface" />
+          </div>
+          <div className="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary border border-secondary/15 shrink-0">
+            <Trophy className="w-8 h-8 text-secondary fill-secondary/5" />
+          </div>
+          <div className="relative z-10">
+            <p className="text-[10px] sm:text-xs font-bold text-on-surface-variant uppercase tracking-widest leading-none pb-1.5">
+              {t('puntos_totales')}
+            </p>
+            <p className="font-headline text-4xl sm:text-5xl font-black text-secondary tracking-tight leading-none">
+              {totalXP.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Tu Progreso Card (Full Row) */}
+        <div className="glass-card p-6 sm:p-8 rounded-xl flex flex-col gap-6 relative overflow-hidden text-left w-full">
+          <div className="absolute top-0 right-0 p-4 opacity-[0.02] select-none pointer-events-none">
+            <Shield className="w-48 h-48 text-on-surface" />
+          </div>
+
+          {/* Header Area of Progress Card */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2 border-b border-secondary/10">
+            <div className="space-y-2 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse" />
+                <h3 className="font-headline text-lg md:text-xl font-bold text-on-surface leading-none">
+                  {t('tu_progreso')}
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed max-w-xl">
+                {unlockedCount === totalCount ? (
+                  <span>
+                    {t('progreso_completo_desc')}
+                  </span>
+                ) : (
+                  <span>
+                    {t('progreso_incompleto_desc').replace('{dest}', nextDestination.name)}
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Smaller SVG Progress Circle on the right */}
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center select-none bg-surface-container/60 rounded-full border border-secondary/10 self-center">
+              <svg className="w-[85%] h-[85%] transform -rotate-90" viewBox="0 0 100 100">
+                <circle 
+                  className="text-surface-container-highest" 
+                  cx="50" 
+                  cy="50" 
+                  fill="transparent" 
+                  r="40" 
+                  stroke="currentColor" 
+                  strokeWidth="8"
+                />
+                <circle 
+                  className="text-tertiary transition-transform duration-500" 
+                  cx="50" 
+                  cy="50" 
+                  fill="transparent" 
+                  r="40" 
+                  stroke="currentColor" 
+                  strokeWidth="8" 
+                  strokeDasharray={`${strokeDasharray}`}
+                  strokeDashoffset={`${strokeDashoffset}`}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="font-headline font-black text-base sm:text-lg text-on-surface leading-none">{unlockedCount}/{totalCount}</span>
+                <span className="text-[7px] sm:text-[8px] font-black text-tertiary tracking-wider mt-0.5 animate-pulse">INSIGNIAS</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Dynamic XP Journey Track from 0 to 24000 XP */}
+          <div className="space-y-4 py-2 border-b border-secondary/10 pb-6">
+            <div className="flex justify-between items-end text-xs font-bold text-on-surface-variant">
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-secondary animate-pulse" />
+                <span className="font-headline text-[10px] sm:text-xs font-black uppercase tracking-wider text-secondary">Ruta de Nivel & Experiencia (XP)</span>
+              </span>
+              <span className="font-mono text-[10px] sm:text-[11px] text-tertiary">
+                {totalXP.toLocaleString()} / 24,000 XP total
+              </span>
+            </div>
+
+            <div className="relative w-full h-8 bg-surface-container-highest/40 rounded-xl border border-secondary/15 p-1 flex items-center overflow-visible select-none shadow-inner mt-4">
+              {/* Milestones / Tick Marks */}
+              <div className="absolute inset-x-0 inset-y-0 flex justify-between px-6 pointer-events-none">
+                {[0, 4000, 8000, 12000, 16000, 20000, 24000].map((milestone) => {
+                  const isReached = totalXP >= milestone;
+                  return (
+                    <div key={milestone} className="relative h-full flex flex-col justify-center items-center">
+                      <div className={`w-2 h-2 rounded-full border transition-all duration-500 z-10 ${
+                        isReached 
+                          ? 'bg-secondary border-secondary shadow-[0_0_8px_rgba(67,229,212,0.6)]' 
+                          : 'bg-surface-container-low border-on-surface-variant/20'
+                      }`} />
+                      <span className={`absolute -bottom-5 font-mono text-[8px] font-black tracking-tight ${
+                        isReached ? 'text-secondary font-extrabold' : 'text-on-surface-variant/40'
+                      }`}>
+                        {milestone === 0 ? '0' : milestone === 24000 ? '24K' : `${milestone / 1000}K`}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Glowing progress fill back-bar */}
+              <div 
+                className="bg-gradient-to-r from-secondary/40 via-secondary/70 to-[#319795] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(67,229,212,0.15)]"
+                style={{ width: `${Math.min(100, (totalXP / 24000) * 100)}%` }}
+              />
+
+              {/* Dynamic floating Locator pin */}
+              <div 
+                className="absolute -top-7 transform -translate-x-1/2 transition-all duration-500 z-20 pointer-events-none"
+                style={{ left: `${Math.min(100, (totalXP / 24000) * 100)}%` }}
+              >
+                <div className="bg-[#43e5d4] text-[#003732] flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase shadow-[0_4px_12px_rgba(67,229,212,0.35)] animate-bounce" style={{ animationDuration: '2.5s' }}>
+                  <span>Nivel {level}</span>
+                </div>
+                <div className="w-2 h-2 bg-[#43e5d4] rotate-45 mx-auto -mt-1 shadow-md" />
+              </div>
+            </div>
+          </div>
+
+          {/* Graphical breakdown of insignias earned on each route (locations) */}
+          <div className="space-y-3">
+            <h4 className="font-headline text-[10px] sm:text-xs font-black uppercase tracking-wider text-secondary">
+              Avance de Insignias Obtenidas por Cada Ruta
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {locations.slice(0, 6).map((loc) => { // ensure maximum 6 routes
+                const transLoc = translateLocation ? translateLocation(loc) : loc;
+                const completedCount = loc.places ? loc.places.filter(p => p.isCheckedIn).length : 0;
+                
+                return (
+                  <div 
+                    key={loc.id} 
+                    onClick={() => onExploreLocation(loc.id)}
+                    className="bg-surface-container-low/70 hover:bg-surface-container/80 border border-secondary/10 hover:border-secondary/20 p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all duration-300 group"
+                  >
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <span className="text-[11px] font-bold text-on-surface truncate block group-hover:text-secondary transition-colors font-headline">
+                        {transLoc.name}
+                      </span>
+                      <p className="text-[9px] font-bold text-on-surface-variant font-mono">
+                        {completedCount} / 8 Monumentos
+                      </p>
+                      
+                      {/* Miniature progress bar for that route checkpoint verification */}
+                      <div className="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden mt-1 max-w-[125px]">
+                        <div 
+                          className="bg-secondary h-full transition-all duration-300"
+                          style={{ width: `${(completedCount / 8) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* 6 Micro stamp circles reflecting the specific stamps earned inside this route */}
+                    <div className="flex items-center gap-0.5 shrink-0 bg-surface-container-high/40 px-1.5 py-1 rounded-lg border border-secondary/5">
+                      {unlockedBadges.map((badgeState) => {
+                        const { badge } = badgeState;
+                        const isRouteBadgeUnlocked = completedCount >= badge.requiredChips;
+                        return (
+                          <div 
+                            key={badge.id}
+                            title={`${t(badge.titleKey)}: ${isRouteBadgeUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}`}
+                            className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${
+                              isRouteBadgeUnlocked 
+                                ? 'bg-secondary/10 border border-secondary/35 scale-105' 
+                                : 'opacity-[0.12] scale-90 border border-transparent'
+                            }`}
+                          >
+                            <img 
+                              src={badge.imageUrl} 
+                              alt={t(badge.titleKey)}
+                              referrerPolicy="no-referrer"
+                              style={{ filter: "url(#remove-white)" }}
+                              className="w-3.5 h-3.5 object-contain"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      </div>
 
       {/* 6. STATS METRICS BLOCK */}
       <section className="bg-surface-container border border-[#005049]/20 p-6 rounded-3xl text-left">

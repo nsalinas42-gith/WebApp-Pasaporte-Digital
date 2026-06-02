@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletCard } from './WalletCard';
+import { ConnectWalletButton } from './ConnectWalletButton';
 
 const PRESET_AVATARS = [
   { name: 'Felix', url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80' },
@@ -54,6 +57,7 @@ export default function SettingsView({
   locations
 }: SettingsViewProps) {
   const { t, translateUser } = useLanguage();
+  const { publicKey, connected } = useWallet();
 
   // Local form states
   const [name, setName] = useState(user.name);
@@ -61,6 +65,13 @@ export default function SettingsView({
   const [title, setTitle] = useState(user.title);
   const [wallet, setWallet] = useState(user.linkedWallet);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
+
+  // Synchronically auto-update the destination wallet input field if a wallet gets connected
+  useEffect(() => {
+    if (connected && publicKey) {
+      setWallet(publicKey.toBase58());
+    }
+  }, [connected, publicKey]);
   
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [walletCopied, setWalletCopied] = useState(false);
@@ -392,57 +403,36 @@ export default function SettingsView({
         {/* Right Panel: Wallet Card & Admin Actions (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* SECURE BLOCKCHAIN WALLET CARD */}
-          <div className="bg-gradient-to-tr from-[#001c2a] to-[#002f2d] rounded-2xl border border-secondary/35 p-6 space-y-5 shadow-lg text-left relative overflow-hidden group">
-            {/* Ambient holographic background circles */}
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#43e5d4]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#43e5d4]/10 transition-colors duration-500"></div>
+          {/* SECURE BLOCKCHAIN WALLET CARD OR CONNECT BUTTON */}
+          {connected ? (
+            <WalletCard />
+          ) : (
+            <div className="bg-gradient-to-tr from-[#001c2a] to-[#002f2d] rounded-2xl border border-secondary/35 p-6 space-y-5 shadow-lg text-left relative overflow-hidden group">
+              {/* Ambient holographic background circles */}
+              <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#43e5d4]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#43e5d4]/10 transition-colors duration-500"></div>
 
-            <div className="flex items-center gap-2 border-b border-secondary/15 pb-3 justify-between">
-              <h3 className="font-headline text-sm font-extrabold text-secondary uppercase tracking-wider flex items-center gap-2">
-                <Wallet className="w-4 h-4 text-[#43e5d4]" />
-                {t('mi_cartera_title')}
-              </h3>
-              <span className="text-[9px] font-black uppercase text-[#43e5d4] bg-[#43e5d4]/10 px-2 py-0.5 rounded-full border border-[#43e5d4]/20">
-                ACTIVE
-              </span>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-[#000f16]/80 border border-secondary/15 rounded-xl p-3.5 space-y-1.5 font-mono relative">
-                <p className="text-[9px] text-on-surface-variant/50 uppercase font-bold tracking-widest leading-none">
-                  {t('direccion_destino_cnft')}
-                </p>
-                <p className="text-xs text-[#c8e7fb] truncate font-bold select-all" title={wallet}>
-                  {wallet || t('no_vinculada')}
-                </p>
+              <div className="flex items-center gap-2 border-b border-secondary/15 pb-3 justify-between">
+                <h3 className="font-headline text-sm font-extrabold text-secondary uppercase tracking-wider flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-[#43e5d4]" />
+                  {t('mi_cartera_title')}
+                </h3>
+                <span className="text-[9px] font-black uppercase text-on-surface-variant/70 bg-[#000f16]/40 px-2 py-0.5 rounded-full border border-[#005049]/20 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                  DESCONECTADA
+                </span>
               </div>
 
-              {/* Network statistics parameters */}
-              <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                <div className="bg-[#000f16]/40 border border-[#005049]/15 rounded-xl p-2.5">
-                  <span className="text-[8px] text-on-surface-variant/50 uppercase font-black tracking-wider block">RED</span>
-                  <span className="text-[11px] text-[#43e5d4] font-black font-mono">Mainnet-Beta</span>
-                </div>
-                <div className="bg-[#000f16]/40 border border-[#005049]/15 rounded-xl p-2.5">
-                  <span className="text-[8px] text-on-surface-variant/50 uppercase font-black tracking-wider block">SOPORTE</span>
-                  <span className="text-[11px] text-on-surface font-extrabold font-mono">SPL cNFT</span>
+              <div className="space-y-4 font-sans">
+                <p className="text-xs text-[#c8e7fb]/80 select-none leading-relaxed">
+                  Conecta tu billetera de Solana (Solflare) para vincular de forma segura tus insignias, ver tu balance y certificar tus hazañas de exploración con un estándar SPL cNFT.
+                </p>
+
+                <div className="flex justify-center py-2">
+                  <ConnectWalletButton />
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(wallet);
-                  setWalletCopied(true);
-                  setTimeout(() => setWalletCopied(false), 2000);
-                }}
-                className="w-full py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] text-xs font-black rounded-xl uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer shadow-[0_0_12px_rgba(67,229,212,0.15)]"
-              >
-                <Check className={`w-3.5 h-3.5 transition-transform ${walletCopied ? 'scale-110' : 'scale-100'}`} />
-                <span>{walletCopied ? t('copiado_exito') : t('copiar_wallet_btn')}</span>
-              </button>
             </div>
-          </div>
+          )}
 
           {/* PANEL DE ADMINISTRADOR CON CONTRASEÑA */}
           <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 space-y-4 shadow-lg text-left">

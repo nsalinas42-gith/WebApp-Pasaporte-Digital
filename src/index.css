@@ -1,38 +1,72 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  --background: #00080d;
+  --on-background: #e6f1f5;
+  --surface: #001019;
+  --surface-dim: #00080d;
+  --surface-bright: #001621;
+  --surface-container-lowest: #00050a;
+  --surface-container-low: #000f16;
+  --surface-container: #00121a;
+  --surface-container-high: #001721;
+  --surface-container-highest: #001c27;
+  --on-surface: #ffffff;
+  --on-surface-variant: #8ba7b3;
+  
+  --primary: #43e5d4;
+  --on-primary: #003732;
+  --primary-container: #005049;
+  --on-primary-container: #43e5d4;
+  
+  --secondary: #43e5d4;
+  --on-secondary: #003732;
+  --secondary-container: #005049;
+  --on-secondary-container: #43e5d4;
+  
+  --tertiary: #43e5d4;
+  --on-tertiary: #003732;
+  --tertiary-container: #005049;
+  --on-tertiary-container: #43e5d4;
+  
+  --on-secondary-fixed-variant: #002332;
+  --error: #E53E3E;
+  --error-container: #742A2A;
+}
+
 @theme {
-  --color-background: #001621;
-  --color-on-background: #c8e7fb;
-  --color-surface: #001621;
-  --color-surface-dim: #001621;
-  --color-surface-bright: #1f3d4d;
-  --color-surface-container-lowest: #001019;
-  --color-surface-container-low: #001e2c;
-  --color-surface-container: #002332;
-  --color-surface-container-high: #0d2d3d;
-  --color-surface-container-highest: #1a3848;
-  --color-on-surface: #c8e7fb;
-  --color-on-surface-variant: #c2c7cc;
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
   
-  --color-primary: #accae2;
-  --color-on-primary: #143346;
-  --color-primary-container: #1c3a4d;
-  --color-on-primary-container: #86a4ba;
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
   
-  --color-secondary: #43e5d4;
-  --color-on-secondary: #003732;
-  --color-secondary-container: #00c9b9;
-  --color-on-secondary-container: #004f48;
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
   
-  --color-tertiary: #6fdd7b;
-  --color-on-tertiary: #003910;
-  --color-tertiary-container: #004113;
-  --color-on-tertiary-container: #46b558;
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
   
-  --color-on-secondary-fixed-variant: #005049;
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
+  --color-on-secondary-fixed-variant: var(--on-secondary-fixed-variant);
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
   
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-headline: "Montserrat", sans-serif;
@@ -47,16 +81,17 @@
 }
 
 @utility glow-tertiary {
-  box-shadow: 0 0 20px rgba(111, 221, 123, 0.2);
+  box-shadow: 0 0 20px rgba(67, 229, 212, 0.2);
 }
 
 @utility nft-gradient {
-  background: linear-gradient(135deg, #005049 0%, #002332 100%);
+  background: linear-gradient(135deg, var(--on-secondary-fixed-variant) 0%, var(--surface-container) 100%);
 }
 
 @utility glass-panel {
   backdrop-filter: blur(12px);
-  background: rgba(0, 30, 44, 0.6);
+  background: var(--surface-container-low);
+  opacity: 0.92;
 }
 
 @utility animate-pulse-slow {
