@@ -504,7 +504,11 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
         {/* Footnote Copyright block */}
         <div className="max-w-6xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-medium text-on-surface-variant/50">
           <p>{t('derechos_reservados')}</p>
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex flex-wrap items-center gap-3 text-xs justify-center sm:justify-end">
+            <span className="text-[10px] bg-[#001c27] border border-secondary/35 text-secondary px-2.5 py-0.5 rounded-lg font-mono tracking-wide">
+              PASAPORTE DIGITAL PINTA MAPAS MVP &bull; Solana cNFT v1.0
+            </span>
+            <span className="w-1 h-1 rounded-full bg-on-surface-variant/20 hidden sm:inline-block"></span>
             <Globe className="w-4 h-4 text-on-surface-variant/40" />
             <span className="w-1 h-1 rounded-full bg-on-surface-variant/20 inline-block"></span>
             <div className="flex items-center gap-1">

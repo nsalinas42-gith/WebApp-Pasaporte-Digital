@@ -167,8 +167,9 @@ export default function SettingsView({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Form Panel: Edit Profile (7 cols) */}
-        <form onSubmit={handleSubmit} className="lg:col-span-8 bg-surface-container rounded-2xl border border-[#005049]/20 p-6 md:p-8 space-y-6 shadow-lg text-left">
+        {/* Left Column (8 cols): Edit Profile Form + Logout Buttons below it */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="bg-surface-container rounded-2xl border border-[#005049]/20 p-6 md:p-8 space-y-6 shadow-lg text-left w-full">
           <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider border-b border-[#005049]/15 pb-2">
             {t('editar_cuenta_section')}
           </h3>
@@ -236,11 +237,12 @@ export default function SettingsView({
                       setErrorMsg(null);
                     }}
                     title={p.name}
+                    aria-label={`Seleccionar avatar de ${p.name}`}
                     className={`w-8 h-8 rounded-full overflow-hidden border-2 focus:outline-none transition-all hover:scale-110 active:scale-95 cursor-pointer ${
                       avatarUrl === p.url ? 'border-secondary scale-105 ring-2 ring-secondary/25' : 'border-[#005049]/40 hover:border-secondary'
                     }`}
                   >
-                    <img src={p.url} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    <img src={p.url} alt={`Avatar preset ${p.name}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </button>
                 ))}
               </div>
@@ -251,11 +253,13 @@ export default function SettingsView({
                   id="avatar-upload"
                   accept="image/*"
                   onChange={handleFileChange}
+                  aria-label="Subir foto de perfil"
                   className="hidden"
                 />
                 <button
                   type="button"
                   onClick={() => document.getElementById('avatar-upload')?.click()}
+                  aria-label="Haz click para buscar y subir tu foto de avatar"
                   className="py-1.5 px-3 bg-[#0d2a29] border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#43e5d4] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
@@ -267,7 +271,7 @@ export default function SettingsView({
           </div>
 
           {errorMsg && (
-            <div className="bg-error-container/15 border border-error/30 text-error rounded-xl p-3 text-xs font-semibold animate-in slide-in-from-top-1 duration-150">
+            <div role="alert" className="bg-error-container/15 border border-error/30 text-error rounded-xl p-3 text-xs font-semibold animate-in slide-in-from-top-1 duration-150">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -275,14 +279,16 @@ export default function SettingsView({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Explorer Nickname */}
             <div className="space-y-2">
-              <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
+              <label htmlFor="explorer-name" className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
                 <User className="w-3.5 h-3.5 text-secondary" /> {t('nombre_explorador_lbl')}
               </label>
               <input
+                id="explorer-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                aria-label="Nombre del explorador"
                 className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder='Ej. Felix "The Voyager"'
               />
@@ -290,13 +296,15 @@ export default function SettingsView({
 
             {/* Explorer Title */}
             <div className="space-y-2">
-              <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
+              <label htmlFor="explorer-honorific" className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
                 <Award className="w-3.5 h-3.5 text-secondary" /> {t('titulo_honorifico_lbl')}
               </label>
               <input
+                id="explorer-honorific"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                aria-label="Título Honorífico"
                 className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="Ej. Explorador Supremo"
               />
@@ -304,14 +312,16 @@ export default function SettingsView({
 
             {/* Email Address */}
             <div className="space-y-2">
-              <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
+              <label htmlFor="explorer-email" className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5 text-secondary" /> {t('correo_vinculado_lbl')}
               </label>
               <input
+                id="explorer-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                aria-label="Correo electrónico"
                 className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="ejemplo@correo.com"
               />
@@ -319,14 +329,16 @@ export default function SettingsView({
 
             {/* Linked Wallet Address */}
             <div className="space-y-2">
-              <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
+              <label htmlFor="explorer-wallet" className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
                 <Wallet className="w-3.5 h-3.5 text-secondary" /> {t('billetera_destino_lbl')}
               </label>
               <input
+                id="explorer-wallet"
                 type="text"
                 value={wallet}
                 onChange={(e) => setWallet(e.target.value)}
                 required
+                aria-label="Billetera Solana de Destino"
                 className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-xs font-mono text-secondary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="Solana public address..."
               />
@@ -353,6 +365,29 @@ export default function SettingsView({
             </button>
           </div>
         </form>
+
+        {/* cerrrar sesion button outside the sandbox card and form card */}
+        {onLogout && (
+          <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-lg select-none">
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5 text-secondary">
+                <Unlock className="w-4 h-4" /> {t('cerrar_sesion_btn')}
+              </h4>
+              <p className="text-[11px] text-on-surface-variant max-w-sm leading-relaxed font-sans">
+                Finaliza tu sesión activa como explorador de forma segura y regresa a la pantalla de entrada del pasaporte digital.
+              </p>
+            </div>
+            <button
+              id="btn-logout-settings"
+              type="button"
+              onClick={onLogout}
+              className="w-full sm:w-auto py-3 px-6 bg-[#001019] border border-secondary/40 hover:border-secondary hover:bg-secondary/10 text-secondary text-xs font-black rounded-xl flex items-center justify-center gap-2 transition-all text-center cursor-pointer shadow-sm uppercase tracking-wider"
+            >
+              Cerrar Sesión e Ir al Inicio
+            </button>
+          </div>
+        )}
+      </div>
 
         {/* Right Panel: Wallet Card & Admin Actions (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
@@ -543,118 +578,101 @@ export default function SettingsView({
                     Habilitar Todas
                   </button>
                 </div>
+
+                {/* RELOCATED RESET & DEMO TOOLS INSIDE THEIR OWN CARD INSIDE OF THE ADMIN PANEL CARD */}
+                <div className="bg-background/80 border border-error/25 p-4 rounded-xl space-y-3 mt-4 text-left shadow-inner">
+                  <h4 className="text-[11px] font-extrabold text-error uppercase tracking-wider flex items-center gap-1.5 border-b border-error/10 pb-2">
+                    <Trash2 className="w-3.5 h-3.5 text-error" /> {t('pruebas_reseteo_title')}
+                  </h4>
+                  <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                    {t('pruebas_reseteo_desc')}
+                  </p>
+                  
+                  <div className="space-y-3">
+                    {/* RESET TO MOCKUP STATE (4/6 CURRENT STATUS) */}
+                    <div className="space-y-2">
+                      <button
+                        id="btn-reset-mockup"
+                        type="button"
+                        onClick={() => {
+                          setShowConfirmResetMock(true);
+                          setShowConfirmResetZero(false);
+                        }}
+                        className="w-full py-2 bg-[#43e5d4]/10 border border-secondary/20 hover:border-secondary text-secondary text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-[#43e5d4]/15 transition-all text-center cursor-pointer"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        {t('regresar_mockup_btn')}
+                      </button>
+                      {showConfirmResetMock && (
+                        <div className="bg-[#000f16] p-3 rounded-lg border border-secondary/20 text-[10px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
+                          <p className="text-on-surface-variant">{t('regresar_mockup_confirm')}</p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onResetToMockupState();
+                                setShowConfirmResetMock(false);
+                              }}
+                              className="bg-secondary text-on-secondary font-bold px-3 py-1 rounded text-[10px] cursor-pointer animate-pulse"
+                            >
+                              {t('si_restablecer_btn')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmResetMock(false)}
+                              className="bg-[#0c1c24] border border-[#005049]/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
+                            >
+                              {t('cancelar_btn')}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* RESET TO COMPLETE ZERO STATE (0/6 CURRENT STATUS) */}
+                    <div className="space-y-2">
+                      <button
+                        id="btn-reset-zero"
+                        type="button"
+                        onClick={() => {
+                          setShowConfirmResetZero(true);
+                          setShowConfirmResetMock(false);
+                        }}
+                        className="w-full py-2 bg-rose-500/10 border border-rose-500/20 hover:border-rose-500 text-rose-400 text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-rose-500/15 transition-all text-center cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        {t('reiniciar_cero_btn')}
+                      </button>
+                      {showConfirmResetZero && (
+                        <div className="bg-[#000f16] p-3 rounded-lg border border-rose-500/25 text-[10px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
+                          <p className="text-on-surface-variant">{t('reiniciar_cero_confirm')}</p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onResetToZeroState();
+                                setShowConfirmResetZero(false);
+                              }}
+                              className="bg-rose-500 border border-rose-500 text-white font-bold px-3 py-1 rounded text-[10px] cursor-pointer"
+                            >
+                              {t('si_borrar_todo_btn')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmResetZero(false)}
+                              className="bg-[#0c1c24] border border-[#005049]/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
+                            >
+                              {t('cancelar_btn')}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-
-          {/* ADMIN & RESET SYSTEM CARD */}
-          <aside className="bg-surface-container rounded-2xl border border-error/15 p-6 space-y-6 shadow-lg text-left">
-            <h3 className="font-headline text-sm font-bold text-error uppercase tracking-wider border-b border-error/10 pb-2 flex items-center gap-1.5">
-              <Trash2 className="w-4 h-4" /> {t('pruebas_reseteo_title')}
-            </h3>
-
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-              {t('pruebas_reseteo_desc')}
-            </p>
-
-            <div className="space-y-4 pt-1">
-              
-              {/* LOG OUT TO HOME */}
-              {onLogout && (
-                <div className="space-y-2 pb-2 border-b border-[#005049]/15">
-                  <button
-                    id="btn-logout-settings"
-                    type="button"
-                    onClick={onLogout}
-                    className="w-full py-3 bg-[#0d1e2a] border border-[#43e5d4]/40 hover:border-[#43e5d4] text-[#43e5d4] text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#112635] transition-all text-center cursor-pointer shadow-sm"
-                  >
-                    {t('cerrar_sesion_btn')}
-                  </button>
-                </div>
-              )}
-              
-              {/* RESET TO MOCKUP STATE (4/6 CURRENT STATUS) */}
-              <div className="space-y-2">
-                <button
-                  id="btn-reset-mockup"
-                  onClick={() => {
-                    setShowConfirmResetMock(true);
-                    setShowConfirmResetZero(false);
-                  }}
-                  className="w-full py-2.5 bg-[#43e5d4]/10 border border-secondary/35 text-secondary text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#43e5d4]/15 transition-all text-center cursor-pointer"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  {t('regresar_mockup_btn')}
-                </button>
-                {showConfirmResetMock && (
-                  <div className="bg-background p-3 rounded-lg border border-secondary/20 text-[11px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
-                    <p className="text-on-surface-variant">{t('regresar_mockup_confirm')}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          onResetToMockupState();
-                          setShowConfirmResetMock(false);
-                        }}
-                        className="bg-secondary text-on-secondary font-bold px-3 py-1 rounded text-[10px] cursor-pointer"
-                      >
-                        {t('si_restablecer_btn')}
-                      </button>
-                      <button
-                        onClick={() => setShowConfirmResetMock(false)}
-                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
-                      >
-                        {t('cancelar_btn')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* RESET TO COMPLETE ZERO STATE (0/6 CURRENT STATUS) */}
-              <div className="space-y-2">
-                <button
-                  id="btn-reset-zero"
-                  onClick={() => {
-                    setShowConfirmResetZero(true);
-                    setShowConfirmResetMock(false);
-                  }}
-                  className="w-full py-2.5 bg-error-container/20 border border-error/30 text-error text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-error-container/30 transition-all text-center cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  {t('reiniciar_cero_btn')}
-                </button>
-                {showConfirmResetZero && (
-                  <div className="bg-background p-3 rounded-lg border border-error/25 text-[11px] space-y-2.5 animate-in slide-in-from-top-2 duration-150">
-                    <p className="text-on-surface-variant">{t('reiniciar_cero_confirm')}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          onResetToZeroState();
-                          setShowConfirmResetZero(false);
-                        }}
-                        className="bg-error border border-error text-on-error font-bold px-3 py-1 rounded text-[10px] cursor-pointer"
-                      >
-                        {t('si_borrar_todo_btn')}
-                      </button>
-                      <button
-                        onClick={() => setShowConfirmResetZero(false)}
-                        className="bg-surface-container-high border border-on-surface-variant/20 text-on-surface-variant px-3 py-1 rounded text-[10px] cursor-pointer"
-                      >
-                        {t('cancelar_btn')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            <div className="p-4 bg-background/35 rounded-xl border border-secondary/10 flex items-center justify-center text-center mt-4">
-              <span className="text-[10px] text-on-surface-variant font-mono">
-                PASAPORTE DIGITAL PINTA MAPAS MVP &bull; Solana cNFT v1.0
-              </span>
-            </div>
-          </aside>
 
         </div>
 
