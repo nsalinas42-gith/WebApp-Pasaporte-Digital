@@ -66,27 +66,6 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
           <LanguageSelector />
-          
-          {/* Ingresar con Gmail Action Button */}
-          <button 
-            id="login-gmail-btn"
-            onClick={onEnter}
-            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] flex items-center gap-1.5 sm:gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all text-[10px] sm:text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.15)] shrink-0"
-          >
-            {user?.avatarUrl ? (
-              <img 
-                src={user.avatarUrl} 
-                alt={user.name} 
-                className="w-5.5 h-5.5 rounded-full object-cover border border-[#003732]/20" 
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <span className="inline-flex w-4 h-4 bg-[#003732] rounded-md items-center justify-center text-[10px] text-secondary font-black">
-                G
-              </span>
-            )}
-            <span>{user?.name ? t('entrar_como').replace('{name}', user.name.split(' ')[0]) : t('ingresar_gmail')}</span>
-          </button>
         </div>
       </header>
 
@@ -297,14 +276,14 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             </div>
 
             {/* Badges list */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4">
+            <div className="flex flex-col sm:grid sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4 w-full items-center justify-center">
               <motion.div 
                 whileHover="hover"
                 variants={{
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -325,7 +304,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -346,7 +325,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -367,7 +346,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -388,7 +367,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -409,7 +388,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
