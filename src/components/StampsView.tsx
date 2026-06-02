@@ -146,7 +146,7 @@ export default function StampsView({ locations, onExploreLocation, onToggleCheck
       </div>
 
       {/* Grid of Stamps Album */}
-      <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <main className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {translatedLocations.map((loc) => {
           const isUnlocked = loc.isCheckedIn;
           const completedCount = loc.places?.filter(p => p.isCheckedIn).length || 0;

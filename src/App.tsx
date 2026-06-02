@@ -18,7 +18,8 @@ import {
   RefreshCw,
   X,
   Camera,
-  CheckCircle2
+  CheckCircle2,
+  LogOut
 } from 'lucide-react';
 import { Location, UserProfile, UserStats, LeaderboardEntry } from './types';
 import { INITIAL_LOCATIONS, INITIAL_USER, LEADERBOARD_DATA } from './data';
@@ -510,18 +511,21 @@ export default function App() {
     <div className="bg-background text-on-background min-h-screen selection:bg-[#43e5d4] selection:text-[#003732] font-sans pb-20 md:pb-0">
       
       {/* Upper Navigation Header Bar for both Mobile & Desktop */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-12 h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(67,229,212,0.04)]">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-          <div className="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/35 glow-mint animate-pulse">
-            <span className="text-xl select-none">🧭</span>
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(67,229,212,0.04)]">
+        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+          <div className="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/35 glow-mint animate-pulse shrink-0">
+            <span className="text-lg sm:text-xl select-none">🧭</span>
           </div>
-          <span className="font-headline text-base md:text-lg font-extrabold text-secondary uppercase tracking-wider select-none">
+          <span className="font-headline text-xs sm:text-sm md:text-lg font-extrabold text-secondary uppercase tracking-wider select-none hidden min-[400px]:inline">
             PASAPORTE DIGITAL PINTA MAPAS
+          </span>
+          <span className="font-headline text-xs font-extrabold text-secondary uppercase tracking-wider select-none inline min-[400px]:hidden">
+            PINTA MAPAS
           </span>
         </div>
 
         {/* Outer navigation shortcuts and profile badge */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6">
           {/* Header navigation tabs (Hidden on smaller mobile, visible on tablet+) */}
           <nav className="hidden md:flex items-center gap-6">
             <button
@@ -550,19 +554,19 @@ export default function App() {
             </button>
           </nav>
 
-          <div className="flex items-center gap-4 select-none">
+          <div className="flex items-center gap-1.5 sm:gap-4 select-none">
             {/* Dynamic XP Pill indicator */}
-            <div className="flex items-center gap-2 bg-[#001e2c] border border-secondary/30 px-4 py-2 rounded-xl text-secondary text-xs font-bold leading-none shadow-[0_0_15px_rgba(67,229,212,0.05)]">
-              <Trophy className="w-3.5 h-3.5 text-secondary fill-secondary/10" />
+            <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 bg-[#001e2c] border border-secondary/30 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-secondary text-[10px] sm:text-xs font-bold leading-none shadow-[0_0_15px_rgba(67,229,212,0.05)] shrink-0">
+              <Trophy className="w-3 h-3 text-secondary fill-secondary/10" />
               <span>{user.xpToNextLevel - user.xp} XP</span>
             </div>
             
             {/* Minimal Avatar widget reflecting Level subscript badge */}
             <div 
               onClick={() => setActiveTab('settings')}
-              className="relative cursor-pointer group"
+              className="relative cursor-pointer group shrink-0"
             >
-              <div className="w-10 h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-secondary">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-secondary">
                 <img 
                   alt="Profile" 
                   src={user.avatarUrl} 
@@ -570,7 +574,7 @@ export default function App() {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-background shadow-md font-mono">
+              <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[8px] sm:text-[10px] font-black w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
                 {user.level}
               </div>
             </div>
@@ -581,9 +585,10 @@ export default function App() {
             <button
               onClick={handleLogout}
               title={t('cerrar_sesion_title')}
-              className="px-3.5 py-2 rounded-xl bg-red-950/15 border border-rose-500/25 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 hover:border-rose-500/55 transition-all text-xs font-bold font-sans flex items-center gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(244,63,94,0.05)] select-none h-10 shrink-0"
+              className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-red-950/15 border border-rose-500/25 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 hover:border-rose-500/55 transition-all text-[11px] sm:text-xs font-bold font-sans flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(244,63,94,0.05)] select-none h-8 sm:h-10 shrink-0"
             >
-              <span>{t('salir_btn')}</span>
+              <span className="hidden sm:inline">{t('salir_btn')}</span>
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
         </div>
@@ -606,7 +611,7 @@ export default function App() {
       />
 
       {/* Main Responsive Canvas Content wrapper */}
-      <main className="md:ml-64 pt-28 px-4 md:px-20 pb-12 overflow-x-hidden">
+      <main className="md:ml-64 pt-20 sm:pt-28 px-3 sm:px-6 md:px-12 lg:px-20 pb-24 md:pb-12 overflow-x-hidden">
         
         {/* Route Render Toggles */}
         {activeTab === 'dashboard' && (

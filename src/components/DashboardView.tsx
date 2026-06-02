@@ -371,7 +371,7 @@ export default function DashboardView({
         </div>
 
         {/* Badges Grid displaying correct asset icons or fallbacks */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-6">
           {locations.map((loc, idx) => {
             const isLockedRouteState = lockedRouteIds.includes(loc.id);
             const isUnlocked = loc.isCheckedIn && !isLockedRouteState;

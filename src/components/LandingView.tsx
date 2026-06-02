@@ -49,26 +49,29 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
     <div className="bg-[#000f16] text-on-background min-h-screen font-sans overflow-x-hidden selection:bg-[#43e5d4] selection:text-[#003732] flex flex-col justify-between">
       
       {/* 1. TOP NAVBAR */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-16 h-20 bg-[#000f16]/80 backdrop-blur-md border-b border-[#005049]/20">
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-16 h-16 sm:h-20 bg-[#000f16]/90 backdrop-blur-md border-b border-[#005049]/20">
         {/* Brand Logo */}
         <div className="flex items-center gap-2 cursor-pointer select-none">
           <div className="w-8 h-8 rounded-lg bg-[#43e5d4]/10 flex items-center justify-center border border-[#43e5d4]/40 shadow-[0_0_15px_rgba(67,229,212,0.15)]">
             <span className="text-secondary text-base">🧭</span>
           </div>
-          <span className="font-headline text-lg font-extrabold text-[#43e5d4] uppercase tracking-wider">
+          <span className="font-headline text-xs sm:text-sm md:text-lg font-extrabold text-[#43e5d4] uppercase tracking-wider hidden min-[400px]:inline">
             PASAPORTE DIGITAL PINTA MAPAS
+          </span>
+          <span className="font-headline text-xs font-black text-[#43e5d4] uppercase tracking-wider inline min-[400px]:hidden">
+            PINTA MAPAS
           </span>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <LanguageSelector />
           
           {/* Ingresar con Gmail Action Button */}
           <button 
             id="login-gmail-btn"
             onClick={onEnter}
-            className="px-5 py-2.5 rounded-xl bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.15)]"
+            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] flex items-center gap-1.5 sm:gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all text-[10px] sm:text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.15)] shrink-0"
           >
             {user?.avatarUrl ? (
               <img 
@@ -88,7 +91,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
       </header>
 
       {/* 2. HERO IMMERSIVE SECTION */}
-      <section className="relative w-full min-h-[95vh] flex items-center justify-center pt-20 px-4 sm:px-8 border-b border-[#005049]/20 overflow-hidden">
+      <section className="relative w-full min-h-[95vh] flex items-center justify-center pt-16 sm:pt-20 px-4 sm:px-8 border-b border-[#005049]/20 overflow-hidden">
         {/* Futuristic Grid Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,80,73,0.15)_0%,transparent_70%)] pointer-events-none z-0"></div>
         <div className="absolute inset-0 bg-[#000f16] opacity-35 mix-blend-multiply z-0 pointer-events-none"></div>
@@ -294,7 +297,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             </div>
 
             {/* Badges list */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4">
               <motion.div 
                 whileHover="hover"
                 variants={{
