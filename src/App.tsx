@@ -30,11 +30,25 @@ import StampsView from './components/StampsView';
 import LeaderboardView from './components/LeaderboardView';
 import SettingsView from './components/SettingsView';
 import LandingView from './components/LandingView';
+import AdminHiddenView from './components/AdminHiddenView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
 
 export default function App() {
   const { t, translateLocation, translateUser, language } = useLanguage();
+
+  // Profile submenu dropdown show/hide state
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleDocumentClick = () => {
+      setIsProfileMenuOpen(false);
+    };
+    document.addEventListener('click', handleDocumentClick);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
 
   // Landing and Onboarding State
   const [showLanding, setShowLanding] = useState<boolean>(() => {
@@ -495,10 +509,37 @@ export default function App() {
   const unlockedCount = locations.filter(loc => loc.isCheckedIn).length;
   const totalCount = locations.length;
 
+  if (activeTab === 'admin_hidden') {
+    return (
+      <AdminHiddenView 
+        locations={locations}
+        user={translatedUser}
+        lockedRouteIds={lockedRouteIds}
+        setLockedRouteIds={setLockedRouteIds}
+        onResetToMockupState={handleResetToMockupState}
+        onResetToZeroState={handleResetToZeroState}
+        onToggleLocationCheckIn={handleToggleLocationCheckIn}
+        onClose={() => {
+          setShowLanding(true);
+          setActiveTab('dashboard');
+        }}
+      />
+    );
+  }
+
   if (showLanding) {
     return (
       <LandingView 
         user={translatedUser}
+        locations={locations}
+        lockedRouteIds={lockedRouteIds}
+        setLockedRouteIds={setLockedRouteIds}
+        onResetToMockupState={handleResetToMockupState}
+        onResetToZeroState={handleResetToZeroState}
+        onEnterHiddenAdminPage={() => {
+          setShowLanding(false);
+          setActiveTab('admin_hidden');
+        }}
         onEnter={() => {
           setShowLanding(false);
           localStorage.setItem('passport_landing_entered', 'true');
@@ -557,39 +598,73 @@ export default function App() {
           <div className="flex items-center gap-1.5 sm:gap-4 select-none">
             {/* Dynamic XP Pill indicator */}
             <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 bg-[#001e2c] border border-secondary/30 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-secondary text-[10px] sm:text-xs font-bold leading-none shadow-[0_0_15px_rgba(67,229,212,0.05)] shrink-0">
-              <Trophy className="w-3 h-3 text-secondary fill-secondary/10" />
-              <span>{user.xpToNextLevel - user.xp} XP</span>
-            </div>
-            
-            {/* Minimal Avatar widget reflecting Level subscript badge */}
-            <div 
-              onClick={() => setActiveTab('settings')}
-              className="relative cursor-pointer group shrink-0"
-            >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-secondary">
-                <img 
-                  alt="Profile" 
-                  src={user.avatarUrl} 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[8px] sm:text-[10px] font-black w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
-                {user.level}
-              </div>
+               <Trophy className="w-3 h-3 text-secondary fill-secondary/10" />
+               <span>{user.xpToNextLevel - user.xp} XP</span>
             </div>
 
             <LanguageSelector />
+            
+            {/* Minimal Avatar widget reflecting Level subscript badge with absolute Submenu Dropdown */}
+            <div className="relative shrink-0 select-none">
+              <div 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsProfileMenuOpen(!isProfileMenuOpen);
+                }}
+                className="relative cursor-pointer group shrink-0"
+              >
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-[#43e5d4] group-active:scale-95 duration-150">
+                  <img 
+                    alt="Profile" 
+                    src={user.avatarUrl} 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[8px] sm:text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
+                  {user.level}
+                </div>
+              </div>
 
-            {/* Logout button in header for fast navigation to home */}
-            <button
-              onClick={handleLogout}
-              title={t('cerrar_sesion_title')}
-              className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-red-950/15 border border-rose-500/25 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 hover:border-rose-500/55 transition-all text-[11px] sm:text-xs font-bold font-sans flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(244,63,94,0.05)] select-none h-8 sm:h-10 shrink-0"
-            >
-              <span className="hidden sm:inline">{t('salir_btn')}</span>
-              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </button>
+              {/* Absolute Flying Submenu Dropdown */}
+              {isProfileMenuOpen && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 mt-3 w-52 bg-[#001019]/95 backdrop-blur-xl border border-[#43e5d4]/45 rounded-2xl shadow-[0_10px_35px_rgba(67,229,212,0.25)] py-2.5 z-50 text-left animate-in fade-in slide-in-from-top-3 duration-200"
+                >
+                  <div className="px-4 pb-2.5 pt-1.5 border-b border-[#005049]/20">
+                    <p className="text-xs font-black text-on-surface truncate tracking-wide">{user.name}</p>
+                    <p className="text-[10px] text-secondary font-mono truncate">{user.email || 'explorador@pintamapas.ve'}</p>
+                  </div>
+                  
+                  <div className="p-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTab('settings');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-extrabold text-on-surface hover:text-[#43e5d4] hover:bg-[#43e5d4]/10 transition-colors flex items-center gap-2.5 rounded-lg outline-none cursor-pointer"
+                    >
+                      <Settings className="w-4 h-4 text-secondary" style={{ display: 'inline' }} />
+                      <span className="ml-2">{t('settings')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleLogout();
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-extrabold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors flex items-center gap-2.5 rounded-lg border-t border-[#005049]/15 mt-1 outline-none cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" style={{ display: 'inline' }} />
+                      <span className="ml-2">Cerrar Sesión</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

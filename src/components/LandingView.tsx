@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { UserProfile } from '../types';
+import { Location, UserProfile } from '../types';
 import { 
   Compass, 
   Map, 
@@ -20,7 +20,13 @@ import {
   ArrowRight,
   Globe,
   ShieldAlert,
-  ArrowUpRight
+  ArrowUpRight,
+  Lock,
+  Unlock,
+  Key,
+  RefreshCw,
+  Trash2,
+  Eye
 } from 'lucide-react';
 import { useLanguage } from '../translations';
 import LanguageSelector from './LanguageSelector';
@@ -35,10 +41,58 @@ import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 interface LandingViewProps {
   onEnter: () => void;
   user?: UserProfile;
+  locations?: Location[];
+  lockedRouteIds?: string[];
+  setLockedRouteIds?: (ids: string[]) => void;
+  onResetToMockupState?: () => void;
+  onResetToZeroState?: () => void;
+  onEnterHiddenAdminPage?: () => void;
 }
 
-export default function LandingView({ onEnter, user }: LandingViewProps) {
+export default function LandingView({ 
+  onEnter, 
+  user,
+  locations,
+  lockedRouteIds,
+  setLockedRouteIds,
+  onResetToMockupState,
+  onResetToZeroState,
+  onEnterHiddenAdminPage
+}: LandingViewProps) {
   const { t } = useLanguage();
+  
+  // Administrator multi-route lock override state for the landing footer
+  const [adminPassword, setAdminPassword] = React.useState('');
+  const [adminPasswordError, setAdminPasswordError] = React.useState<string | null>(null);
+  const [adminSuccessMsg, setAdminSuccessMsg] = React.useState<string | null>(null);
+  const [isAdminUnlocked, setIsAdminUnlocked] = React.useState(false);
+  const [showConfirmResetMock, setShowConfirmResetMock] = React.useState(false);
+  const [showConfirmResetZero, setShowConfirmResetZero] = React.useState(false);
+
+  const handleVerifyAdminPassword = () => {
+    if (adminPassword !== '009286') {
+      setAdminPasswordError('Contraseña incorrecta. Se requiere credencial de administrador.');
+      return;
+    }
+    setAdminPasswordError(null);
+    setAdminPassword('');
+    if (onEnterHiddenAdminPage) {
+      onEnterHiddenAdminPage();
+    }
+  };
+
+  const handleToggleIndividualRoute = (routeId: string) => {
+    if (setLockedRouteIds && lockedRouteIds) {
+      if (lockedRouteIds.includes(routeId)) {
+        setLockedRouteIds(lockedRouteIds.filter(id => id !== routeId));
+        setAdminSuccessMsg('Ruta configurada como Activa');
+      } else {
+        setLockedRouteIds([...lockedRouteIds, routeId]);
+        setAdminSuccessMsg('Ruta configurada como Bloqueada');
+      }
+      setTimeout(() => setAdminSuccessMsg(null), 3000);
+    }
+  };
   
   // Smooth scroll helper
   const scrollToHowItWorks = () => {
@@ -157,7 +211,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           
           {/* CARD 1: Adquiere tu Mapa Físico (col-span-12 md:col-span-7) */}
-          <div className="md:col-span-7 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-6 overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors">
+          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-6 overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors">
             <div className="space-y-4 max-w-xs text-left">
               <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
                 <Map className="w-5 h-5 text-[#43e5d4]" />
@@ -182,7 +236,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           </div>
 
           {/* CARD 2: Visita los Sitios (col-span-12 md:col-span-5) */}
-          <div className="md:col-span-5 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
                 <Compass className="w-5 h-5 text-[#43e5d4]" />
@@ -200,7 +254,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           </div>
 
           {/* CARD 3: GPS Check-in (col-span-12 md:col-span-5) */}
-          <div className="md:col-span-5 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
                 <MapPin className="w-5 h-5 text-[#43e5d4]" />
@@ -223,7 +277,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           </div>
 
           {/* CARD 4: Gana cNFTs Exclusivos (col-span-12 md:col-span-7) */}
-          <div className="md:col-span-7 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-6 overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors">
+          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-6 overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors">
             
             {/* Hologram render floating on left side of card */}
             <div className="relative w-full md:w-44 h-36 md:h-full rounded-2xl overflow-hidden self-center border border-[#1a3848]/50 shadow-sm shrink-0 order-2 md:order-1">
@@ -265,7 +319,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
           </div>
 
           {/* CARD 5: Insignias Digitales (Badges) (col-span-12) */}
-          <div className="col-span-12 bg-[#001721] border border-[#005049]/25 p-8 rounded-3xl hover:border-[#43e5d4]/40 transition-colors text-left space-y-6">
+          <div className="col-span-1 md:col-span-12 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl hover:border-[#43e5d4]/40 transition-colors text-left space-y-6">
             <div className="space-y-2">
               <h3 className="font-headline text-lg sm:text-xl font-extrabold text-on-surface">
                 Insignias Digitales (Badges)
@@ -276,14 +330,14 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             </div>
 
             {/* Badges list */}
-            <div className="flex flex-col sm:grid sm:grid-cols-3 md:grid-cols-6 gap-4 pt-4 w-full items-center justify-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 pt-4 w-full items-center justify-center">
               <motion.div 
                 whileHover="hover"
                 variants={{
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -304,7 +358,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -325,7 +379,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -346,7 +400,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -367,7 +421,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -388,7 +442,7 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
                   hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
               >
                 <motion.img 
                   variants={{
@@ -436,15 +490,54 @@ export default function LandingView({ onEnter, user }: LandingViewProps) {
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
               {t('footer_manifesto')}
             </p>
-            
-            {/* Relocated Login to Backend Action */}
-            <button 
-              onClick={onEnter}
-              className="px-4 py-2 text-left rounded-xl bg-transparent border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#43e5d4]/10 text-[#43e5d4] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider outline-none cursor-pointer flex items-center gap-2 w-max shadow-[0_0_15px_rgba(67,229,212,0.05)]"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>{t('ingresar_gmail')}</span>
-            </button>
+             {/* Relocated Admin Panel replacing Login Button */}
+            <div className="bg-[#001019] border border-[#43e5d4]/20 rounded-2xl p-4 space-y-4 max-w-sm">
+              <div className="flex items-center gap-2 border-b border-[#43e5d4]/15 pb-2">
+                <Lock className="w-4 h-4 text-[#43e5d4]" />
+                <span className="font-headline text-[11px] font-bold text-[#43e5d4] uppercase tracking-widest block text-left">
+                  Panel de Administrador
+                </span>
+                <span className="text-[8px] uppercase bg-[#43e5d4]/10 px-1.5 py-0.5 rounded text-[#43e5d4] font-mono ml-auto">
+                  SECURE GATE
+                </span>
+              </div>
+
+              <div className="space-y-2 text-left">
+                <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                  Ingresa la clave autorizada para abrir directamente el panel de control supremo del administrador.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => {
+                      setAdminPassword(e.target.value);
+                      setAdminPasswordError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleVerifyAdminPassword();
+                      }
+                    }}
+                    placeholder="Contraseña (009286)..."
+                    className="flex-1 bg-[#00080d] border border-[#43e5d4]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#43e5d4] transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleVerifyAdminPassword}
+                    className="px-3.5 py-1.5 bg-[#43e5d4]/10 border border-[#43e5d4]/40 text-[#43e5d4] text-[11px] font-black rounded-xl hover:brightness-110 hover:border-[#43e5d4] hover:bg-[#43e5d4]/20 active:scale-95 transition-all outline-none uppercase cursor-pointer"
+                  >
+                    Entrar
+                  </button>
+                </div>
+                {adminPasswordError && (
+                  <p className="text-[10px] text-rose-400 font-semibold animate-pulse mt-1">
+                    ⚠️ {adminPasswordError}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Comunidad Column */}

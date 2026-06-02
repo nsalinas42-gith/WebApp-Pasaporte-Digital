@@ -60,12 +60,12 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
-    'exploration': 'Exploration',
-    'my_stamps': 'My Stamps',
-    'leaderboard': 'Leaderboard',
-    'settings': 'Settings',
+    'exploration': 'Rutas',
+    'my_stamps': 'Mis Logros',
+    'leaderboard': 'Ranking',
+    'settings': 'Configuración',
     'status': 'STATUS',
-    'explorer_level': 'Explorer Level {level}',
+    'explorer_level': 'Nivel del Explorador {level}',
     'xp_to_level_up': '{xp} XP to Level Up',
     'unlock_new_region': 'Unlock New Region',
     'support': 'Support',
@@ -278,7 +278,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // StampsView:
     'insignias_digitales_title': 'Insignias Digitales (Badges)',
     'insignias_digitales_desc': 'Cada insignia se desbloquea de forma sucesiva según tu progreso verificado. Para obtener la insignia Explorador Principiante deberás completar la primera geolocalización de la ficha de ruta, y así sucesivamente (2 para intermedia, 3 para avanzada, 4 para cazador, 6 para guía y las 8 fichas para el guía experto) hasta coleccionar las 6 insignias.',
-    'tu_cuenta_sello': 'Tu Cuenta de Sello',
+    'tu_cuenta_sello': 'Tu cuenta de insignias',
     'canjeados_label': '{completed} de {total} canjeados',
     'album_supremo_congrats': '¡Felicidades Explorador Supremo! Has dominado el mapa entero por completo. Tu cNFT de Solana te espera en la pantalla principal.',
     'album_supremo_missing': 'Te faltan {num} monumentos por recorrer para reclamar el título final de Embajador Supremo y acuñar tu cNFT.',

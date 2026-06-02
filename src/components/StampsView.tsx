@@ -146,7 +146,7 @@ export default function StampsView({ locations, onExploreLocation, onToggleCheck
       </div>
 
       {/* Grid of Stamps Album */}
-      <main className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <main className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {translatedLocations.map((loc) => {
           const isUnlocked = loc.isCheckedIn;
           const completedCount = loc.places?.filter(p => p.isCheckedIn).length || 0;
@@ -156,7 +156,7 @@ export default function StampsView({ locations, onExploreLocation, onToggleCheck
             <div
               key={loc.id}
               onClick={() => setSelectedBadge(loc)}
-              className={`p-4 rounded-xl border flex flex-col items-center text-center space-y-3 relative overflow-hidden transition-all duration-300 filter group cursor-pointer ${
+              className={`p-3 sm:p-4 rounded-xl border flex flex-col items-center text-center space-y-3 relative overflow-hidden transition-all duration-300 filter group cursor-pointer ${
                 isUnlocked
                   ? 'bg-gradient-to-b from-surface-container to-surface-container-high border-secondary glow-mint hover:scale-[1.03] select-none'
                   : 'bg-surface-container-longest/40 border-outline-variant/15 opacity-60 hover:opacity-100 hover:scale-[1.01] hover:border-outline-variant/40'

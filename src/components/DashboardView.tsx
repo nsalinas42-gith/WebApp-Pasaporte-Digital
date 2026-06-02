@@ -371,7 +371,7 @@ export default function DashboardView({
         </div>
 
         {/* Badges Grid displaying correct asset icons or fallbacks */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
           {locations.map((loc, idx) => {
             const isLockedRouteState = lockedRouteIds.includes(loc.id);
             const isUnlocked = loc.isCheckedIn && !isLockedRouteState;
@@ -384,7 +384,7 @@ export default function DashboardView({
                   if (isLockedRouteState) return;
                   onExploreLocation(loc.id);
                 }}
-                className={`glass-card p-6 rounded-xl flex flex-col items-center group border ${
+                className={`glass-card p-4 sm:p-6 rounded-xl flex flex-col items-center group border ${
                   isLockedRouteState
                     ? 'opacity-40 cursor-not-allowed bg-black/25 border-error/5'
                     : isUnlocked ? 'border-tertiary/40 cursor-pointer' : 'opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all border-outline-variant/15 cursor-pointer'
