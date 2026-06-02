@@ -34,83 +34,83 @@ export const INITIAL_LOCATIONS: Location[] = [
     places: [
       {
         id: 'alh_leones',
-        name: 'Estatua Ecuestre de Bolívar',
+        name: 'Estatua ecuestre del Libertador Simón Bolívar',
         category: 'Monumento Central',
         latitude: 10.506085,
         longitude: -66.914631,
         points: 500,
         isCheckedIn: false,
-        description: 'La célebre escultura de bronce sobre pedestal de granito, fundida por Tadolini en 1874.'
+        description: 'La célebre escultura tallada en bronce sobre un pedestal de granito, inaugurada en 1874 en el corazón de la Plaza Bolívar.'
       },
       {
         id: 'alh_comares',
-        name: 'Catedral de Caracas',
-        category: 'Templo Coloquial',
+        name: 'La Catedral de Caracas',
+        category: 'Templo Metropolitano',
         latitude: 10.5061,
         longitude: -66.9139,
         points: 500,
         isCheckedIn: false,
-        description: 'Catedral histórica con su elegante fachada barroca y torre campanario colonial.'
+        description: 'Catedral del siglo XVII que ostenta una hermosa fachada neobarroca y alberga restos de los padres del Libertador.'
       },
       {
         id: 'alh_generalife',
-        name: 'Casa Amarilla',
-        category: 'Residencia Histórica',
+        name: 'Casa Natal del Libertador',
+        category: 'Residencia Colonial',
         latitude: 10.5065,
         longitude: -66.9149,
         points: 500,
         isCheckedIn: false,
-        description: 'Sede colonial del ayuntamiento y actual cancillería, testigo de los hitos de independencia.'
+        description: 'Casa señorial del siglo XVIII donde nació Simón Bolívar, hoy preservada como un museo que guarda reliquias invaluables.'
       },
       {
         id: 'alh_vela',
-        name: 'Palacio Municipal de Caracas',
-        category: 'Edificación Neoclásica',
+        name: 'El Palacio Federal Legislativo',
+        category: 'Sede del Parlamento',
         latitude: 10.5057,
         longitude: -66.9149,
         points: 500,
         isCheckedIn: false,
-        description: 'Hermosa edificación con reliefs neoclásicos y el histórico Salón de Actas.'
+        description: 'Singular joya neoclásica construida por Antonio Guzmán Blanco, célebre por su majestuosa Cúpula Dorada y el Salón Elíptico.'
       },
       {
         id: 'alh_carlosv',
-        name: 'Capitolio Federal',
-        category: 'Sede Legislativa',
+        name: 'El Teatro Municipal de Caracas',
+        category: 'Patrimonio Teatral',
         latitude: 10.5055,
         longitude: -66.9155,
         points: 500,
         isCheckedIn: false,
-        description: 'El fastuoso Palacio Federal Legislativo con su majestuosa cúpula dorada e hito republicano.'
+        description: 'Uno de los templos de la ópera y el drama de mayor solera en Sudamérica, inaugurado solemnemente en el año 1881.'
       },
       {
         id: 'alh_hermanas',
-        name: 'Esquina de Gradillas',
-        category: 'Rincón de Leyendas',
+        name: "La plaza O'Leary",
+        category: 'Espacio Cívico',
         latitude: 10.5057,
         longitude: -66.9139,
         points: 500,
         isCheckedIn: false,
-        description: 'Punto histórico de tertulia colonial situado en la esquina sureste de la plaza.'
+        description: "Eje urbano y monumental diseñado por Carlos Raúl Villanueva en la reurbanización de El Silencio, adornado por las fuentes del artista Francisco Narváez."
       },
       {
         id: 'alh_justicia',
-        name: 'Las Cuatro Fuentes de Hierro',
-        category: 'Detalle Ornamental',
+        name: 'El Arco de la Federación',
+        category: 'Monumento Conmemorativo',
         latitude: 10.5063,
         longitude: -66.9143,
         points: 500,
         isCheckedIn: false,
-        description: 'Fuentes alegóricas decoradas con querubines, ubicadas en las cuatro esquinas internas de la plaza.'
+        description: 'Imponente arco de triunfo neoclásico erigido en El Calvario para ensalzar la victoria de la Guerra Federal venezolana.'
       },
       {
         id: 'alh_baños',
-        name: 'Sombra de los Caobos y Jacarandás',
-        category: 'Jardines de la Plaza',
+        name: 'La Ceiba de San Francisco',
+        category: 'Patrimonio Natural',
         latitude: 10.5060,
         longitude: -66.9145,
         points: 500,
         isCheckedIn: false,
-        description: 'La exuberante foresta urbana y jardinería que adorna las caminerías de mármol de la plaza.'
+        description: 'Árbol sagrado centenario de la ciudad de Caracas, testigo silente de innumerables hitos políticos y mercantiles frente a la Iglesia de San Francisco.'
       }
     ]
   },
