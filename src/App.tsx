@@ -120,7 +120,18 @@ export default function App() {
 
   const [user, setUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('passport_user');
-    return saved ? JSON.parse(saved) : INITIAL_USER;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed?.avatarUrl && parsed.avatarUrl.includes('unsplash.com')) {
+          parsed.avatarUrl = INITIAL_USER.avatarUrl;
+        }
+        return parsed;
+      } catch (e) {
+        // Fallback
+      }
+    }
+    return INITIAL_USER;
   });
 
   const [stats, setStats] = useState<UserStats>(() => {
@@ -472,6 +483,21 @@ export default function App() {
     setShowLanding(true);
   };
 
+  const handleGoogleLoginSuccess = (decodedUser: any, rawToken: string) => {
+    const updatedUser: UserProfile = {
+      ...user,
+      name: decodedUser.name || user.name,
+      email: decodedUser.email || user.email,
+      avatarUrl: decodedUser.picture || user.avatarUrl,
+    };
+    setUser(updatedUser);
+    localStorage.setItem('passport_user', JSON.stringify(updatedUser));
+    
+    // Smoothly transition off landing page and enter dashboard
+    setShowLanding(false);
+    localStorage.setItem('passport_landing_entered', 'true');
+  };
+
   // Calculate generic unlocked count
   const unlockedCount = locations.filter(loc => loc.isCheckedIn).length;
   const totalCount = locations.length;
@@ -503,6 +529,7 @@ export default function App() {
         setLockedRouteIds={setLockedRouteIds}
         onResetToMockupState={handleResetToMockupState}
         onResetToZeroState={handleResetToZeroState}
+        onGoogleLoginSuccess={handleGoogleLoginSuccess}
         onEnterHiddenAdminPage={() => {
           setShowLanding(false);
           setActiveTab('admin_hidden');

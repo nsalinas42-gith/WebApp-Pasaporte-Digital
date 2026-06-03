@@ -11,6 +11,14 @@ import stampSevilla from './assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from './assets/images/05E_Guia_Local.png';
 import stampOlite from './assets/images/06F_guia_local_experto.png';
 import mapaCaracasHero from './assets/images/Mapa Caracas.png';
+import { 
+  AVATAR_FELIX, 
+  AVATAR_SOFIA, 
+  AVATAR_MATEO, 
+  AVATAR_CAMILA, 
+  AVATAR_DIEGO, 
+  AVATAR_ELENA 
+} from './utils/avatars';
 
 export const INITIAL_LOCATIONS: Location[] = [
   {
@@ -625,7 +633,7 @@ export const INITIAL_USER: UserProfile = {
   name: 'Felix "The Voyager"',
   title: 'Explorador Supremo',
   email: 'felix.voyager@gmail.com',
-  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+  avatarUrl: AVATAR_FELIX,
   level: 12,
   xp: 3550, // Let's say XP progress: 3550/6000 XP (with 2450 XP remaining to reach Level 13!)
   xpToNextLevel: 6000,
@@ -634,10 +642,10 @@ export const INITIAL_USER: UserProfile = {
 };
 
 export const LEADERBOARD_DATA: LeaderboardEntry[] = [
-  { rank: 1, name: 'Sofia "Mountain Queen"', title: 'Custodio del Olimpo', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80', points: 1450, badgesUnlocked: 6 },
-  { rank: 2, name: 'Mateo "Globetrotter"', title: 'Embajador del Desierto', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80', points: 1280, badgesUnlocked: 6 },
-  { rank: 3, name: 'Camila "Eco Scout"', title: 'Sabio Forestal', avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80', points: 1050, badgesUnlocked: 5 },
-  { rank: 4, name: 'Felix "The Voyager"', title: 'Explorador Supremo', avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80', points: 570, badgesUnlocked: 4, isCurrentUser: true },
-  { rank: 5, name: 'Diego "Trailblazer"', title: 'Cazador Marino', avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80', points: 450, badgesUnlocked: 3 },
-  { rank: 6, name: 'Elena "Arqueo Fan"', title: 'Iniciado del Templo', avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80', points: 300, badgesUnlocked: 2 }
+  { rank: 1, name: 'Sofia "Mountain Queen"', title: 'Custodio del Olimpo', avatarUrl: AVATAR_SOFIA, points: 1450, badgesUnlocked: 6 },
+  { rank: 2, name: 'Mateo "Globetrotter"', title: 'Embajador del Desierto', avatarUrl: AVATAR_MATEO, points: 1280, badgesUnlocked: 6 },
+  { rank: 3, name: 'Camila "Eco Scout"', title: 'Sabio Forestal', avatarUrl: AVATAR_CAMILA, points: 1050, badgesUnlocked: 5 },
+  { rank: 4, name: 'Felix "The Voyager"', title: 'Explorador Supremo', avatarUrl: AVATAR_FELIX, points: 570, badgesUnlocked: 4, isCurrentUser: true },
+  { rank: 5, name: 'Diego "Trailblazer"', title: 'Cazador Marino', avatarUrl: AVATAR_DIEGO, points: 450, badgesUnlocked: 3 },
+  { rank: 6, name: 'Elena "Arqueo Fan"', title: 'Iniciado del Templo', avatarUrl: AVATAR_ELENA, points: 300, badgesUnlocked: 2 }
 ];
