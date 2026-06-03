@@ -353,7 +353,7 @@ export default function GoogleSignInButton({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2 w-full">
-            {initError && (
+            {!hideDebugConfig && initError && (
               <div className="text-[11px] bg-red-950/50 border border-red-800/40 p-4 rounded-xl max-w-sm mb-3 text-left leading-normal space-y-2.5 text-red-100 shadow-md">
                 <div className="font-bold flex items-center gap-1.5 text-red-400 border-b border-red-800/30 pb-1">
                   <span>⚠️ Detalle del Error de Google</span>
@@ -448,7 +448,7 @@ export default function GoogleSignInButton({
       </div>
 
       {/* 2. RECONCILE ERROR OR MANUALLY CONFIGURE GOOGLE CLIENT ID */}
-      {(!hideDebugConfig || initError) && (
+      {!hideDebugConfig && (
         <div className="text-center">
           <button
             type="button"
