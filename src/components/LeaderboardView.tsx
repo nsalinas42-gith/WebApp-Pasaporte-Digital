@@ -87,8 +87,14 @@ export default function LeaderboardView({
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 bg-on-surface-variant/25 text-on-surface-variant font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full">
               {t('puesto_index').replace('{num}', '2')}
             </div>
-            <div className="w-16 h-16 rounded-full border-2 border-slate-400 overflow-hidden mx-auto mt-3">
-              <img src={rankedEntries[1].avatarUrl} alt={rankedEntries[1].name} className="w-full h-full object-cover" />
+            <div className="w-16 h-16 rounded-full border-2 border-slate-400 overflow-hidden mx-auto mt-3 flex items-center justify-center">
+              {rankedEntries[1].avatarUrl ? (
+                <img src={rankedEntries[1].avatarUrl} alt={rankedEntries[1].name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-secondary text-base font-black font-mono">
+                  {rankedEntries[1].name ? rankedEntries[1].name.charAt(0).toUpperCase() : '2'}
+                </span>
+              )}
             </div>
             <div className="mt-3">
               <h4 className="font-headline text-sm font-bold text-on-surface truncate">{rankedEntries[1].name}</h4>
@@ -106,8 +112,14 @@ export default function LeaderboardView({
             <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-secondary text-on-secondary font-black text-[11px] uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md flex items-center gap-1">
               <Star className="w-3 h-3 fill-on-secondary" /> {t('rey_del_mapapodium')}
             </div>
-            <div className="w-20 h-20 rounded-full border-4 border-secondary overflow-hidden mx-auto mt-4">
-              <img src={rankedEntries[0].avatarUrl} alt={rankedEntries[0].name} className="w-full h-full object-cover animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="w-20 h-20 rounded-full border-4 border-secondary overflow-hidden mx-auto mt-4 flex items-center justify-center">
+              {rankedEntries[0].avatarUrl ? (
+                <img src={rankedEntries[0].avatarUrl} alt={rankedEntries[0].name} className="w-full h-full object-cover animate-pulse" style={{ animationDuration: '3s' }} />
+              ) : (
+                <span className="text-secondary text-2xl font-black font-mono">
+                  {rankedEntries[0].name ? rankedEntries[0].name.charAt(0).toUpperCase() : '1'}
+                </span>
+              )}
             </div>
             <div className="mt-4">
               <h4 className="font-headline text-base font-extrabold text-[#c8e7fb] truncate">{rankedEntries[0].name}</h4>
@@ -126,8 +138,14 @@ export default function LeaderboardView({
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 bg-[#005049]/45 text-secondary font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full">
               {t('puesto_index').replace('{num}', '3')}
             </div>
-            <div className="w-16 h-16 rounded-full border-2 border-amber-600/50 overflow-hidden mx-auto mt-3">
-              <img src={rankedEntries[2].avatarUrl} alt={rankedEntries[2].name} className="w-full h-full object-cover" />
+            <div className="w-16 h-16 rounded-full border-2 border-amber-600/50 overflow-hidden mx-auto mt-3 flex items-center justify-center">
+              {rankedEntries[2].avatarUrl ? (
+                <img src={rankedEntries[2].avatarUrl} alt={rankedEntries[2].name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-secondary text-base font-black font-mono">
+                  {rankedEntries[2].name ? rankedEntries[2].name.charAt(0).toUpperCase() : '3'}
+                </span>
+              )}
             </div>
             <div className="mt-3">
               <h4 className="font-headline text-sm font-bold text-on-surface truncate">{rankedEntries[2].name}</h4>
@@ -188,8 +206,14 @@ export default function LeaderboardView({
                     </div>
 
                     {/* Small avatar */}
-                    <div className="w-9 h-9 rounded-full border border-secondary/20 overflow-hidden shrink-0">
-                      <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                    <div className="w-9 h-9 rounded-full border border-secondary/20 overflow-hidden shrink-0 flex items-center justify-center">
+                      {player.avatarUrl ? (
+                        <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-secondary text-[10px] font-black font-mono">
+                          {player.name ? player.name.charAt(0).toUpperCase() : '?'}
+                        </span>
+                      )}
                     </div>
 
                     <div className="text-left min-w-0">

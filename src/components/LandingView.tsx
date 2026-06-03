@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Globe,
   ShieldAlert,
+  ShieldCheck,
   ArrowUpRight,
   Lock,
   Unlock,
@@ -173,6 +174,7 @@ export default function LandingView({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 max-w-lg mx-auto">
             <div className="w-full sm:w-auto min-w-[240px]">
               <GoogleSignInButton
+                key={user?.email || 'guest'}
                 onSuccess={(decoded, token) => {
                   if (onGoogleLoginSuccess) {
                     onGoogleLoginSuccess(decoded, token);
@@ -180,6 +182,7 @@ export default function LandingView({
                     onEnter();
                   }
                 }}
+                hideDebugConfig={true}
               />
             </div>
 

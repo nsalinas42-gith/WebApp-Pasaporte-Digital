@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, 
   Activity, 
@@ -18,9 +18,20 @@ import {
   Cpu, 
   FileText,
   Compass,
-  ArrowLeft
+  ArrowLeft,
+  ShieldCheck,
+  Users,
+  Search,
+  UserX
 } from 'lucide-react';
 import { Location, UserProfile } from '../types';
+import { INITIAL_LOCATIONS } from '../data';
+import GoogleSignInButton from './GoogleSignInButton';
+import { 
+  getAllRegisteredUsers, 
+  resetUserProgress, 
+  deleteUserEntirely 
+} from '../utils/firebase';
 
 interface AdminHiddenViewProps {
   locations: Location[];
@@ -31,6 +42,7 @@ interface AdminHiddenViewProps {
   onResetToZeroState: () => void;
   onToggleLocationCheckIn: (locationId: string) => void;
   onClose: () => void;
+  onGoogleLoginSuccess?: (decodedUser: any, rawToken: string) => void;
 }
 
 export default function AdminHiddenView({
@@ -41,7 +53,8 @@ export default function AdminHiddenView({
   onResetToMockupState,
   onResetToZeroState,
   onToggleLocationCheckIn,
-  onClose
+  onClose,
+  onGoogleLoginSuccess
 }: AdminHiddenViewProps) {
   const [selectedDbTable, setSelectedDbTable] = useState<'locations' | 'user' | 'system'>('locations');
   const [simulationLogs, setSimulationLogs] = useState<string[]>(() => [
@@ -49,6 +62,53 @@ export default function AdminHiddenView({
     `[${new Date().toISOString().slice(11, 19)}] Solana RPC devnet conectada: 100% operativa.`,
     `[${new Date().toISOString().slice(11, 19)}] Sesión de administración de alta jerarquía establecida.`
   ]);
+
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
+  const [isLoadingDbUsers, setIsLoadingDbUsers] = useState<boolean>(true);
+  const [dbUserSearch, setDbUserSearch] = useState<string>('');
+  const [actionStatusMsg, setActionStatusMsg] = useState<string | null>(null);
+
+  const fetchUsers = async () => {
+    setIsLoadingDbUsers(true);
+    try {
+      const users = await getAllRegisteredUsers();
+      setDbUsers(users);
+    } catch (err) {
+      console.error("Failed to fetch registered users list:", err);
+    } finally {
+      setIsLoadingDbUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleResetProgressInCloud = async (userId: string, userName: string) => {
+    try {
+      await resetUserProgress(userId, INITIAL_LOCATIONS);
+      addLog(`Progreso en la nube de '${userName}' REINICIADO con éxito.`);
+      setActionStatusMsg(`Progreso de ${userName} reiniciado.`);
+      setTimeout(() => setActionStatusMsg(null), 3000);
+      fetchUsers();
+    } catch (err) {
+      console.error("Failed to reset progress:", err);
+      addLog(`Error al reiniciar progreso de '${userName}'.`);
+    }
+  };
+
+  const handleDeleteUserInCloud = async (userId: string, userName: string) => {
+    try {
+      await deleteUserEntirely(userId);
+      addLog(`Usuario '${userName}' ELIMINADO de Firestore permanentemente.`);
+      setActionStatusMsg(`Usuario ${userName} eliminado.`);
+      setTimeout(() => setActionStatusMsg(null), 3000);
+      fetchUsers();
+    } catch (err) {
+      console.error("Failed to delete user:", err);
+      addLog(`Error al eliminar al usuario '${userName}'.`);
+    }
+  };
 
   const addLog = (message: string) => {
     setSimulationLogs(prev => [`[${new Date().toISOString().slice(11, 19)}] ${message}`, ...prev.slice(0, 8)]);
@@ -198,6 +258,123 @@ export default function AdminHiddenView({
             </div>
           </div>
 
+          {/* CLOUD USER PERSISTENCE & RESET MANAGER CARD */}
+          <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#005049]/15 pb-4">
+              <div>
+                <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[#43e5d4]" />
+                  Gestión Central de Exploradores (Firestore Database)
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Lista viva de usuarios registrados en el servidor. Reinicia stamps a cero o elimina registros de manera irreversible.
+                </p>
+              </div>
+              
+              <button
+                onClick={fetchUsers}
+                className="py-1.5 px-3.5 bg-[#43e5d4]/10 border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#43e5d4]/20 text-[#43e5d4] text-[10px] font-black uppercase rounded-lg cursor-pointer transition-all shrink-0 flex items-center gap-1.5"
+              >
+                <RefreshCw className="w-3 h-3 animate-pulse" />
+                Actualizar base
+              </button>
+            </div>
+
+            {/* Searches filters */}
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#8c9f9e]/50 pointer-events-none">
+                <Search className="w-4 h-4" />
+              </span>
+              <input
+                type="text"
+                placeholder="Buscar por nombre o correo electrónico..."
+                value={dbUserSearch}
+                onChange={(e) => setDbUserSearch(e.target.value)}
+                className="w-full bg-[#000d14] border border-[#005049]/25 rounded-xl py-2 px-10 text-xs text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-all font-sans"
+              />
+            </div>
+
+            {actionStatusMsg && (
+              <div className="py-2.5 px-4 bg-emerald-950/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                ✓ {actionStatusMsg}
+              </div>
+            )}
+
+            {/* Main scroll window pane */}
+            <div className="bg-[#000d14] rounded-2xl border border-[#005049]/15 p-2 overflow-hidden shadow-inner">
+              <div className="max-h-64 overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-[#005049]/40 scrollbar-track-transparent">
+                {isLoadingDbUsers ? (
+                  <div className="py-12 flex flex-col items-center justify-center gap-2 text-[#8c9f9e]/50">
+                    <RefreshCw className="w-6 h-6 animate-spin text-[#43e5d4]" />
+                    <span className="text-xs font-mono uppercase tracking-wider">Conectando con Firestore...</span>
+                  </div>
+                ) : dbUsers.filter((u: any) => {
+                  const q = dbUserSearch.toLowerCase().trim();
+                  return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+                }).length === 0 ? (
+                  <div className="py-12 text-center text-[#8c9f9e]/40 flex flex-col items-center justify-center gap-1.5">
+                    <span className="text-2xl">👥</span>
+                    <span className="text-xs font-semibold">Ningún explorador activo coincide con tu búsqueda.</span>
+                  </div>
+                ) : (
+                  dbUsers.filter((u: any) => {
+                    const q = dbUserSearch.toLowerCase().trim();
+                    return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+                  }).map((u) => (
+                    <div 
+                      key={u.uid} 
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-[#001721]/45 hover:bg-[#001c27]/70 border border-[#005049]/10 rounded-xl transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        {u.avatarUrl ? (
+                          <img 
+                            src={u.avatarUrl} 
+                            alt={u.name} 
+                            referrerPolicy="no-referrer"
+                            className="w-10 h-10 rounded-xl object-cover border border-[#43e5d4]/20 bg-[#000d14]"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center font-bold text-secondary shrink-0">
+                            {u.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        
+                        <div className="text-left space-y-0.5 truncate">
+                          <p className="text-xs font-black text-on-surface truncate flex items-center gap-1.5">
+                            {u.name}
+                            {u.email === 'felix.voyager@gmail.com' && (
+                              <span className="text-[8px] tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.5 rounded font-bold">GUEST</span>
+                            )}
+                          </p>
+                          <p className="text-[10px] text-[#8c9f9e]/80 font-mono truncate max-w-[200px] sm:max-w-xs">{u.email}</p>
+                          <span className="text-[9px] text-on-surface-variant/40 font-mono block select-all">ID: {u.uid}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 border-[#005049]/10 pt-2.5 sm:pt-0">
+                        <button
+                          onClick={() => handleResetProgressInCloud(u.uid, u.name)}
+                          className="flex items-center gap-1 py-1.5 px-3 bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4]/25 hover:border-[#43e5d4] text-[#43e5d4] text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer"
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                          Reiniciar
+                        </button>
+                        
+                        <button
+                          onClick={() => handleDeleteUserInCloud(u.uid, u.name)}
+                          className="flex items-center gap-1 py-1.5 px-3 bg-red-950/20 hover:bg-rose-950/40 border border-rose-500/30 hover:border-rose-400 text-rose-400 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer"
+                        >
+                          <UserX className="w-3 h-3" />
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* SIMULATED SYSTEM EVENT LOG */}
           <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
             <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
@@ -219,6 +396,49 @@ export default function AdminHiddenView({
         {/* Right Column (4 cols): DB Explorer & Settings */}
         <div className="lg:col-span-4 space-y-8">
           
+          {/* Autenticación con Google (Inside Admin Panel) */}
+          <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
+            <div className="flex justify-between items-center border-[#005049]/15 border-b pb-2">
+              <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-5 h-5 text-secondary" style={{ display: 'inline-block' }} /> Autenticación con Google
+              </h3>
+              <div className="flex items-center gap-1.5 text-[9px] bg-secondary/10 border border-secondary/20 px-2.5 py-0.5 rounded-full text-secondary font-bold">
+                <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+                <span>SECURE ID</span>
+              </div>
+            </div>
+            
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+              Vincula cuentas de Google de forma segura para sincronizar nombre, correo y avatar oficial directamente en el pasaporte digital.
+            </p>
+
+            <div className="flex flex-col gap-3 p-3.5 bg-[#000f16]/60 rounded-2xl border border-secondary/15">
+              <div className="text-left space-y-0.5">
+                <span className="text-[9px] uppercase font-bold text-[#8c9f9e] block">Estado de Conexión</span>
+                <span className="text-xs text-[#c8e7fb] font-semibold flex flex-wrap items-center gap-1">
+                  {user && user.email && user.email !== 'felix.voyager@gmail.com' ? (
+                    <>
+                      <span className="text-[#43e5d4] font-bold">● Conectado:</span> {user.name} ({user.email})
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-on-surface-variant/70 font-semibold">● No vinculado</span>
+                    </>
+                  )}
+                </span>
+              </div>
+              <GoogleSignInButton
+                onSuccess={(decoded, token) => {
+                  if (onGoogleLoginSuccess) {
+                    onGoogleLoginSuccess(decoded, token);
+                  }
+                }}
+                className="w-full"
+                hideDebugConfig={true}
+              />
+            </div>
+          </div>
+
           {/* ACTIVATE/DISABLE MAPS INTERACTIVE TOGGLE */}
           <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
             <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider border-b border-secondary/15 pb-2 flex items-center gap-1.5">

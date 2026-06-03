@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+        (request.auth.token.email == 'nsalinas42@gmail.com' || request.auth.token.email == 'felix.voyager@gmail.com') && 
+        request.auth.token.email_verified == true;
+    }
+
+    // Validation Blueprint for User Document
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() <= 128
+        && data.name is string && data.name.size() <= 200
+        && data.email is string && data.email.size() <= 200
+        && (data.avatarUrl == null || (data.avatarUrl is string && data.avatarUrl.size() <= 1000))
+        && (data.title == null || (data.title is string && data.title.size() <= 128));
+    }
+
+    // Validation Blueprint for User Progress Document
+    function isValidUserProgress(data) {
+      return data.uid is string && data.uid.size() <= 128
+        && data.level is number
+        && data.xp is number
+        && data.xpToNextLevel is number
+        && (data.locations == null || (data.locations is string && data.locations.size() <= 131072));
+    }
+
+    // Rules for /test/{docId}
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Rules for /users/{userId}
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().createdAt == request.time
+        && incoming().lastLogin == request.time;
+      allow update: if (isOwner(userId) || isAdmin())
+        && isValidUser(incoming())
+        && incoming().lastLogin == request.time
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    // Rules for /user_progress/{userId}
+    match /user_progress/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && isValidUserProgress(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if (isOwner(userId) || isAdmin())
+        && isValidUserProgress(incoming())
+        && incoming().updatedAt == request.time;
+      allow delete: if isAdmin();
+    }
+  }
+}

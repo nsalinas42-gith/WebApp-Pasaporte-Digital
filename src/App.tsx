@@ -34,6 +34,14 @@ import AdminHiddenView from './components/AdminHiddenView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
 import { calculateUserProgress } from './components/GamificationEngine';
+import { onAuthStateChanged } from 'firebase/auth';
+import { 
+  auth, 
+  authenticateWithGoogleCredential, 
+  logoutFirebase, 
+  saveUserProfileAndProgress, 
+  getUserProfileAndProgress 
+} from './utils/firebase';
 
 export default function App() {
   const { t, translateLocation, translateUser, language } = useLanguage();
@@ -209,6 +217,87 @@ export default function App() {
       localStorage.removeItem('passport_tx_hash');
     }
   }, [txHash]);
+
+  // Synchronize Google Auth with Firebase Auth when active, and set up state
+  const [firebaseUid, setFirebaseUid] = useState<string | null>(() => {
+    return localStorage.getItem('passport_firebase_uid');
+  });
+
+  // Synchronize Firebase Auth state on boot and perform automatic restoration
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setFirebaseUid(firebaseUser.uid);
+        localStorage.setItem('passport_firebase_uid', firebaseUser.uid);
+        
+        // Auto-restore progress from Firestore if available
+        try {
+          const cloudData = await getUserProfileAndProgress(firebaseUser.uid);
+          if (cloudData) {
+            setUser(cloudData.profile);
+            setStats(cloudData.stats);
+            setLocations(cloudData.locations);
+          }
+        } catch (err) {
+          console.error("Failed to restore progress from cloud:", err);
+        }
+      } else {
+        setFirebaseUid(null);
+        localStorage.removeItem('passport_firebase_uid');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Sync state changes to cloud for verified users (Debounced)
+  const userEmail = user.email;
+  const userName = user.name;
+  const userAvatarUrl = user.avatarUrl;
+  const userTitle = user.title;
+  const userLevel = user.level;
+  const userXp = user.xp;
+  const userXpToNextLevel = user.xpToNextLevel;
+  const userLinkedWallet = user.linkedWallet;
+  const userJoinedDate = user.joinedDate;
+  const statsSerialized = JSON.stringify(stats);
+  const locationsSerialized = JSON.stringify(locations);
+
+  useEffect(() => {
+    if (firebaseUid && userEmail && userEmail !== 'felix.voyager@gmail.com') {
+      const timeout = setTimeout(() => {
+        saveUserProfileAndProgress(
+          firebaseUid,
+          {
+            name: userName,
+            email: userEmail,
+            avatarUrl: userAvatarUrl,
+            title: userTitle,
+            level: userLevel,
+            xp: userXp,
+            xpToNextLevel: userXpToNextLevel,
+            joinedDate: userJoinedDate,
+            linkedWallet: userLinkedWallet,
+          },
+          JSON.parse(statsSerialized),
+          JSON.parse(locationsSerialized)
+        ).catch(err => console.error("Database sync failed:", err));
+      }, 1500);
+      return () => clearTimeout(timeout);
+    }
+  }, [
+    firebaseUid,
+    userEmail,
+    userName,
+    userAvatarUrl,
+    userTitle,
+    userLevel,
+    userXp,
+    userXpToNextLevel,
+    userLinkedWallet,
+    userJoinedDate,
+    statsSerialized,
+    locationsSerialized
+  ]);
 
   // Handle click on location stamp in dashboard/stamps
   const handleSelectAndExploreLocation = (locationId: string) => {
@@ -479,23 +568,106 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    // Firebase Auth session signout
+    logoutFirebase().catch(e => console.error("Firebase logout error:", e));
+    setFirebaseUid(null);
+    localStorage.removeItem('passport_firebase_uid');
+
+    // 1. Revoke Google OAuth session and disable auto-select if GSI SDK is present
+    if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      try {
+        const idLib = (window as any).google.accounts.id;
+        idLib.disableAutoSelect();
+        if (user && user.email) {
+          idLib.revoke(user.email, (done: any) => {
+            console.log('Google Sign-In session revoked for:', user.email, done);
+          });
+        }
+      } catch (err) {
+        console.error('Error during Google Sign-In session revocation:', err);
+      }
+    }
+
+    // 2. Clear authentication and user data from storage
     localStorage.removeItem('passport_landing_entered');
+    localStorage.removeItem('passport_user');
+
+    // 3. Reset state back to a clean guest profile structure 
+    setUser({
+      name: '',
+      title: 'Invitado',
+      email: '',
+      avatarUrl: '',
+      level: 1,
+      xp: 0,
+      xpToNextLevel: 2000,
+      joinedDate: 'Miembro desde: Reciente',
+      linkedWallet: ''
+    });
+
     setShowLanding(true);
   };
 
-  const handleGoogleLoginSuccess = (decodedUser: any, rawToken: string) => {
-    const updatedUser: UserProfile = {
-      ...user,
-      name: decodedUser.name || user.name,
-      email: decodedUser.email || user.email,
-      avatarUrl: decodedUser.picture || user.avatarUrl,
-    };
-    setUser(updatedUser);
-    localStorage.setItem('passport_user', JSON.stringify(updatedUser));
-    
-    // Smoothly transition off landing page and enter dashboard
-    setShowLanding(false);
-    localStorage.setItem('passport_landing_entered', 'true');
+  const handleGoogleLoginSuccess = async (decodedUser: any, rawToken: string) => {
+    try {
+      // 1. Authenticate with Google credential in Firebase Auth
+      let fbUser;
+      if (rawToken === 'firebase-popup-token' && auth.currentUser) {
+        fbUser = auth.currentUser;
+      } else {
+        fbUser = await authenticateWithGoogleCredential(rawToken);
+      }
+      
+      const updatedUser: UserProfile = {
+        name: fbUser.displayName || decodedUser.name || user.name,
+        email: fbUser.email || decodedUser.email || user.email,
+        avatarUrl: fbUser.photoURL || decodedUser.picture || user.avatarUrl,
+        title: user.title || 'Explorador',
+        level: user.level,
+        xp: user.xp,
+        xpToNextLevel: user.xpToNextLevel,
+        joinedDate: user.joinedDate || 'Miembro desde: Reciente',
+        linkedWallet: user.linkedWallet || '',
+      };
+      
+      // 2. See if there is existing progress in the cloud
+      const cloudData = await getUserProfileAndProgress(fbUser.uid);
+      if (cloudData) {
+        // Merge name/avatar if updated, or restore completely
+        setUser({
+          ...cloudData.profile,
+          name: updatedUser.name,
+          avatarUrl: updatedUser.avatarUrl,
+        });
+        setStats(cloudData.stats);
+        setLocations(cloudData.locations);
+      } else {
+        // First-time user profile registration: establish initial database entries
+        setUser(updatedUser);
+        await saveUserProfileAndProgress(fbUser.uid, updatedUser, stats, locations);
+      }
+
+      setFirebaseUid(fbUser.uid);
+      localStorage.setItem('passport_firebase_uid', fbUser.uid);
+      localStorage.setItem('passport_user', JSON.stringify(updatedUser));
+      
+      // Smoothly transition off landing page and enter dashboard
+      setShowLanding(false);
+      localStorage.setItem('passport_landing_entered', 'true');
+    } catch (e) {
+      console.error("GLogin Firebase sync error, falling back to local localstorage session:", e);
+      // Fallback local login
+      const updatedUser: UserProfile = {
+        ...user,
+        name: decodedUser.name || user.name,
+        email: decodedUser.email || user.email,
+        avatarUrl: decodedUser.picture || user.avatarUrl,
+      };
+      setUser(updatedUser);
+      localStorage.setItem('passport_user', JSON.stringify(updatedUser));
+      setShowLanding(false);
+      localStorage.setItem('passport_landing_entered', 'true');
+    }
   };
 
   // Calculate generic unlocked count
@@ -512,6 +684,7 @@ export default function App() {
         onResetToMockupState={handleResetToMockupState}
         onResetToZeroState={handleResetToZeroState}
         onToggleLocationCheckIn={handleToggleLocationCheckIn}
+        onGoogleLoginSuccess={handleGoogleLoginSuccess}
         onClose={() => {
           setShowLanding(true);
           setActiveTab('dashboard');
@@ -607,13 +780,19 @@ export default function App() {
                 }}
                 className="relative cursor-pointer group shrink-0"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-[#43e5d4] group-active:scale-95 duration-150">
-                  <img 
-                    alt="Profile" 
-                    src={user.avatarUrl} 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-[#43e5d4] group-active:scale-95 duration-150 flex items-center justify-center">
+                  {user.avatarUrl ? (
+                    <img 
+                      alt="Profile" 
+                      src={user.avatarUrl} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="text-secondary text-xs sm:text-xs font-black font-mono">
+                      {user.name ? user.name.charAt(0).toUpperCase() : 'I'}
+                    </span>
+                  )}
                 </div>
                 <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[8px] sm:text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
                   {user.level}

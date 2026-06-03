@@ -372,51 +372,6 @@ export default function SettingsView({
           </div>
         </form>
 
-        {/* Google Authentication Section */}
-        <div className="bg-surface-container rounded-2xl border border-[#005049]/20 p-6 md:p-8 space-y-4 text-left shadow-lg">
-          <div className="flex justify-between items-center border-[#005049]/15 border-b pb-2">
-            <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
-              <ShieldCheck className="w-5 h-5 text-secondary" style={{ display: 'inline-block' }} /> Autenticación con Google
-            </h3>
-            <div className="flex items-center gap-1.5 text-[9px] bg-[#43e5d4]/10 border border-[#43e5d4]/20 px-2.5 py-0.5 rounded-full text-[#43e5d4] font-bold">
-              <span className="w-1.5 h-1.5 bg-[#43e5d4] rounded-full animate-pulse"></span>
-              <span>SECURE ID</span>
-            </div>
-          </div>
-          
-          <p className="text-[11px] text-on-surface-variant leading-relaxed">
-            Vincula tu cuenta de Google de forma rápida y segura. Al conectarte, tu nombre, correo electrónico y foto de perfil oficial se sincronizarán directamente con tu perfil de explorador en el pasaporte digital.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-1 justify-between bg-[#001721] p-4 rounded-xl border border-secondary/15">
-            <div className="space-y-1 text-left">
-              <span className="text-[10px] uppercase font-bold text-on-surface-variant/70 block">Estado de Conexión</span>
-              <span className="text-xs text-[#c8e7fb] font-semibold flex items-center gap-1.5">
-                {user.email && user.email !== 'felix.voyager@gmail.com' ? (
-                  <>
-                    <span className="text-secondary font-bold">● Conectado como:</span> {user.name} ({user.email})
-                  </>
-                ) : (
-                  <>
-                    <span className="text-on-surface-variant/70 font-semibold">● No vinculado</span> (Explorando como Félix)
-                  </>
-                )}
-              </span>
-            </div>
-            <GoogleSignInButton
-              onSuccess={(decoded, token) => {
-                onUpdateUser({
-                  ...user,
-                  name: decoded.name || user.name,
-                  email: decoded.email || user.email,
-                  avatarUrl: decoded.picture || user.avatarUrl,
-                });
-              }}
-              className="w-full sm:w-auto"
-            />
-          </div>
-        </div>
-
         {/* cerrrar sesion button outside the sandbox card and form card */}
         {onLogout && (
           <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-lg select-none">

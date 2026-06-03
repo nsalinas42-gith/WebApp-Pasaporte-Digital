@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "User": {
+      "title": "Perfil de Usuario",
+      "description": "Datos de perfil del usuario sincronizados desde Google Auth",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Identificador único de Firebase Auth"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nombre completo"
+        },
+        "email": {
+          "type": "string",
+          "description": "Correo electrónico de Google"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "URL del avatar o foto de perfil"
+        },
+        "title": {
+          "type": "string",
+          "description": "Título o rango del usuario"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastLogin": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "UserProgress": {
+      "title": "Progreso de Usuario",
+      "description": "Historial de progreso, nivel, monedas/puntos e insignias desbloqueadas",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Enlace al UID del usuario"
+        },
+        "level": {
+          "type": "number"
+        },
+        "xp": {
+          "type": "number"
+        },
+        "xpToNextLevel": {
+          "type": "number"
+        },
+        "stats": {
+          "type": "object"
+        },
+        "locations": {
+          "type": "string",
+          "description": "JSON serializado con el estado de las ubicaciones y sellos"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "level", "xp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Almacena los perfiles registrados de forma segura"
+    },
+    "user_progress/{userId}": {
+      "schema": "UserProgress",
+      "description": "Guarda de manera detallada el progreso, sellos y estado de juego"
+    }
+  }
+}
