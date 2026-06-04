@@ -36,14 +36,27 @@ export default function GoogleSignInButton({
   const [isGisLoaded, setIsGisLoaded] = useState<boolean>(false);
   const [initError, setInitError] = useState<string | null>(null);
 
+  const DEFAULT_CLIENT_ID = '892671771680-7vcr615oha4bmgeora051g0d3p95v5hi.apps.googleusercontent.com';
+
+  const getEffectiveClientId = (val: string | undefined | null) => {
+    if (!val || val.includes('your-google-client-id') || val.trim() === '') {
+      return DEFAULT_CLIENT_ID;
+    }
+    return val.trim();
+  };
+
   // Read Google Client ID from localStorage override, or fall back to environment variable
   const [googleClientId, setGoogleClientId] = useState<string>(() => {
-    return localStorage.getItem('google_client_id_override') || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    const override = localStorage.getItem('google_client_id_override');
+    if (override && override.trim() !== '') return override.trim();
+    return getEffectiveClientId(import.meta.env.VITE_GOOGLE_CLIENT_ID);
   });
 
   // UI state for custom Client ID editor - open by default if it's the placeholder/empty or if override exists
   const [showConfig, setShowConfig] = useState<boolean>(() => {
-    const activeId = localStorage.getItem('google_client_id_override') || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    const override = localStorage.getItem('google_client_id_override');
+    const envId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const activeId = override || envId || '';
     return !activeId || activeId.includes('your-google-client-id') || activeId.trim() === '';
   });
   const [inputClientId, setInputClientId] = useState<string>(googleClientId);
@@ -110,7 +123,9 @@ export default function GoogleSignInButton({
   // Sync state between multiple instances in the same page
   useEffect(() => {
     const handleStorageChange = () => {
-      const activeId = localStorage.getItem('google_client_id_override') || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+      const override = localStorage.getItem('google_client_id_override');
+      const envId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      const activeId = override || getEffectiveClientId(envId);
       if (activeId !== googleClientId) {
         setGoogleClientId(activeId);
         setInputClientId(activeId);
@@ -228,7 +243,8 @@ export default function GoogleSignInButton({
     }
     
     // Sync to state to trigger rebuild of GIS integration
-    const finalId = trimmed || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    const envId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const finalId = trimmed || getEffectiveClientId(envId);
     setGoogleClientId(finalId);
     setInputClientId(finalId);
     setInitError(null); // Clear errors as a new ID is applied
@@ -243,7 +259,8 @@ export default function GoogleSignInButton({
   // Restores the original environment-configured client ID
   const handleResetClientId = () => {
     localStorage.removeItem('google_client_id_override');
-    const defaultId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    const envId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const defaultId = getEffectiveClientId(envId);
     setGoogleClientId(defaultId);
     setInputClientId(defaultId);
     setInitError(null);
