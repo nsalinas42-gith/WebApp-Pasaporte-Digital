@@ -259,14 +259,42 @@ export default function UserWayAccessibility() {
         aria-expanded={isOpen}
         className="flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.08)] select-none shrink-0 group"
       >
-        {/* Geometric Vitruvian Man representation (circle + square + human) */}
+        {/* Geometric Vitruvian/Universal Accessibility Man representation inspired by the exact structure of the attachment */}
         <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
-          {/* Vitruvian Circle */}
-          <div className="absolute inset-0.5 rounded-full border border-secondary/30 group-hover:border-secondary/60 transition-colors duration-300"></div>
-          {/* Vitruvian Square */}
-          <div className="absolute inset-1.5 border border-secondary/25 group-hover:border-secondary/50 transition-colors duration-300"></div>
-          {/* Core Human Figure */}
-          <Accessibility className={`w-3.5 h-3.5 relative z-10 shrink-0 transition-transform duration-300 ${isOpen ? 'scale-115 text-white' : 'group-hover:scale-105'}`} />
+          <svg 
+            viewBox="0 0 100 100" 
+            className="w-5.5 h-5.5 shrink-0 select-none" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Outer Ring */}
+            <circle 
+              cx="50" 
+              cy="50" 
+              r="46" 
+              className="stroke-secondary group-hover:stroke-white transition-colors duration-300" 
+              strokeWidth="6" 
+            />
+            {/* Inner Solid Circular Backdrop */}
+            <circle 
+              cx="50" 
+              cy="50" 
+              r="34" 
+              className="fill-secondary group-hover:fill-white transition-colors duration-300" 
+            />
+            {/* Universal Accessibility Figure Head */}
+            <circle 
+              cx="50" 
+              cy="25" 
+              r="6" 
+              className="fill-[#001c2c] group-hover:fill-[#002e48] transition-colors duration-300" 
+            />
+            {/* Universal Accessibility Figure Body & Outstretched Limbs */}
+            <path 
+              d="M 50,32 C 44,33 37,35 27,37 C 24.5,37.5 24.5,41.5 27,42 C 35,43 41,43.5 45,44 L 45,56 L 41,77 C 40.2,80 43.8,81 44.8,78.5 L 50,62 L 55.2,78.5 C 56.2,81 59.8,80 59,77 L 55,56 L 55,44 C 59,43.5 65,43 73,42 C 75.5,41.5 75.5,37.5 73,37 C 63,35 56,33 50,32 Z" 
+              className="fill-[#001c2c] group-hover:fill-[#002e48] transition-colors duration-300" 
+            />
+          </svg>
         </div>
         <span className="text-[10px] sm:text-xs font-black font-mono tracking-widest uppercase relative top-px">
           Accesibilidad
