@@ -409,7 +409,7 @@ export default function AdminHiddenView({
             </div>
             
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Vincula cuentas de Google de forma segura para sincronizar nombre, correo y avatar oficial directamente en el pasaporte digital.
+              Vincula cuentas de Google de forma segura para sincronizar nombre, correo y avatar oficial directamente en la Bitácora Digital.
             </p>
 
             <div className="flex flex-col gap-3 p-3.5 bg-[#000f16]/60 rounded-2xl border border-secondary/15">

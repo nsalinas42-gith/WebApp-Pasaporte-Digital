@@ -40,6 +40,7 @@ import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
+import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
 
 interface LandingViewProps {
   onEnter: () => void;
@@ -111,15 +112,12 @@ export default function LandingView({
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-16 h-16 sm:h-20 bg-[#000f16]/90 backdrop-blur-md border-b border-[#005049]/20">
         {/* Brand Logo */}
         <div className="flex items-center gap-2 cursor-pointer select-none">
-          <div className="w-8 h-8 rounded-lg bg-[#43e5d4]/10 flex items-center justify-center border border-[#43e5d4]/40 shadow-[0_0_15px_rgba(67,229,212,0.15)]">
-            <span className="text-secondary text-base">🧭</span>
-          </div>
-          <span className="font-headline text-xs sm:text-sm md:text-lg font-extrabold text-[#43e5d4] uppercase tracking-wider hidden min-[400px]:inline">
-            PASAPORTE DIGITAL PINTA MAPAS
-          </span>
-          <span className="font-headline text-xs font-black text-[#43e5d4] uppercase tracking-wider inline min-[400px]:hidden">
-            PINTA MAPAS
-          </span>
+          <img 
+            src={logoPintaMapas} 
+            alt="Pinta Mapas" 
+            referrerPolicy="no-referrer"
+            className="h-10 sm:h-12 md:h-14 w-auto object-contain"
+          />
         </div>
 
         {/* Right Actions */}
@@ -171,35 +169,37 @@ export default function LandingView({
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 max-w-lg mx-auto">
-            <div className="w-full sm:w-auto min-w-[240px]">
-              <GoogleSignInButton
-                key={user?.email || 'guest'}
-                onSuccess={(decoded, token) => {
-                  if (onGoogleLoginSuccess) {
-                    onGoogleLoginSuccess(decoded, token);
-                  } else {
-                    onEnter();
-                  }
-                }}
-                hideDebugConfig={true}
-              />
+          <div className="space-y-6 pt-4 max-w-2xl mx-auto flex flex-col items-center">
+            {/* Top row with Google Sign In and Iniciar como Invitado */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+              <div className="w-full sm:w-auto min-w-[240px]">
+                <GoogleSignInButton
+                  key={user?.email || 'guest'}
+                  onSuccess={(decoded, token) => {
+                    if (onGoogleLoginSuccess) {
+                      onGoogleLoginSuccess(decoded, token);
+                    } else {
+                      onEnter();
+                    }
+                  }}
+                  hideDebugConfig={true}
+                />
+              </div>
+
+              <button
+                onClick={onEnter}
+                className="w-full sm:w-auto px-8 py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-full text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center min-w-[240px] shadow-[0_0_15px_rgba(67,229,212,0.15)]"
+              >
+                {t('iniciar_como_invitado')}
+              </button>
             </div>
 
+            {/* Bottom centered Saber Mas button */}
             <button
               onClick={scrollToHowItWorks}
-              className="w-full sm:w-auto px-8 py-3 bg-transparent hover:bg-white/5 border border-[#43e5d4]/40 text-[#43e5d4] font-bold rounded-full text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center"
+              className="w-auto px-8 py-2 bg-transparent hover:bg-white/5 border border-[#43e5d4]/40 text-[#43e5d4] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
             >
               {t('saber_mas')}
-            </button>
-          </div>
-
-          <div className="pt-2 animate-pulse-slow">
-            <button
-              onClick={onEnter}
-              className="text-[11px] text-[#43e5d4]/60 hover:text-secondary underline underline-offset-4 font-bold tracking-wide uppercase transition-all"
-            >
-              o explorar como invitado
             </button>
           </div>
         </div>
@@ -490,10 +490,12 @@ export default function LandingView({
           {/* Logo & Manifesto Column */}
           <div className="col-span-2 md:col-span-4 space-y-4">
             <div className="flex items-center gap-2 select-none">
-              <span className="text-xl">🧭</span>
-              <span className="font-headline text-base font-extrabold text-[#43e5d4] tracking-wider uppercase">
-                PASAPORTE DIGITAL PINTA MAPAS
-              </span>
+              <img 
+                src={logoPintaMapas} 
+                alt="Pinta Mapas" 
+                referrerPolicy="no-referrer"
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
               {t('footer_manifesto')}
@@ -589,7 +591,7 @@ export default function LandingView({
           <p>{t('derechos_reservados')}</p>
           <div className="flex flex-wrap items-center gap-3 text-xs justify-center sm:justify-end">
             <span className="text-[10px] bg-[#001c27] border border-secondary/35 text-secondary px-2.5 py-0.5 rounded-lg font-mono tracking-wide">
-              PASAPORTE DIGITAL PINTA MAPAS MVP &bull; Solana cNFT v1.0
+              BITÁCORA DIGITAL PINTA MAPAS MVP &bull; Solana cNFT v1.0
             </span>
             <span className="w-1 h-1 rounded-full bg-on-surface-variant/20 hidden sm:inline-block"></span>
             <Globe className="w-4 h-4 text-on-surface-variant/40" />

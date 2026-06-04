@@ -33,6 +33,7 @@ import LandingView from './components/LandingView';
 import AdminHiddenView from './components/AdminHiddenView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
+import logoPintaMapas from './assets/images/Logo Pinta Mapas1.png';
 import { calculateUserProgress } from './components/GamificationEngine';
 import { onAuthStateChanged } from 'firebase/auth';
 import { 
@@ -721,15 +722,12 @@ export default function App() {
       {/* Upper Navigation Header Bar for both Mobile & Desktop */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(67,229,212,0.04)]">
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-          <div className="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/35 glow-mint animate-pulse shrink-0">
-            <span className="text-lg sm:text-xl select-none">🧭</span>
-          </div>
-          <span className="font-headline text-xs sm:text-sm md:text-lg font-extrabold text-secondary uppercase tracking-wider select-none hidden min-[400px]:inline">
-            PASAPORTE DIGITAL PINTA MAPAS
-          </span>
-          <span className="font-headline text-xs font-extrabold text-secondary uppercase tracking-wider select-none inline min-[400px]:hidden">
-            PINTA MAPAS
-          </span>
+          <img 
+            src={logoPintaMapas} 
+            alt="Pinta Mapas" 
+            referrerPolicy="no-referrer"
+            className="h-10 sm:h-12 md:h-14 w-auto object-contain"
+          />
         </div>
 
         {/* Outer navigation shortcuts and profile badge */}

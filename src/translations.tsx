@@ -31,13 +31,14 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'colecciona_historia': 'Colecciona Historia',
     'hero_desc': 'Transforma tus viajes en una aventura digital. Visita monumentos, completa tu mapa y desbloquea activos digitales únicos.',
     'saber_mas': 'Saber más',
+    'iniciar_como_invitado': 'Iniciar como Invitado',
     'empieza_ahora_gratis': 'Empieza Ahora Gratis',
     'listo_comenzar_coleccion': '¿Listo para comenzar tu colección?',
 
     // Landing How It Works
     'como_funciona': '¿Cómo funciona?',
     'physical_map_title': 'Adquiere tu Mapa Físico',
-    'physical_map_desc': 'Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu pasaporte digital.',
+    'physical_map_desc': 'Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu Bitácora Digital.',
     'visit_sites_title': 'Visita los Sitios',
     'visit_sites_desc': 'Explora monumentos históricos y maravillas naturales. Cada ubicación es un nuevo hito en tu carrera como Explorador Digital.',
     'gps_checkin_title': 'GPS Check-in',
@@ -56,7 +57,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Política de Cookies',
     'centro_ayuda': 'Centro de Ayuda',
     'contacto': 'Contacto',
-    'derechos_reservados': '© 2024 PASAPORTE DIGITAL PINTA MAPAS. Todos los derechos reservados.',
+    'derechos_reservados': '© 2024 BITÁCORA DIGITAL PINTA MAPAS. Todos los derechos reservados.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
@@ -349,6 +350,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'colecciona_historia': 'Collect History',
     'hero_desc': 'Transform your travels into a digital adventure. Visit monuments, complete your map, and unlock unique digital assets.',
     'saber_mas': 'Learn more',
+    'iniciar_como_invitado': 'Start as Guest',
     'empieza_ahora_gratis': 'Start Now For Free',
     'listo_comenzar_coleccion': 'Ready to start your collection?',
 
@@ -374,7 +376,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Cookie Policy',
     'centro_ayuda': 'Help Center',
     'contacto': 'Contact Us',
-    'derechos_reservados': '© 2024 PASAPORTE DIGITAL PINTA MAPAS. All rights reserved.',
+    'derechos_reservados': '© 2024 BITÁCORA DIGITAL PINTA MAPAS. All rights reserved.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',

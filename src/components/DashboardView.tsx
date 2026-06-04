@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { calculateUserProgress } from './GamificationEngine';
+import { calculateUserProgress, BASE_GAMIFIED_BADGES } from './GamificationEngine';
 import { 
   Trophy,
   Award, 
@@ -446,7 +446,7 @@ export default function DashboardView({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2 border-b border-secondary/10">
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#fe014f] animate-pulse" />
                 <h3 className="font-headline text-lg md:text-xl font-bold text-on-surface leading-none">
                   {t('tu_progreso')}
                 </h3>
@@ -463,41 +463,157 @@ export default function DashboardView({
                 )}
               </p>
             </div>
+          </div>
 
-            {/* Smaller SVG Progress Circle on the right */}
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center select-none bg-surface-container/60 rounded-full border border-secondary/10 self-center">
-              <svg className="w-[85%] h-[85%] transform -rotate-90" viewBox="0 0 100 100">
+          {/* 6 circulos pequeños (Rutas) */}
+          <div className="py-4 border-b border-on-secondary-fixed-variant/40">
+            <h4 className="font-headline text-xs font-black uppercase tracking-wider text-[#8ba7b3] mb-6 text-center sm:text-left">
+              Progreso de Insignias por Ruta
+            </h4>
+            
+            <div className="grid grid-cols-3 sm:flex sm:flex-row sm:justify-between gap-6 items-center w-full">
+              {locations.slice(0, 6).map((loc, idx) => {
+                const completedCount = loc.places ? loc.places.filter(p => p.isCheckedIn).length : 0;
+                // Badges unlocked in this route
+                const badgesUnlockedInRoute = BASE_GAMIFIED_BADGES.filter(b => completedCount >= b.requiredChips).length;
+                const routeProgressPercent = (badgesUnlockedInRoute / 6) * 100;
+
+                // SVG calculations
+                const smallRadius = 18;
+                const smallCircumference = 2 * Math.PI * smallRadius;
+                const smallOffset = smallCircumference - (routeProgressPercent / 100) * smallCircumference;
+
+                return (
+                  <div key={loc.id} className="flex flex-col items-center gap-2 group flex-1">
+                    {/* Route Label - V1 to V6 */}
+                    <div className="relative">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-headline text-xs font-black transition-all ${
+                        badgesUnlockedInRoute > 0 
+                          ? 'bg-[#fe014f] text-white shadow-[0_0_10px_rgba(254,1,79,0.6)] scale-110 font-bold' 
+                          : 'bg-surface-container-highest text-[#8ba7b3] border border-secondary/10'
+                      }`} title={loc.name}>
+                        V{idx + 1}
+                      </div>
+                    </div>
+
+                    {/* Small Progress Ring */}
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 44 44">
+                        <defs>
+                          <linearGradient id={`roseGradient-${loc.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#fe014f" />
+                            <stop offset="100%" stopColor="#ff5e62" />
+                          </linearGradient>
+                        </defs>
+                        {/* Background ring */}
+                        <circle 
+                          cx="22" 
+                          cy="22" 
+                          r={smallRadius} 
+                          fill="transparent" 
+                          stroke="rgba(254, 1, 79, 0.12)" 
+                          strokeWidth="4"
+                        />
+                        {/* Progress ring */}
+                        <circle 
+                          cx="22" 
+                          cy="22" 
+                          r={smallRadius} 
+                          fill="transparent" 
+                          stroke={`url(#roseGradient-${loc.id})`} 
+                          strokeWidth="4" 
+                          strokeDasharray={`${smallCircumference}`}
+                          strokeDashoffset={`${smallOffset}`}
+                          strokeLinecap="round"
+                          className="transition-all duration-500"
+                        />
+                      </svg>
+                      {/* Badge counter */}
+                      <span className="absolute text-[8px] font-mono font-black text-white/90">
+                        {badgesUnlockedInRoute}/6
+                      </span>
+                    </div>
+
+                    {/* Short label underneath */}
+                    <div className="text-center">
+                      <span className="text-[10px] font-bold text-on-surface truncate line-clamp-1 max-w-[80px] block" title={loc.name}>
+                        Vol. {idx + 1}
+                      </span>
+                      <span className="text-[8px] font-mono text-[#8ba7b3]/60 block">
+                        {completedCount}/8 Mon.
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Circulo Principal (Gran Circulo) */}
+          <div className="py-6 flex flex-col items-center justify-center gap-4 w-full border-b border-on-secondary-fixed-variant/40">
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center select-none bg-surface-container-low/40 rounded-full border border-secondary/5 shadow-2xl">
+              <svg className="w-[90%] h-[90%] transform -rotate-90" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="mainRoseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fe014f" />
+                    <stop offset="100%" stopColor="#ff5e62" />
+                  </linearGradient>
+                  {/* Drop shadow filter to give that rich overlay effect */}
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#fe014f" floodOpacity="0.4" />
+                  </filter>
+                </defs>
+                {/* Background ring */}
                 <circle 
                   className="text-surface-container-highest" 
                   cx="50" 
                   cy="50" 
                   fill="transparent" 
                   r="40" 
-                  stroke="currentColor" 
-                  strokeWidth="8"
+                  stroke="rgba(254, 1, 79, 0.15)" 
+                  strokeWidth="8.5"
                 />
+                {/* Progress ring */}
                 <circle 
-                  className="text-tertiary transition-transform duration-500" 
                   cx="50" 
                   cy="50" 
                   fill="transparent" 
                   r="40" 
-                  stroke="currentColor" 
-                  strokeWidth="8" 
+                  stroke="url(#mainRoseGradient)" 
+                  strokeWidth="8.5" 
                   strokeDasharray={`${strokeDasharray}`}
                   strokeDashoffset={`${strokeDashoffset}`}
                   strokeLinecap="round"
+                  filter="url(#shadow)"
+                  className="transition-all duration-700 ease-out"
                 />
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-headline font-black text-base sm:text-lg text-on-surface leading-none">{unlockedCount}/{totalCount}</span>
-                <span className="text-[7px] sm:text-[8px] font-black text-tertiary tracking-wider mt-0.5 animate-pulse">INSIGNIAS</span>
+              {/* Inside the circle: counter 0/6 insignias and label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                {/* Visual arrow indicator matching the Apple Fitness vibe */}
+                <span className="text-[#fe014f] text-2xl font-black mb-1 animate-pulse">➔</span>
+                
+                <span className="font-headline font-black text-2xl sm:text-3xl text-white leading-none tracking-tight">
+                  {unlockedCount}/{totalCount}
+                </span>
+                <span className="text-[8px] sm:text-[9px] font-black text-[#fe014f] tracking-widest mt-1 uppercase">
+                  Insignias
+                </span>
               </div>
+            </div>
+            
+            <div className="text-center max-w-sm space-y-1">
+              <p className="font-headline font-black text-sm text-white">
+                Progreso General de Logros
+              </p>
+              <p className="text-xs text-[#8ba7b3]">
+                Has desbloqueado {unlockedCount} de 6 insignias del Catastro Histórico de Caracas.
+              </p>
             </div>
           </div>
 
           {/* Dynamic XP Journey Track from 0 to 24000 XP */}
-          <div className="space-y-4 py-2 border-b border-secondary/10 pb-6">
+          <div className="space-y-4 py-2">
             <div className="flex justify-between items-end text-xs font-bold text-on-surface-variant">
               <span className="flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-secondary animate-pulse" />
@@ -546,71 +662,6 @@ export default function DashboardView({
                 </div>
                 <div className="w-2 h-2 bg-[#43e5d4] rotate-45 mx-auto -mt-1 shadow-md" />
               </div>
-            </div>
-          </div>
-
-          {/* Graphical breakdown of insignias earned on each route (locations) */}
-          <div className="space-y-3">
-            <h4 className="font-headline text-[10px] sm:text-xs font-black uppercase tracking-wider text-secondary">
-              Avance de Insignias Obtenidas por Cada Ruta
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {locations.slice(0, 6).map((loc) => { // ensure maximum 6 routes
-                const transLoc = translateLocation ? translateLocation(loc) : loc;
-                const completedCount = loc.places ? loc.places.filter(p => p.isCheckedIn).length : 0;
-                
-                return (
-                  <div 
-                    key={loc.id} 
-                    onClick={() => onExploreLocation(loc.id)}
-                    className="bg-surface-container-low/70 hover:bg-surface-container/80 border border-secondary/10 hover:border-secondary/20 p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all duration-300 group"
-                  >
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <span className="text-[11px] font-bold text-on-surface truncate block group-hover:text-secondary transition-colors font-headline">
-                        {transLoc.name}
-                      </span>
-                      <p className="text-[9px] font-bold text-on-surface-variant font-mono">
-                        {completedCount} / 8 Monumentos
-                      </p>
-                      
-                      {/* Miniature progress bar for that route checkpoint verification */}
-                      <div className="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden mt-1 max-w-[125px]">
-                        <div 
-                          className="bg-secondary h-full transition-all duration-300"
-                          style={{ width: `${(completedCount / 8) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* 6 Micro stamp circles reflecting the specific stamps earned inside this route */}
-                    <div className="flex items-center gap-0.5 shrink-0 bg-surface-container-high/40 px-1.5 py-1 rounded-lg border border-secondary/5">
-                      {unlockedBadges.map((badgeState) => {
-                        const { badge } = badgeState;
-                        const isRouteBadgeUnlocked = completedCount >= badge.requiredChips;
-                        return (
-                          <div 
-                            key={badge.id}
-                            title={`${t(badge.titleKey)}: ${isRouteBadgeUnlocked ? t('desbloqueado_caps') : t('bloqueado_caps')}`}
-                            className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${
-                              isRouteBadgeUnlocked 
-                                ? 'bg-secondary/10 border border-secondary/35 scale-105' 
-                                : 'opacity-[0.12] scale-90 border border-transparent'
-                            }`}
-                          >
-                            <img 
-                              src={badge.imageUrl} 
-                              alt={t(badge.titleKey)}
-                              referrerPolicy="no-referrer"
-                              style={{ filter: "url(#remove-white)" }}
-                              className="w-3.5 h-3.5 object-contain"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
 

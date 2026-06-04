@@ -54,7 +54,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
 
   const handleShare = (platform: string, badgeState: UnlockedBadgeState) => {
     const badgeName = t(badgeState.badge.titleKey);
-    const text = `¡Acabo de desbloquear la insignia "${badgeName}" (X${badgeState.multiplier}) en mi Pasaporte Digital Pintamapas! 🗺️🚀`;
+    const text = `¡Acabo de desbloquear la insignia "${badgeName}" (X${badgeState.multiplier}) en mi Bitácora Digital Pintamapas! 🗺️🚀`;
     const url = window.location.href;
 
     if (platform === 'twitter') {

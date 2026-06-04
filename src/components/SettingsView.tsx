@@ -380,7 +380,7 @@ export default function SettingsView({
                 <Unlock className="w-4 h-4" /> {t('cerrar_sesion_btn')}
               </h4>
               <p className="text-[11px] text-on-surface-variant max-w-sm leading-relaxed font-sans">
-                Finaliza tu sesión activa como explorador de forma segura y regresa a la pantalla de entrada del pasaporte digital.
+                Finaliza tu sesión activa como explorador de forma segura y regresa a la pantalla de entrada de la Bitácora Digital.
               </p>
             </div>
             <button

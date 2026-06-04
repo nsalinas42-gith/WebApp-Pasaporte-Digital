@@ -11,6 +11,8 @@ import stampSevilla from './assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from './assets/images/05E_Guia_Local.png';
 import stampOlite from './assets/images/06F_guia_local_experto.png';
 import mapaCaracasHero from './assets/images/Mapa Caracas.png';
+import mapaMuseos from './assets/images/Mapa Museos.png';
+import prontoImg from './assets/images/pronto.png';
 import { 
   AVATAR_FELIX, 
   AVATAR_SOFIA, 
@@ -124,7 +126,7 @@ export const INITIAL_LOCATIONS: Location[] = [
   },
   {
     id: 'mezquita_cordoba',
-    name: 'Mapa casco histórico de Caracas vol.2 ver. 2.0',
+    name: 'Mapa Circuito Museos de Caracas',
     city: 'Caracas, Venezuela',
     category: 'Arte Mezquita-Catedral',
     latitude: 37.8789,
@@ -135,15 +137,15 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador Omeya',
     badgeIcon: 'mosque',
     badgeImageUrl: stampCordoba,
-    imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+    imageUrl: mapaMuseos,
     review: [
-      'Mapa casco histórico de Caracas vol.2 ver. 2.0'
+      'Mapa Circuito Museos de Caracas'
     ],
     isCheckedIn: false,
     places: [
       {
         id: 'mez_naranjos',
-        name: 'Patio de los Naranjos',
+        name: 'Museo de Ciencias',
         category: 'Atrio Exterior',
         latitude: 37.8794,
         longitude: -4.7794,
@@ -153,7 +155,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_mihrab',
-        name: 'El Mihrab Principal',
+        name: 'Museo Bellas Artes',
         category: 'Santuario Sagrado',
         latitude: 37.8784,
         longitude: -4.7792,
@@ -163,7 +165,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_columnas',
-        name: 'Bosque de Columnas',
+        name: 'Museo de Arte Contemporáneo',
         category: 'Sala de Oración',
         latitude: 37.8789,
         longitude: -4.7794,
@@ -173,7 +175,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_alminar',
-        name: 'Torre del Alminar',
+        name: 'Galería de Arte Nacional (GAN)',
         category: 'Campanario',
         latitude: 37.8797,
         longitude: -4.7795,
@@ -183,7 +185,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_villaviciosa',
-        name: 'Capilla de Villaviciosa',
+        name: 'Museo del Niño',
         category: 'Conversión Cristiana',
         latitude: 37.8790,
         longitude: -4.7796,
@@ -193,7 +195,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_crucero',
-        name: 'Crucero Catedralicio',
+        name: 'Museo Cruz Diez',
         category: 'Basílica Mayor',
         latitude: 37.8788,
         longitude: -4.7793,
@@ -203,7 +205,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_almodovar',
-        name: 'Puerta de Almodóvar',
+        name: 'Museo de Arquitectura',
         category: 'Acceso Amurallado',
         latitude: 37.8805,
         longitude: -4.7820,
@@ -213,7 +215,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       },
       {
         id: 'mez_tesoro',
-        name: 'Tesoro de la Catedral',
+        name: 'Museo de Caracas',
         category: 'Bóveda Histórica',
         latitude: 37.8785,
         longitude: -4.7798,
@@ -236,7 +238,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador Flavio',
     badgeIcon: 'aqueduct',
     badgeImageUrl: stampSegovia,
-    imageUrl: 'https://images.unsplash.com/photo-1518638150341-f706e86654de?auto=format&fit=crop&w=800&q=80',
+    imageUrl: prontoImg,
     review: [
       'Mapa casco histórico de Caracas vol.3 ver. 3.0'
     ],
@@ -337,7 +339,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador de Reinos',
     badgeIcon: 'fortress',
     badgeImageUrl: stampSevilla,
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    imageUrl: prontoImg,
     review: [
       'Mapa casco histórico de Caracas vol.4 ver. 4.0'
     ],
@@ -438,7 +440,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador Modernista',
     badgeIcon: 'cathedral',
     badgeImageUrl: stampSagrada,
-    imageUrl: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=800&q=80',
+    imageUrl: prontoImg,
     review: [
       'Mapa casco histórico de Caracas vol.5 ver. 5.0'
     ],
@@ -539,7 +541,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeTitle: 'Explorador de Navarra',
     badgeIcon: 'tower',
     badgeImageUrl: stampOlite,
-    imageUrl: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=800&q=80',
+    imageUrl: prontoImg,
     review: [
       'Mapa casco histórico de Caracas vol.6 ver. 6.0'
     ],

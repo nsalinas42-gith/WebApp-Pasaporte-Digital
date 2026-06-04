@@ -1,6 +1,6 @@
 {
   "name": "Pasaporte Turístico Digital",
-  "description": "Mini app de pasaporte digital que premia la exploración de lugares históricos con check-in por GPS e insignias digitales.",
+  "description": "Mini app de Bitácora Digital que premia la exploración de lugares históricos con check-in por GPS e insignias digitales.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
