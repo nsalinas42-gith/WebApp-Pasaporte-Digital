@@ -27,7 +27,9 @@ import {
   Key,
   RefreshCw,
   Trash2,
-  Eye
+  Eye,
+  Menu,
+  X
 } from 'lucide-react';
 import { useLanguage } from '../translations';
 import LanguageSelector from './LanguageSelector';
@@ -69,6 +71,24 @@ export default function LandingView({
 }: LandingViewProps) {
   const { t } = useLanguage();
   
+  // Mobile responsive menu controls
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    function handleClickOutsideMobile(event: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutsideMobile);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideMobile);
+    };
+  }, [isMobileMenuOpen]);
+
   // Administrator multi-route lock override state for the landing footer
   const [adminPassword, setAdminPassword] = React.useState('');
   const [adminPasswordError, setAdminPasswordError] = React.useState<string | null>(null);
@@ -123,9 +143,60 @@ export default function LandingView({
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        {/* Desktop actions: visible on medium screens and larger */}
+        <div className="hidden md:flex items-center gap-4">
           <LanguageSelector />
           <UserWayAccessibility />
+        </div>
+
+        {/* Mobile action: Hamburguer Menu for responsive viewport */}
+        <div className="flex md:hidden items-center relative" ref={mobileMenuRef}>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-expanded={isMobileMenuOpen}
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.08)] select-none shrink-0"
+            title="Soporte y configuración"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5 transition-transform duration-200 rotate-90" />
+            ) : (
+              <Menu className="w-5 h-5 transition-transform duration-200" />
+            )}
+          </button>
+
+          {/* Submenu container */}
+          {isMobileMenuOpen && (
+            <div 
+              id="mobile-navigation-submenu" 
+              className="absolute right-0 top-[52px] w-64 rounded-2xl bg-[#001721] border border-secondary/40 shadow-[0_15px_35px_rgba(0,0,0,0.6)] z-55 p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-300"
+            >
+              {/* Language Selector block */}
+              <div className="flex flex-col gap-2">
+                <span className="text-[9px] font-black tracking-widest uppercase font-mono text-secondary opacity-80 flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5" />
+                  IDIOMA
+                </span>
+                <div className="pl-1 text-left">
+                  <LanguageSelector />
+                </div>
+              </div>
+
+              {/* Separation line */}
+              <div className="h-px bg-[#005049]/20 my-1" />
+
+              {/* Accessibility widget block */}
+              <div className="flex flex-col gap-2">
+                <span className="text-[9px] font-black tracking-widest uppercase font-mono text-secondary opacity-80 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  ACCESIBILIDAD
+                </span>
+                <div className="pl-1 text-left">
+                  <UserWayAccessibility />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
