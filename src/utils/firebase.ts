@@ -14,7 +14,8 @@ import {
   deleteDoc,
   collection,
   serverTimestamp, 
-  getDocFromServer 
+  getDocFromServer,
+  onSnapshot
 } from 'firebase/firestore';
 import { UserProfile, UserStats, Location } from '../types';
 import firebaseConfig from '../../firebase-applet-config.json';
@@ -24,13 +25,33 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
-// Test database connection on boot
+// Test database connection on boot as required by Firebase SDK Verification guidelines
 async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('offline')) {
-      console.warn("Firebase client is offline. Progress syncing will auto-resume once connection re-establishes.");
+    console.log("Firebase Database connection successfully verified.");
+  } catch (error: any) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : '';
+    
+    // Gracefully logs any standard connectivity delay/offline states
+    if (
+      errorCode === 'unavailable' || 
+      errorMessage.toLowerCase().includes('offline') || 
+      errorMessage.toLowerCase().includes('could not reach') ||
+      errorMessage.toLowerCase().includes('unavailable')
+    ) {
+      console.warn(
+        "Firebase Firestore connection is temporarily in offline/disconnected mode. " +
+        "Progress syncing and cloud saves will automatically resume and sync once the connection re-establishes."
+      );
+    } else if (errorCode === 'permission-denied') {
+      console.log(
+        "Firebase connection verified (replaces offline query checks). " +
+        "Database is reachable, but direct test connection metadata read access is restricted by secure firestore.rules."
+      );
+    } else {
+      console.warn("Firebase connection status info:", errorMessage);
     }
   }
 }
@@ -339,4 +360,84 @@ export async function deleteUserEntirely(userId: string) {
     console.error(`Failed to delete user doc:`, error);
     throw error;
   }
+}
+
+/**
+ * Saves and updates the global Solana configurations in Firestore settings/solana
+ */
+export async function saveSolanaGlobalSettings(walletEnabled: boolean, network: 'MAINET' | 'DEVNET') {
+  // Update local storage first to achieve perfect local reactivity and fallback
+  localStorage.setItem('solana_global_wallet_enabled', String(walletEnabled));
+  localStorage.setItem('solana_global_network', network);
+  
+  // Dispatch custom event to notify other local subscribers instantly
+  window.dispatchEvent(new CustomEvent('solana-global-settings-changed', {
+    detail: { walletEnabled, network }
+  }));
+
+  try {
+    const settingsDocPath = 'settings/solana';
+    await setDoc(doc(db, 'settings', 'solana'), {
+      walletEnabled,
+      network,
+      updatedAt: serverTimestamp(),
+    });
+    console.log("Global Solana settings successfully updated in Firestore.");
+  } catch (error) {
+    console.warn("Could not save to Cloud Firestore (permissions/offline). Falling back to operational local storage config.", error);
+    handleFirestoreError(error, ReturnOperationType.WRITE, 'settings/solana');
+  }
+}
+
+/**
+ * Subscribes to real-time changes of the global Solana settings in Firestore
+ */
+export function subscribeSolanaGlobalSettings(
+  callback: (settings: { walletEnabled: boolean; network: 'MAINET' | 'DEVNET' }) => void,
+  onError?: (error: any) => void
+) {
+  // 1. Core initialization from localStorage/defaults
+  const cachedEnabled = localStorage.getItem('solana_global_wallet_enabled');
+  const cachedNetwork = localStorage.getItem('solana_global_network');
+  const initialSettings = {
+    walletEnabled: cachedEnabled === null ? true : cachedEnabled === 'true',
+    network: (cachedNetwork as 'MAINET' | 'DEVNET') || 'DEVNET'
+  };
+  callback(initialSettings);
+
+  // 2. Set up local window event listener for instant reactivity across components
+  const handleLocalUpdate = (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (customEvent && customEvent.detail) {
+      callback(customEvent.detail);
+    }
+  };
+  window.addEventListener('solana-global-settings-changed', handleLocalUpdate);
+
+  // 3. Set up Firestore real-time listener
+  const settingsDocRef = doc(db, 'settings', 'solana');
+  const unsubscribeFirestore = onSnapshot(settingsDocRef, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const nextSettings = {
+        walletEnabled: data.walletEnabled !== false,
+        network: (data.network as 'MAINET' | 'DEVNET') || 'DEVNET',
+      };
+      
+      // Keep local cache in sync with cloud
+      localStorage.setItem('solana_global_wallet_enabled', String(nextSettings.walletEnabled));
+      localStorage.setItem('solana_global_network', nextSettings.network);
+      
+      callback(nextSettings);
+    }
+  }, (err) => {
+    console.warn("Settings subscription active offline / read denied: ", err.message);
+    if (onError) onError(err);
+  });
+
+  // Return a combined hybrid cleanup function
+  return () => {
+    window.removeEventListener('solana-global-settings-changed', handleLocalUpdate);
+    unsubscribeFirestore();
+  };
 }

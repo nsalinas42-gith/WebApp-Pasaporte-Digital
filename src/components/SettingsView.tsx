@@ -417,36 +417,8 @@ export default function SettingsView({
         {/* Right Panel: Wallet Card & Admin Actions (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* SECURE BLOCKCHAIN WALLET CARD OR CONNECT BUTTON */}
-          {connected ? (
-            <WalletCard />
-          ) : (
-            <div className="bg-gradient-to-tr from-[#001c2a] to-[#002f2d] rounded-2xl border border-secondary/35 p-6 space-y-5 shadow-lg text-left relative overflow-hidden group">
-              {/* Ambient holographic background circles */}
-              <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#43e5d4]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#43e5d4]/10 transition-colors duration-500"></div>
-
-              <div className="flex items-center gap-2 border-b border-secondary/15 pb-3 justify-between">
-                <h3 className="font-headline text-sm font-extrabold text-secondary uppercase tracking-wider flex items-center gap-2">
-                  <Wallet className="w-4 h-4 text-[#43e5d4]" />
-                  {t('mi_cartera_title')}
-                </h3>
-                <span className="text-[9px] font-black uppercase text-on-surface-variant/70 bg-[#000f16]/40 px-2 py-0.5 rounded-full border border-[#005049]/20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                  DESCONECTADA
-                </span>
-              </div>
-
-              <div className="space-y-4 font-sans">
-                <p className="text-xs text-[#c8e7fb]/80 select-none leading-relaxed">
-                  Conecta tu billetera de Solana (Solflare) para vincular de forma segura tus insignias, ver tu balance y certificar tus hazañas de exploración con un estándar SPL cNFT.
-                </p>
-
-                <div className="flex justify-center py-2">
-                  <ConnectWalletButton />
-                </div>
-              </div>
-            </div>
-          )}
+          {/* SECURE BLOCKCHAIN WALLET CARD */}
+          <WalletCard />
 
           {/* PANEL DE ADMINISTRADOR CON CONTRASEÑA */}
           <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 space-y-4 shadow-lg text-left">
@@ -533,13 +505,13 @@ export default function SettingsView({
                       return (
                         <div 
                           key={loc.id} 
-                          className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                          className={`flex items-center justify-between p-3 rounded-xl border gap-2 transition-all ${
                             isLocked 
                               ? 'bg-red-950/10 border-red-500/20 text-rose-400/90' 
                               : 'bg-[#001c27] border-secondary/20 text-[#c8e7fb]'
                           }`}
                         >
-                          <div className="flex flex-col text-left max-w-[70%]">
+                          <div className="flex flex-col text-left min-w-0 flex-1">
                             <span className="text-[9px] font-bold text-secondary uppercase tracking-wider">
                               Ruta {idx + 1}
                             </span>
@@ -551,7 +523,7 @@ export default function SettingsView({
                           <button
                             type="button"
                             onClick={() => handleToggleIndividualRoute(loc.id)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                            className={`shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                               isLocked
                                 ? 'bg-rose-950/40 text-rose-400 border border-rose-500/30 hover:bg-rose-900/40 font-mono font-bold'
                                 : 'bg-secondary/10 text-secondary border border-secondary/30 hover:bg-secondary/20 font-mono font-bold'

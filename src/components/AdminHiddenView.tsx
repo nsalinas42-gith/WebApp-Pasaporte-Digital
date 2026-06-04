@@ -30,7 +30,9 @@ import GoogleSignInButton from './GoogleSignInButton';
 import { 
   getAllRegisteredUsers, 
   resetUserProgress, 
-  deleteUserEntirely 
+  deleteUserEntirely,
+  saveSolanaGlobalSettings,
+  subscribeSolanaGlobalSettings
 } from '../utils/firebase';
 
 interface AdminHiddenViewProps {
@@ -62,6 +64,17 @@ export default function AdminHiddenView({
     `[${new Date().toISOString().slice(11, 19)}] Solana RPC devnet conectada: 100% operativa.`,
     `[${new Date().toISOString().slice(11, 19)}] Sesión de administración de alta jerarquía establecida.`
   ]);
+
+  const [globalWalletEnabled, setGlobalWalletEnabled] = useState<boolean>(true);
+  const [globalNetwork, setGlobalNetwork] = useState<'MAINET' | 'DEVNET'>('DEVNET');
+
+  useEffect(() => {
+    const unsubscribe = subscribeSolanaGlobalSettings((settings) => {
+      setGlobalWalletEnabled(settings.walletEnabled);
+      setGlobalNetwork(settings.network);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [dbUsers, setDbUsers] = useState<any[]>([]);
   const [isLoadingDbUsers, setIsLoadingDbUsers] = useState<boolean>(true);
@@ -439,6 +452,96 @@ export default function AdminHiddenView({
             </div>
           </div>
 
+          {/* ADMIN BLOCKCHAIN SOLANA CARD */}
+          <div id="admin-blockchain-solana-card" className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-5 shadow-lg text-left">
+            <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider border-b border-[#005049]/15 pb-2 flex items-center gap-1.5">
+              <span className="text-secondary select-none">🌐</span>
+              ADMIN BLOCKCHAIN SOLANA
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] text-[#8c9f9e] font-black uppercase tracking-wider block mb-2">
+                  Función de wallet (Todos los usuarios)
+                </span>
+                
+                <button
+                  id="btn-toggle-wallet-global"
+                  onClick={async () => {
+                    const newValue = !globalWalletEnabled;
+                    try {
+                      await saveSolanaGlobalSettings(newValue, globalNetwork);
+                      addLog(`Función Solana Wallet ${newValue ? 'ACTIVADA' : 'DESACTIVADA'} para todos los usuarios.`);
+                    } catch (err) {
+                      console.error("Error setting wallet global flag:", err);
+                      addLog(`[Local] Función Solana Wallet cambiada localmente a ${newValue ? 'ACTIVADA' : 'DESACTIVADA'}. (Se requiere inicio de sesión de admin para sincronizar en la nube).`);
+                    }
+                  }}
+                  className={`w-full py-3 px-4 rounded-xl font-bold uppercase text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+                    globalWalletEnabled
+                      ? 'bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4] text-[#43e5d4]'
+                      : 'bg-red-500/10 hover:bg-red-500/20 border border-red-500 text-red-500 font-bold'
+                  }`}
+                >
+                  <span>{globalWalletEnabled ? '⚡ Wallet Habilitada' : '🚫 Wallet Deshabilitada'}</span>
+                </button>
+                <p className="text-[10px] text-on-surface-variant/70 mt-1.5 leading-relaxed font-sans">
+                  Activa o desactiva de forma global el acceso y visibilidad de la Solana Wallet para todos los exploradores.
+                </p>
+              </div>
+
+              <div id="admin-solana-network-section" className="pt-2 border-t border-[#005049]/15">
+                <span className="text-xs font-black uppercase tracking-wider block text-[#c8e7fb] mb-1 font-headline">
+                  RED
+                </span>
+                
+                <div className="bg-[#000f16] p-1 rounded-xl flex items-center mt-2 border border-[#005049]/10">
+                  <button
+                    id="btn-sol-network-mainnet"
+                    onClick={async () => {
+                      try {
+                        await saveSolanaGlobalSettings(globalWalletEnabled, 'MAINET');
+                        addLog(`Red Solana cambiada globalmente a MAINET.`);
+                      } catch (err) {
+                        console.error("Error updating network to mainnet:", err);
+                        addLog(`[Local] Red Solana cambiada localmente a MAINET. (Se requiere inicio de sesión de admin para sincronizar en la nube).`);
+                      }
+                    }}
+                    className={`flex-1 py-2 text-center text-[10px] font-black uppercase tracking-widest rounded-lg transition-all cursor-pointer ${
+                      globalNetwork === 'MAINET'
+                        ? 'bg-red-500/15 border border-red-400 text-red-400'
+                        : 'text-[#8c9f9e] hover:text-on-surface'
+                    }`}
+                  >
+                    MAINET
+                  </button>
+                  <button
+                    id="btn-sol-network-devnet"
+                    onClick={async () => {
+                      try {
+                        await saveSolanaGlobalSettings(globalWalletEnabled, 'DEVNET');
+                        addLog(`Red Solana cambiada globalmente a DEVNET.`);
+                      } catch (err) {
+                        console.error("Error updating network to devnet:", err);
+                        addLog(`[Local] Red Solana cambiada localmente a DEVNET. (Se requiere inicio de sesión de admin para sincronizar en la nube).`);
+                      }
+                    }}
+                    className={`flex-1 py-2 text-center text-[10px] font-black uppercase tracking-widest rounded-lg transition-all cursor-pointer ${
+                      globalNetwork === 'DEVNET'
+                        ? 'bg-[#43e5d4]/10 border border-[#43e5d4]/30 text-[#43e5d4]'
+                        : 'text-[#8c9f9e] hover:text-on-surface'
+                    }`}
+                  >
+                    DEVNET
+                  </button>
+                </div>
+                <p className="text-[10px] text-on-surface-variant/70 mt-1.5 leading-relaxed font-sans">
+                  Selecciona la red de Solana de destino utilizada para emitir transacciones Web3.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* ACTIVATE/DISABLE MAPS INTERACTIVE TOGGLE */}
           <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
             <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider border-b border-secondary/15 pb-2 flex items-center gap-1.5">
@@ -455,20 +558,20 @@ export default function AdminHiddenView({
                 return (
                   <div 
                     key={loc.id} 
-                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                    className={`flex items-center justify-between p-3 rounded-xl border gap-2 transition-all ${
                       isLocked 
                         ? 'bg-red-950/10 border-red-500/20 text-rose-400/90' 
                         : 'bg-[#001c27] border-secondary/20 text-[#c8e7fb]'
                     }`}
                   >
-                    <div className="flex flex-col text-left max-w-[70%]">
+                    <div className="flex flex-col text-left min-w-0 flex-1">
                       <span className="text-[9px] font-bold text-secondary uppercase tracking-wider">Ruta {i+1}</span>
                       <span className="text-xs font-bold truncate" title={loc.name}>{loc.name}</span>
                     </div>
 
                     <button
                       onClick={() => handleToggleRouteLock(loc.id)}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer font-mono ${
+                      className={`shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer font-mono ${
                         isLocked
                           ? 'bg-rose-950/40 text-rose-400 border border-rose-500/30'
                           : 'bg-secondary/10 text-secondary border border-secondary/30'

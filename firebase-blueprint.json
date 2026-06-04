@@ -67,6 +67,27 @@
         }
       },
       "required": ["uid", "level", "xp"]
+    },
+    "GlobalSettings": {
+      "title": "Configuración Global Solana",
+      "description": "Configuración administrable de red y activación global de Solana Wallet",
+      "type": "object",
+      "properties": {
+        "walletEnabled": {
+          "type": "boolean",
+          "description": "Estado global para habilitar o deshabilitar la wallet"
+        },
+        "network": {
+          "type": "string",
+          "enum": ["MAINET", "DEVNET"],
+          "description": "Red de Solana seleccionada"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["walletEnabled", "network"]
     }
   },
   "firestore": {
@@ -77,6 +98,10 @@
     "user_progress/{userId}": {
       "schema": "UserProgress",
       "description": "Guarda de manera detallada el progreso, sellos y estado de juego"
+    },
+    "settings/{settingId}": {
+      "schema": "GlobalSettings",
+      "description": "Contiene parámetros del sistema como la configuración de Solana"
     }
   }
 }

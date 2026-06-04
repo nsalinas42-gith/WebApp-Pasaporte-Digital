@@ -51,9 +51,26 @@ service cloud.firestore {
         && (data.locations == null || (data.locations is string && data.locations.size() <= 131072));
     }
 
+    // Validation Blueprint for Settings Document
+    function isValidSettings(data) {
+      return data.walletEnabled is bool
+        && data.network is string
+        && (data.network == 'MAINET' || data.network == 'DEVNET');
+    }
+
     // Rules for /test/{docId}
     match /test/{docId} {
       allow read: if true;
+    }
+
+    // Rules for /settings/{settingId}
+    match /settings/{settingId} {
+      allow get: if true; // Publicly accessible configurations
+      allow create, update: if isAdmin()
+        && isValidId(settingId)
+        && isValidSettings(incoming())
+        && incoming().updatedAt == request.time;
+      allow delete: if isAdmin();
     }
 
     // Rules for /users/{userId}
