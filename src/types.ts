@@ -49,6 +49,7 @@ export interface UserProfile {
   xpToNextLevel: number;
   joinedDate: string;
   linkedWallet: string;
+  bio?: string;
 }
 
 export interface LeaderboardEntry {

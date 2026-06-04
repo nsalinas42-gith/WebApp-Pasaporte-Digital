@@ -60,6 +60,7 @@ export default function SettingsView({
   const [title, setTitle] = useState(user.title);
   const [wallet, setWallet] = useState(user.linkedWallet);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
+  const [bio, setBio] = useState(user.bio || '');
 
   // Synchronically auto-update the destination wallet input field if a wallet gets connected
   useEffect(() => {
@@ -122,6 +123,7 @@ export default function SettingsView({
     setTitle(translatedUser.title);
     setWallet(translatedUser.linkedWallet);
     setAvatarUrl(translatedUser.avatarUrl);
+    setBio(translatedUser.bio || '');
   }, [user, translateUser]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +153,8 @@ export default function SettingsView({
       email,
       title,
       linkedWallet: wallet,
-      avatarUrl
+      avatarUrl,
+      bio
     });
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
@@ -347,6 +350,22 @@ export default function SettingsView({
                 aria-label="Billetera Solana de Destino"
                 className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-xs font-mono text-secondary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
                 placeholder="Solana public address..."
+              />
+            </div>
+
+            {/* Biography */}
+            <div className="space-y-2 md:col-span-2">
+              <label htmlFor="explorer-bio" className="text-xs text-on-surface-variant font-bold uppercase tracking-wide flex items-center gap-1">
+                <Settings className="w-3.5 h-3.5 text-secondary" /> {t('biografia_lbl')}
+              </label>
+              <textarea
+                id="explorer-bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+                aria-label="Biografía"
+                className="w-full bg-background/60 border border-[#005049]/25 rounded-xl py-3 px-4 text-sm text-[#c8e7fb] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 font-sans resize-none"
+                placeholder="Escribe una breve reseña de ti como explorador..."
               />
             </div>
           </div>

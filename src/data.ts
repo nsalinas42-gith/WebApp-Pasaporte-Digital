@@ -640,7 +640,8 @@ export const INITIAL_USER: UserProfile = {
   xp: 3550, // Let's say XP progress: 3550/6000 XP (with 2450 XP remaining to reach Level 13!)
   xpToNextLevel: 6000,
   joinedDate: 'Miembro desde: Ene 2024',
-  linkedWallet: 'felix.voyager@solana.inv' // Invisible linked wallet linked to email
+  linkedWallet: 'felix.voyager@solana.inv', // Invisible linked wallet linked to email
+  bio: 'Apasionado por la historia colonial y la fotografía urbana en Caracas.'
 };
 
 export const LEADERBOARD_DATA: LeaderboardEntry[] = [

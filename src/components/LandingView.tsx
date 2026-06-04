@@ -41,6 +41,8 @@ import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import UserProfilesCarousel from './UserProfilesCarousel';
+import UserWayAccessibility from './UserWayAccessibility';
 
 interface LandingViewProps {
   onEnter: () => void;
@@ -109,7 +111,7 @@ export default function LandingView({
     <div className="bg-[#000f16] text-on-background min-h-screen font-sans overflow-x-hidden selection:bg-[#43e5d4] selection:text-[#003732] flex flex-col justify-between">
       
       {/* 1. TOP NAVBAR */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-16 h-16 sm:h-20 bg-[#000f16]/90 backdrop-blur-md border-b border-[#005049]/20">
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center pl-4 sm:pl-6 md:pl-16 pr-[15px] h-16 sm:h-20 bg-[#000f16]/90 backdrop-blur-md border-b border-[#005049]/20">
         {/* Brand Logo */}
         <div className="flex items-center gap-2 cursor-pointer select-none">
           <img 
@@ -123,6 +125,7 @@ export default function LandingView({
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
           <LanguageSelector />
+          <UserWayAccessibility />
         </div>
       </header>
 
@@ -484,17 +487,20 @@ export default function LandingView({
         </button>
       </section>
 
+      {/* Dynamic Profile Carousel */}
+      <UserProfilesCarousel />
+
       {/* 5. FOOTER SECTION */}
       <footer className="bg-[#00080d] border-t border-[#005049]/20 pt-16 pb-10 px-6 md:px-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-12 gap-8 text-left pb-12 border-b border-[#005049]/15">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 text-left pb-12 border-b border-[#005049]/15">
           {/* Logo & Manifesto Column */}
-          <div className="col-span-2 md:col-span-4 space-y-4">
+          <div className="col-span-1 sm:col-span-2 md:col-span-6 space-y-4">
             <div className="flex items-center gap-2 select-none">
               <img 
                 src={logoPintaMapas} 
                 alt="Pinta Mapas" 
                 referrerPolicy="no-referrer"
-                className="h-10 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
             </div>
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
@@ -551,7 +557,7 @@ export default function LandingView({
           </div>
 
           {/* Comunidad Column */}
-          <div className="col-span-1 md:col-span-2 md:ml-auto space-y-3.5">
+          <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
               {t('comunidad')}
             </h4>
@@ -562,26 +568,18 @@ export default function LandingView({
             </div>
           </div>
 
-          {/* Legal Column */}
+          {/* Legal y Soporte Column */}
           <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              {t('legal')}
-            </h4>
-            <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
-              <a href="#terms" className="hover:text-[#43e5d4] hover:underline transition-all">{t('terminos')}</a>
-              <a href="#privacy" className="hover:text-[#43e5d4] hover:underline transition-all">{t('privacidad')}</a>
-              <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">{t('cookies_policy')}</a>
-            </div>
-          </div>
-
-          {/* Soporte Column */}
-          <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
-            <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              {t('soporte')}
+              {t('soporte')} y {t('legal')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
               <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">{t('centro_ayuda')}</a>
               <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
+              <div className="h-px bg-[#005049]/10 my-0.5" />
+              <a href="#terms" className="hover:text-[#43e5d4] hover:underline transition-all">{t('terminos')}</a>
+              <a href="#privacy" className="hover:text-[#43e5d4] hover:underline transition-all">{t('privacidad')}</a>
+              <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">{t('cookies_policy')}</a>
             </div>
           </div>
         </div>
