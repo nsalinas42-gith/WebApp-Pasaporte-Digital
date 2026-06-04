@@ -25,7 +25,7 @@ import {
 export const INITIAL_LOCATIONS: Location[] = [
   {
     id: 'alhambra',
-    name: 'Mapa casco histórico de Caracas vol.1 ver. 1.0',
+    name: 'Mapa casco histórico de Caracas',
     city: 'Caracas, Venezuela',
     category: 'Monumento Histórico',
     latitude: 10.506085,
@@ -38,7 +38,7 @@ export const INITIAL_LOCATIONS: Location[] = [
     badgeImageUrl: stampAlhambra,
     imageUrl: mapaCaracasHero,
     review: [
-      'Mapa casco histórico de Caracas vol.1 ver. 1.0'
+      'Mapa casco histórico de Caracas'
     ],
     isCheckedIn: false,
     places: [

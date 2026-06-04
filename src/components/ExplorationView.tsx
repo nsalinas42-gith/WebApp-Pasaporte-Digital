@@ -323,9 +323,6 @@ export default function ExplorationView({
                   </div>
 
                   <div className="text-left space-y-1 pr-14">
-                    <span className="text-[10px] text-secondary font-black uppercase tracking-wider block">
-                      {place.category}
-                    </span>
                     <h4 className="font-headline text-base font-black text-[#c8e7fb] leading-snug">
                       {place.name}
                     </h4>
@@ -499,9 +496,6 @@ export default function ExplorationView({
             </div>
 
             <div className="space-y-2 text-center">
-              <span className="text-[10px] text-secondary font-black uppercase tracking-widest block bg-secondary/10 w-fit mx-auto px-2.5 py-0.5 rounded-full border border-secondary/15">
-                {justUnlockedPlace.place.category}
-              </span>
               <h3 className="font-headline text-xl font-black text-on-surface leading-tight">
                 {justUnlockedPlace.place.name}
               </h3>
