@@ -2,7 +2,7 @@
   "entities": {
     "User": {
       "title": "Perfil de Usuario",
-      "description": "Datos de perfil del usuario sincronizados desde Google Auth",
+      "description": "Datos de perfil del usuario sincronizados desde Google Auth o Email Auth",
       "type": "object",
       "properties": {
         "uid": {
@@ -15,7 +15,7 @@
         },
         "email": {
           "type": "string",
-          "description": "Correo electrónico de Google"
+          "description": "Correo electrónico principal"
         },
         "avatarUrl": {
           "type": "string",
@@ -24,6 +24,22 @@
         "title": {
           "type": "string",
           "description": "Título o rango del usuario"
+        },
+        "secondaryEmail": {
+          "type": "string",
+          "description": "Correo electrónico secundario o alternativo para recuperación"
+        },
+        "passwordHash": {
+          "type": "string",
+          "description": "Contraseña hasheada con SHA-256"
+        },
+        "recoveryToken": {
+          "type": "string",
+          "description": "Token temporal de recuperación de contraseña"
+        },
+        "recoveryTokenExpires": {
+          "type": "string",
+          "description": "Fecha y hora de expiración del token de recuperación"
         },
         "createdAt": {
           "type": "string",

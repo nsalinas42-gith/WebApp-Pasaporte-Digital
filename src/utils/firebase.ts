@@ -4,9 +4,18 @@
  */
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup, signOut } from 'firebase/auth';
 import { 
-  getFirestore, 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithCredential, 
+  signInWithPopup, 
+  signOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
+} from 'firebase/auth';
+import { 
+  initializeFirestore, 
   doc, 
   setDoc, 
   getDoc, 
@@ -15,14 +24,18 @@ import {
   collection,
   serverTimestamp, 
   getDocFromServer,
-  onSnapshot
+  onSnapshot,
+  query,
+  where
 } from 'firebase/firestore';
 import { UserProfile, UserStats, Location } from '../types';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase app safely
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+}, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
 // Test database connection on boot as required by Firebase SDK Verification guidelines
@@ -440,4 +453,140 @@ export function subscribeSolanaGlobalSettings(
     window.removeEventListener('solana-global-settings-changed', handleLocalUpdate);
     unsubscribeFirestore();
   };
+}
+
+/**
+ * Lightweight helper to secure and hash passwords using the browser's native subtle Web Crypto APIs without bloating libraries
+ */
+async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+/**
+ * Sign in using Firebase Auth with email and password first, and then retrieve user metadata.
+ */
+export async function signInWithEmail(email: string, password: string) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userId = userCredential.user.uid;
+    
+    // Update lastLogin in Firestore
+    const userDocRef = doc(db, 'users', userId);
+    await setDoc(userDocRef, {
+      lastLogin: serverTimestamp()
+    }, { merge: true });
+
+    return userCredential.user;
+  } catch (error) {
+    console.error("Sign-In with email failed:", error);
+    throw error;
+  }
+}
+
+/**
+ * Register a new user using Firebase Auth with email and password.
+ * Persist passwordHash (SHA-256 hashed) and secondaryEmail in Firestore.
+ */
+export async function signUpWithEmail(email: string, password: string, name: string, secondaryEmail: string) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userId = userCredential.user.uid;
+    const hashHex = await sha256(password);
+
+    // Save initial user profile with optional recovery fields
+    const userDocRef = doc(db, 'users', userId);
+    await setDoc(userDocRef, {
+      uid: userId,
+      name: name,
+      email: email,
+      avatarUrl: '',
+      title: 'Explorador',
+      secondaryEmail: secondaryEmail,
+      passwordHash: hashHex,
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+    });
+
+    return userCredential.user;
+  } catch (error) {
+    console.error("Sign-Up with email failed:", error);
+    throw error;
+  }
+}
+
+/**
+ * Option A: Recover Password
+ * Verify if the email exists in Firestore (searching by email).
+ * Generates a safe temporary token, stores in user doc, and triggers Firebase Auth's password reset.
+ */
+export async function recoverPassword(email: string): Promise<{ success: boolean; token?: string; error?: string }> {
+  try {
+    // 1. Check if user document exists with this email
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('email', '==', email));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      return { success: false, error: "El correo ingresado no está registrado en el sistema." };
+    }
+
+    const userDoc = snap.docs[0];
+    const userUid = userDoc.id;
+
+    // 2. Generate a secure random token (using Web Crypto)
+    const array = new Uint8Array(16);
+    window.crypto.getRandomValues(array);
+    const token = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    // Set 1-hour expiration
+    const expiry = new Date();
+    expiry.setHours(expiry.getHours() + 1);
+    const expiryStr = expiry.toISOString();
+
+    // 3. Save token & expiration to student's user profile in Firestore
+    const userDocRef = doc(db, 'users', userUid);
+    const existingData = userDoc.data();
+    await setDoc(userDocRef, {
+      ...existingData,
+      recoveryToken: token,
+      recoveryTokenExpires: expiryStr,
+      lastLogin: serverTimestamp() // triggers lastLogin criteria for update validation rules
+    });
+
+    // 4. Trigger built-in Firebase reset email
+    await sendPasswordResetEmail(auth, email);
+
+    return { success: true, token };
+  } catch (error: any) {
+    console.error("Password recovery failed:", error);
+    return { success: false, error: error?.message || String(error) };
+  }
+}
+
+/**
+ * Option B: Recover Email
+ * Locates the account where secondaryEmail === secondaryEmail.
+ * Returns the primary email of the matched user or error.
+ */
+export async function recoverEmail(secondaryEmailInput: string): Promise<{ success: boolean; primaryEmail?: string; error?: string }> {
+  try {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('secondaryEmail', '==', secondaryEmailInput));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      return { success: false, error: "No se encontró ninguna cuenta asociada con ese correo secundario." };
+    }
+
+    const userDoc = snap.docs[0];
+    const data = userDoc.data();
+    return { success: true, primaryEmail: data.email };
+  } catch (error: any) {
+    console.error("Email recovery failed:", error);
+    return { success: false, error: error?.message || String(error) };
+  }
 }

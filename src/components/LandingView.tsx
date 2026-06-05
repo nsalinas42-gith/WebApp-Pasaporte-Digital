@@ -28,11 +28,20 @@ import {
   RefreshCw,
   Trash2,
   Eye,
+  EyeOff,
+  Mail,
+  User,
   Menu,
   X
 } from 'lucide-react';
 import { useLanguage } from '../translations';
 import LanguageSelector from './LanguageSelector';
+import { 
+  signInWithEmail, 
+  signUpWithEmail, 
+  recoverPassword, 
+  recoverEmail 
+} from '../utils/firebase';
 import GoogleSignInButton from './GoogleSignInButton';
 import { DecodedGoogleUser } from '../utils/googleAuth';
 import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
@@ -104,6 +113,192 @@ export default function LandingView({
   const [isAdminUnlocked, setIsAdminUnlocked] = React.useState(false);
   const [showConfirmResetMock, setShowConfirmResetMock] = React.useState(false);
   const [showConfirmResetZero, setShowConfirmResetZero] = React.useState(false);
+
+  // --- CUSTOM EMAIL AUTHENTICATION STATES ---
+  const [authMode, setAuthMode] = React.useState<'login' | 'register'>('login');
+  const [emailForm, setEmailForm] = React.useState('');
+  const [passwordForm, setPasswordForm] = React.useState('');
+  const [nameForm, setNameForm] = React.useState('');
+  const [secondaryEmailForm, setSecondaryEmailForm] = React.useState('');
+  const [showPasswordField, setShowPasswordField] = React.useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = React.useState(false);
+  const [authErrorMsg, setAuthErrorMsg] = React.useState<string | null>(null);
+  const [authSuccessMsg, setAuthSuccessMsg] = React.useState<string | null>(null);
+
+  // Recovery modal states
+  const [showRecoveryModal, setShowRecoveryModal] = React.useState(false);
+  const [recoveryOption, setRecoveryOption] = React.useState<'A' | 'B' | null>(null);
+  const [primaryEmailRecoveryInput, setPrimaryEmailRecoveryInput] = React.useState('');
+  const [secondaryEmailRecoveryInput, setSecondaryEmailRecoveryInput] = React.useState('');
+  const [recoveryMessage, setRecoveryMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleEmailLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthErrorMsg(null);
+    setAuthSuccessMsg(null);
+    setIsLoadingAuth(true);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailForm)) {
+      setAuthErrorMsg("Ingresa tu correo electrónico con un formato válido.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    if (passwordForm.length < 6) {
+      setAuthErrorMsg("La contraseña debe tener al menos 6 caracteres.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    try {
+      const fbUser = await signInWithEmail(emailForm, passwordForm);
+      setAuthSuccessMsg("¡Sesión iniciada correctamente! Entrando...");
+      
+      if (onGoogleLoginSuccess) {
+        onGoogleLoginSuccess(
+          {
+            name: fbUser.displayName || emailForm.split('@')[0],
+            email: fbUser.email || emailForm,
+            picture: ''
+          }, 
+          'firebase-popup-token'
+        );
+      } else {
+        onEnter();
+      }
+    } catch (err: any) {
+      console.error(err);
+      let localizedError = "Error al iniciar sesión.";
+      if (err?.code === 'auth/wrong-password' || err?.message?.includes('password') || err?.message?.includes('credential') || err?.message?.includes('invalid-credential')) {
+        localizedError = "Contraseña incorrecta o correo inválido. Verifica tus datos.";
+      } else if (err?.code === 'auth/user-not-found' || err?.message?.includes('user-not-found')) {
+        localizedError = "No existe ninguna cuenta registrada con este correo electrónico.";
+      } else {
+        localizedError = err?.message || localizedError;
+      }
+      setAuthErrorMsg(localizedError);
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
+  const handleEmailRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthErrorMsg(null);
+    setAuthSuccessMsg(null);
+    setIsLoadingAuth(true);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!nameForm.trim()) {
+      setAuthErrorMsg("Por favor, ingresa tu nombre completo.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    if (!emailRegex.test(emailForm)) {
+      setAuthErrorMsg("Ingresa tu correo electrónico principal con un formato válido.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    if (passwordForm.length < 6) {
+      setAuthErrorMsg("La contraseña debe tener al menos 6 caracteres.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    if (!emailRegex.test(secondaryEmailForm)) {
+      setAuthErrorMsg("Ingresa un correo electrónico secundario válido para la recuperación.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    if (emailForm.toLowerCase() === secondaryEmailForm.toLowerCase()) {
+      setAuthErrorMsg("El correo secundario/alternativo no puede ser igual al correo principal.");
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    try {
+      const fbUser = await signUpWithEmail(emailForm, passwordForm, nameForm, secondaryEmailForm);
+      setAuthSuccessMsg("¡Cuenta creada y sincronizada exitosamente con Firebase!");
+      
+      if (onGoogleLoginSuccess) {
+        onGoogleLoginSuccess(
+          {
+            name: nameForm,
+            email: emailForm,
+            picture: ''
+          }, 
+          'firebase-popup-token'
+        );
+      } else {
+        onEnter();
+      }
+    } catch (err: any) {
+      console.error(err);
+      let localizedError = "Error al crear la cuenta.";
+      if (err?.code === 'auth/email-already-in-use' || err?.message?.includes('already-in-use')) {
+        localizedError = "El correo electrónico principal ya está registrado por otro usuario.";
+      } else {
+        localizedError = err?.message || localizedError;
+      }
+      setAuthErrorMsg(localizedError);
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
+  const handleRecoveryOptionASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryMessage(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(primaryEmailRecoveryInput)) {
+      setRecoveryMessage({ type: 'error', text: "Ingresa tu correo electrónico principal con un formato válido." });
+      return;
+    }
+
+    try {
+      const result = await recoverPassword(primaryEmailRecoveryInput);
+      if (result.success) {
+        setRecoveryMessage({ 
+          type: 'success', 
+          text: `Se verificó la existencia de la cuenta. Hemos registrado un token de recuperación temporal en Firebase (${result.token}) y enviado un enlace seguro al correo principal.` 
+        });
+      } else {
+        setRecoveryMessage({ type: 'error', text: result.error || "El correo ingresado no está registrado." });
+      }
+    } catch (err: any) {
+      setRecoveryMessage({ type: 'error', text: err?.message || "Ocurrió un error inesperado al procesar la solicitud." });
+    }
+  };
+
+  const handleRecoveryOptionBSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryMessage(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(secondaryEmailRecoveryInput)) {
+      setRecoveryMessage({ type: 'error', text: "Ingresa tu correo electrónico secundario con un formato válido." });
+      return;
+    }
+
+    try {
+      const result = await recoverEmail(secondaryEmailRecoveryInput);
+      if (result.success) {
+        setRecoveryMessage({ 
+          type: 'success', 
+          text: `¡Cuenta Localizada! El correo principal asignado es: ${result.primaryEmail}` 
+        });
+      } else {
+        setRecoveryMessage({ type: 'error', text: result.error || "No se encontró ningún correo principal asociado con esta cuenta secundaria." });
+      }
+    } catch (err: any) {
+      setRecoveryMessage({ type: 'error', text: err?.message || "Ocurrió un error inesperado al buscar la cuenta." });
+    }
+  };
 
   const handleVerifyAdminPassword = () => {
     if (adminPassword !== '009286') {
@@ -251,7 +446,209 @@ export default function LandingView({
           </div>
 
           {/* Action buttons */}
-          <div className="space-y-6 pt-4 max-w-2xl mx-auto flex flex-col items-center">
+          <div className="space-y-6 pt-4 max-w-2xl mx-auto flex flex-col items-center w-full">
+            
+            {/* Email/Password Auth Module (Required specs) */}
+            <div className="w-full max-w-md mx-auto bg-[#00171f]/80 backdrop-blur-md rounded-2xl p-6 border border-[#43e5d4]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
+              
+              {/* Tab selection toggles */}
+              <div className="flex border-b border-[#43e5d4]/10 pb-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('login');
+                    setAuthErrorMsg(null);
+                    setAuthSuccessMsg(null);
+                  }}
+                  className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
+                    authMode === 'login'
+                      ? 'text-[#43e5d4] border-b-2 border-[#43e5d4]'
+                      : 'text-on-surface-variant/40 hover:text-on-surface'
+                  }`}
+                >
+                  {t('iniciar_sesion') || 'Iniciar Sesión'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('register');
+                    setAuthErrorMsg(null);
+                    setAuthSuccessMsg(null);
+                  }}
+                  className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
+                    authMode === 'register'
+                      ? 'text-[#43e5d4] border-b-2 border-[#43e5d4]'
+                      : 'text-on-surface-variant/40 hover:text-on-surface'
+                  }`}
+                >
+                  Registrarse
+                </button>
+              </div>
+
+              {/* Form */}
+              <form 
+                id={authMode === 'login' ? 'login-form-custom' : 'register-form-custom'}
+                onSubmit={authMode === 'login' ? handleEmailLoginSubmit : handleEmailRegisterSubmit} 
+                className="space-y-4 text-left"
+              >
+                
+                {authMode === 'register' && (
+                  <div className="space-y-1">
+                    <label htmlFor="auth-name-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                      Nombre Completo
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant/40">
+                        <User className="h-4 w-4" />
+                      </span>
+                      <input
+                        id="auth-name-input"
+                        type="text"
+                        required
+                        placeholder="Tu nombre completo"
+                        value={nameForm}
+                        onChange={(e) => setNameForm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label htmlFor="auth-email-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                    {authMode === 'register' ? 'Correo Electrónico Principal' : 'Correo Electrónico'}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant/40">
+                      <Mail className="h-4 w-4" />
+                    </span>
+                    <input
+                      id="auth-email-input"
+                      type="email"
+                      required
+                      placeholder="ejemplo@correo.com"
+                      value={emailForm}
+                      onChange={(e) => setEmailForm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label htmlFor="auth-password-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                    Contraseña
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant/40">
+                      <Lock className="h-4 w-4" />
+                    </span>
+                    <input
+                      id="auth-password-input"
+                      type={showPasswordField ? "text" : "password"}
+                      required
+                      placeholder="Mínimo 6 caracteres"
+                      value={passwordForm}
+                      onChange={(e) => setPasswordForm(e.target.value)}
+                      className="w-full pl-10 pr-10 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                    />
+                    <button
+                      id="toggle-password-vis"
+                      type="button"
+                      onClick={() => setShowPasswordField(!showPasswordField)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant/40 hover:text-[#43e5d4] transition-colors"
+                    >
+                      {showPasswordField ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {authMode === 'register' && (
+                  <div className="space-y-1">
+                    <label htmlFor="auth-secondary-email" className="block text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                      Correo Secundario / Alternativo
+                    </label>
+                    <p className="text-[10px] text-on-surface-variant/60 leading-3">
+                      Obligatorio si deseas usar la recuperación de cuenta (Opción B).
+                    </p>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant/40">
+                        <Mail className="h-4 w-4 text-amber-300/40" />
+                      </span>
+                      <input
+                        id="auth-secondary-email"
+                        type="email"
+                        required
+                        placeholder="correo_secundario@ejemplo.com"
+                        value={secondaryEmailForm}
+                        onChange={(e) => setSecondaryEmailForm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-amber-300/30 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-amber-350 transition-colors"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Status Feedbacks */}
+                {authErrorMsg && (
+                  <div className="text-[11px] text-rose-400 bg-rose-950/40 border border-rose-500/20 p-2.5 rounded-xl flex items-start gap-2">
+                    <span className="font-extrabold">⚠️</span>
+                    <span>{authErrorMsg}</span>
+                  </div>
+                )}
+
+                {authSuccessMsg && (
+                  <div className="text-[11px] text-[#43e5d4] bg-[#003732]/40 border border-[#43e5d4]/20 p-2.5 rounded-xl flex items-start gap-2">
+                    <span className="font-extrabold">✓</span>
+                    <span>{authSuccessMsg}</span>
+                  </div>
+                )}
+
+                {/* Action Submit Button */}
+                <button
+                  id="submit-auth-btn"
+                  type="submit"
+                  disabled={isLoadingAuth}
+                  className="w-full py-2.5 bg-gradient-to-r from-[#43e5d4] to-[#04c0ae] hover:from-[#c7ffd3] hover:to-[#43e5d4] text-[#003732] font-black uppercase text-xs tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-55 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(67,229,212,0.15)]"
+                >
+                  {isLoadingAuth ? (
+                    <span className="h-3 w-3 border-2 border-[#003732] border-t-transparent rounded-full animate-spin"></span>
+                  ) : (
+                    <LogIn className="h-3.5 w-3.5" />
+                  )}
+                  {authMode === 'login' ? 'Iniciar Sesión' : 'Registrar Cuenta'}
+                </button>
+
+                {/* Assistance link */}
+                <div className="text-center pt-1">
+                  <button
+                    id="assistance-link-btn"
+                    type="button"
+                    onClick={() => {
+                      setShowRecoveryModal(true);
+                      setRecoveryMessage(null);
+                      setRecoveryOption(null);
+                      setPrimaryEmailRecoveryInput('');
+                      setSecondaryEmailRecoveryInput('');
+                    }}
+                    className="text-[11px] text-amber-200/80 hover:text-amber-300 underline cursor-pointer hover:scale-[1.01] transition-transform"
+                  >
+                    ¿Olvidaste tu correo o contraseña?
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+            {/* Separator line with OR text */}
+            <div className="flex items-center gap-3 w-full max-w-md my-1 text-on-surface-variant/35 text-[10px] uppercase font-bold select-none">
+              <div className="flex-1 h-px bg-[#43e5d4]/10"></div>
+              <span>o continuar con</span>
+              <div className="flex-1 h-px bg-[#43e5d4]/10"></div>
+            </div>
+
             {/* Top row with Google Sign In and Iniciar como Invitado */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
               <div className="w-full sm:w-auto min-w-[240px]">
@@ -789,6 +1186,170 @@ export default function LandingView({
           </div>
         </div>
       </footer>
+
+      {/* --- ASSISTANCE RECOVERY MODAL --- */}
+      {showRecoveryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+          <div className="bg-[#00171f] border border-amber-400/20 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative">
+            
+            {/* Header */}
+            <div className="p-5 border-b border-[#005049]/20 flex items-center justify-between bg-[#001c27]">
+              <h3 className="font-headline text-xs sm:text-sm font-black text-[#43e5d4] uppercase tracking-wider flex items-center gap-2">
+                <Key className="w-4 h-4 text-[#43e5d4]" />
+                Asistencia de Credenciales
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowRecoveryModal(false)}
+                className="p-1 text-on-surface-variant/70 hover:text-rose-400 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 space-y-4">
+              
+              {/* Option Toggles */}
+              <div className="grid grid-cols-2 gap-2 border border-[#43e5d4]/15 p-1 rounded-xl bg-black/30">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRecoveryOption('A');
+                    setRecoveryMessage(null);
+                    setPrimaryEmailRecoveryInput('');
+                    setSecondaryEmailRecoveryInput('');
+                  }}
+                  className={`text-center py-2 text-[10px] sm:text-xs font-bold uppercase rounded-lg cursor-pointer transition-all ${
+                    recoveryOption === 'A'
+                      ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30'
+                      : 'text-on-surface-variant/70 hover:text-[#43e5d4]'
+                  }`}
+                >
+                  Olvidé mi contraseña
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRecoveryOption('B');
+                    setRecoveryMessage(null);
+                    setPrimaryEmailRecoveryInput('');
+                    setSecondaryEmailRecoveryInput('');
+                  }}
+                  className={`text-center py-2 text-[10px] sm:text-xs font-bold uppercase rounded-lg cursor-pointer transition-all ${
+                    recoveryOption === 'B'
+                      ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30'
+                      : 'text-on-surface-variant/70 hover:text-[#43e5d4]'
+                  }`}
+                >
+                  Olvidé mi correo
+                </button>
+              </div>
+
+              {!recoveryOption && (
+                <div className="py-6 text-center space-y-2">
+                  <p className="text-xs text-[#8c9f9e]">
+                    ¿Qué credencial necesitas recuperar hoy? Selecciona una de las opciones superiores.
+                  </p>
+                  <div className="text-[11px] leading-relaxed text-amber-300/80 font-medium bg-amber-950/25 border border-amber-400/10 p-3.5 rounded-xl max-w-sm mx-auto text-left">
+                    • <strong>Opción A:</strong> Restablece tu contraseña enviando un enlace y generando un token temporal.<br/>
+                    • <strong>Opción B:</strong> Recupera y visualiza tu correo principal usando tu correo secundario.
+                  </div>
+                </div>
+              )}
+
+              {/* Option A View: Forgot Password */}
+              {recoveryOption === 'A' && (
+                <form onSubmit={handleRecoveryOptionASubmit} className="space-y-3.5 text-left">
+                  <div className="p-3 bg-amber-400/5 border border-amber-400/10 rounded-xl space-y-1">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-amber-300">Opción A: Restablecer Contraseña</span>
+                    <p className="text-[11px] text-[#8c9f9e] leading-relaxed">
+                      Verificaremos si el correo principal está en Firestore. Si existe, generamos un token de recuperación único y temporal con expiración de 1 de hora, y te enviaremos el enlace oficial.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase text-[#43e5d4]/70">Correo Principal Registrado</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="ejemplo@correo.com"
+                      value={primaryEmailRecoveryInput}
+                      onChange={(e) => setPrimaryEmailRecoveryInput(e.target.value)}
+                      className="w-full bg-[#00080d] border border-[#43e5d4]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#43e5d4] transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-xs tracking-wider rounded-xl hover:scale-[1.01] transition-transform cursor-pointer"
+                  >
+                    Verificar y Enviar Enlace
+                  </button>
+                </form>
+              )}
+
+              {/* Option B View: Forgot Email */}
+              {recoveryOption === 'B' && (
+                <form onSubmit={handleRecoveryOptionBSubmit} className="space-y-3.5 text-left">
+                  <div className="p-3 bg-amber-400/5 border border-amber-400/10 rounded-xl space-y-1">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-amber-300">Opción B: Recuperar Correo Principal</span>
+                    <p className="text-[11px] text-[#8c9f9e] leading-relaxed">
+                      Ingresa el correo secundario/alternativo registrado previamente en tu cuenta. Buscaremos la cuenta asociada en Firestore para revelarte el correo principal.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase text-amber-300">Correo Secundario / Respaldo</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="backup_mail@ejemplo.com"
+                      value={secondaryEmailRecoveryInput}
+                      onChange={(e) => setSecondaryEmailRecoveryInput(e.target.value)}
+                      className="w-full bg-[#00080d] border border-[#43e5d4]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#43e5d4] transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-xs tracking-wider rounded-xl hover:scale-[1.01] transition-transform cursor-pointer"
+                  >
+                    Localizar Mi Cuenta
+                    </button>
+                </form>
+              )}
+
+              {/* Result Message Container */}
+              {recoveryMessage && (
+                <div className={`p-3.5 rounded-xl text-left space-y-1 ${
+                  recoveryMessage.type === 'success'
+                    ? 'bg-[#002f2a]/80 text-[#43e5d4] border border-[#43e5d4]/20'
+                    : 'bg-rose-950/40 text-rose-300 border border-rose-500/20'
+                }`}>
+                  <div className="font-black flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                    <span>{recoveryMessage.type === 'success' ? '✓ Operación Exitosa' : '⚠️ Error de Recuperación'}</span>
+                  </div>
+                  <p className="leading-relaxed text-[11px]">{recoveryMessage.text}</p>
+                </div>
+              )}
+
+            </div>
+
+            {/* Footer */}
+            <div className="bg-black/30 p-4 border-t border-[#005049]/20 text-center flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowRecoveryModal(false)}
+                className="px-6 py-1.5 border border-[#43e5d4]/30 text-[#43e5d4] rounded-lg text-xs uppercase tracking-widest font-bold hover:bg-[#43e5d4]/10 transition-colors cursor-pointer"
+              >
+                Volver al Login
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
