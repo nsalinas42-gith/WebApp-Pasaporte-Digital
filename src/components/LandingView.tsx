@@ -41,6 +41,9 @@ import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
 import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import specialBronce from '../assets/images/lider_de_expedicion_1.png';
+import specialPlata from '../assets/images/guia_legendario_2.png';
+import specialOro from '../assets/images/explorador_supremo.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
@@ -537,6 +540,98 @@ export default function LandingView({
                   referrerPolicy="no-referrer"
                 />
                 <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL EXPERTO</span>
+              </motion.div>
+            </div>
+
+            {/* Elegant Divider */}
+            <div className="border-t border-[#005049]/20 pt-8 mt-6"></div>
+
+            {/* Special Badges Header */}
+            <div className="space-y-2">
+              <h3 className="font-headline text-lg sm:text-xl font-extrabold text-[#43e5d4] flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#43e5d4]" />
+                Insignias Especiales
+              </h3>
+              <p className="text-xs sm:text-sm text-[#8c9f9e]/90 leading-relaxed">
+                Estas insignias la podrás obtener al completar las (6) rutas, Bronce, Plata, Oro
+              </p>
+            </div>
+
+            {/* Special Badges Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 w-full items-center justify-center">
+              {/* Card 1: Bronce */}
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.4 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={specialBronce} 
+                  alt="completa 2 rutas" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="flex flex-col items-center space-y-1">
+                  <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase">completa 2 rutas</span>
+                  <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase">LÍDER DE EXPEDICIÓN</span>
+                </div>
+              </motion.div>
+
+              {/* Card 2: Plata */}
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.4 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={specialPlata} 
+                  alt="completas 4 rutas" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="flex flex-col items-center space-y-1">
+                  <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase">completas 4 rutas</span>
+                  <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase">GUÍA LEGENDARIO</span>
+                </div>
+              </motion.div>
+
+              {/* Card 3: Oro */}
+              <motion.div 
+                whileHover="hover"
+                variants={{
+                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
+              >
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.4 }
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  src={specialOro} 
+                  alt="completa 6 rutas" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="flex flex-col items-center space-y-1">
+                  <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase">completa 6 rutas</span>
+                  <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase">EXPLORADOR SUPREMO</span>
+                </div>
               </motion.div>
             </div>
           </div>

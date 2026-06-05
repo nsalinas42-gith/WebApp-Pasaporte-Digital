@@ -24,6 +24,9 @@ import { motion } from 'motion/react';
 import { Location } from '../types';
 import { useLanguage } from '../translations';
 import { calculateUserProgress, UnlockedBadgeState } from './GamificationEngine';
+import specialBronce from '../assets/images/lider_de_expedicion_1.png';
+import specialPlata from '../assets/images/guia_legendario_2.png';
+import specialOro from '../assets/images/explorador_supremo.png';
 
 interface StampsViewProps {
   locations: Location[];
@@ -40,6 +43,13 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
     overallCompletedPlaces,
     completedRoutesCount
   } = calculateUserProgress(locations);
+
+  const completedRouteNames = locations
+    .filter((loc) => {
+      const checkedInPlaces = loc.places ? loc.places.filter((p) => p.isCheckedIn) : [];
+      return checkedInPlaces.length === 8;
+    })
+    .map((loc) => loc.name);
 
   const [selectedBadge, setSelectedBadge] = useState<UnlockedBadgeState | null>(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -225,6 +235,242 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
         })}
       </main>
 
+      {/* Header Insignias Especiales */}
+      <div className="text-left space-y-2 pt-6">
+        <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface flex items-center gap-2">
+          <Layers className="w-6 h-6 text-on-surface-variant flex-shrink-0" />
+          Insignias Especiales
+        </h2>
+        <p className="text-sm text-on-surface-variant max-w-2xl leading-relaxed">
+          Estas insignias la podrás obtener al completar las (6) rutas, Bronce, Plata, Oro
+        </p>
+      </div>
+
+      {/* Grid of Special Badges for Bronce, Plata, Oro */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Card 1: Bronce */}
+        <div
+          onClick={() => setSelectedBadge({
+            badge: {
+              id: 'special_bronze',
+              key: 'special_bronze',
+              titleKey: 'LÍDER DE EXPEDICIÓN',
+              subtitleKey: 'completa 2 rutas',
+              requiredChips: 2,
+              imageUrl: specialBronce
+            },
+            isUnlocked: completedRoutesCount >= 2,
+            multiplier: completedRoutesCount >= 2 ? 1 : 0,
+            progressPercent: Math.min(100, Math.round((completedRoutesCount / 2) * 100)),
+            unlockedRouteNames: completedRouteNames
+          })}
+          className={`p-3 sm:p-4 rounded-xl border flex flex-col items-center text-center space-y-3 relative overflow-hidden transition-all duration-300 filter group cursor-pointer ${
+            completedRoutesCount >= 2
+              ? 'bg-gradient-to-b from-surface-container to-surface-container-high border-secondary glow-mint hover:scale-[1.03] select-none'
+              : 'bg-surface-container-longest/40 border-outline-variant/15 opacity-60 hover:opacity-100 hover:scale-[1.01] hover:border-outline-variant/40'
+          }`}
+        >
+          {/* Lock / Unlocked Indicator */}
+          <div className="absolute top-2 right-2">
+            {completedRoutesCount >= 2 ? (
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                Completo
+              </span>
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-on-surface-variant/40" />
+            )}
+          </div>
+
+          <div 
+            className="relative flex items-center justify-center my-1" 
+            style={{ perspective: 1000 }}
+          >
+            <motion.div
+              className="w-16 h-16 flex items-center justify-center select-none"
+              style={{ transformStyle: "preserve-3d" }}
+              whileHover={{
+                scale: 1.4,
+                transition: {
+                  type: "spring", stiffness: 200, damping: 12
+                }
+              }}
+              animate={completedRoutesCount >= 2 ? {
+                scale: [1, 1.05, 1],
+              } : {}}
+              transition={completedRoutesCount >= 2 ? {
+                scale: {
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              } : undefined}
+            >
+              <img 
+                src={specialBronce} 
+                alt="completa 2 rutas" 
+                referrerPolicy="no-referrer"
+                style={{ filter: completedRoutesCount >= 2 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+              />
+            </motion.div>
+          </div>
+
+          {/* Title info */}
+          <div className="space-y-1">
+            <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase block">completa 2 rutas</span>
+            <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase block">LÍDER DE EXPEDICIÓN</span>
+          </div>
+        </div>
+
+        {/* Card 2: Plata */}
+        <div
+          onClick={() => setSelectedBadge({
+            badge: {
+              id: 'special_silver',
+              key: 'special_silver',
+              titleKey: 'GUÍA LEGENDARIO',
+              subtitleKey: 'completas 4 rutas',
+              requiredChips: 4,
+              imageUrl: specialPlata
+            },
+            isUnlocked: completedRoutesCount >= 4,
+            multiplier: completedRoutesCount >= 4 ? 1 : 0,
+            progressPercent: Math.min(100, Math.round((completedRoutesCount / 4) * 100)),
+            unlockedRouteNames: completedRouteNames
+          })}
+          className={`p-3 sm:p-4 rounded-xl border flex flex-col items-center text-center space-y-3 relative overflow-hidden transition-all duration-300 filter group cursor-pointer ${
+            completedRoutesCount >= 4
+              ? 'bg-gradient-to-b from-surface-container to-surface-container-high border-secondary glow-mint hover:scale-[1.03] select-none'
+              : 'bg-surface-container-longest/40 border-outline-variant/15 opacity-60 hover:opacity-100 hover:scale-[1.01] hover:border-outline-variant/40'
+          }`}
+        >
+          {/* Lock / Unlocked Indicator */}
+          <div className="absolute top-2 right-2">
+            {completedRoutesCount >= 4 ? (
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                Completo
+              </span>
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-on-surface-variant/40" />
+            )}
+          </div>
+
+          <div 
+            className="relative flex items-center justify-center my-1" 
+            style={{ perspective: 1000 }}
+          >
+            <motion.div
+              className="w-16 h-16 flex items-center justify-center select-none"
+              style={{ transformStyle: "preserve-3d" }}
+              whileHover={{
+                scale: 1.4,
+                transition: {
+                  type: "spring", stiffness: 200, damping: 12
+                }
+              }}
+              animate={completedRoutesCount >= 4 ? {
+                scale: [1, 1.05, 1],
+              } : {}}
+              transition={completedRoutesCount >= 4 ? {
+                scale: {
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              } : undefined}
+            >
+              <img 
+                src={specialPlata} 
+                alt="completas 4 rutas" 
+                referrerPolicy="no-referrer"
+                style={{ filter: completedRoutesCount >= 4 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+              />
+            </motion.div>
+          </div>
+
+          {/* Title info */}
+          <div className="space-y-1">
+            <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase block">completas 4 rutas</span>
+            <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase block">GUÍA LEGENDARIO</span>
+          </div>
+        </div>
+
+        {/* Card 3: Oro */}
+        <div
+          onClick={() => setSelectedBadge({
+            badge: {
+              id: 'special_gold',
+              key: 'special_gold',
+              titleKey: 'EXPLORADOR SUPREMO',
+              subtitleKey: 'completa 6 rutas',
+              requiredChips: 6,
+              imageUrl: specialOro
+            },
+            isUnlocked: completedRoutesCount >= 6,
+            multiplier: completedRoutesCount >= 6 ? 1 : 0,
+            progressPercent: Math.min(100, Math.round((completedRoutesCount / 6) * 100)),
+            unlockedRouteNames: completedRouteNames
+          })}
+          className={`p-3 sm:p-4 rounded-xl border flex flex-col items-center text-center space-y-3 relative overflow-hidden transition-all duration-300 filter group cursor-pointer ${
+            completedRoutesCount >= 6
+              ? 'bg-gradient-to-b from-surface-container to-surface-container-high border-secondary glow-mint hover:scale-[1.03] select-none'
+              : 'bg-surface-container-longest/40 border-outline-variant/15 opacity-60 hover:opacity-100 hover:scale-[1.01] hover:border-outline-variant/40'
+          }`}
+        >
+          {/* Lock / Unlocked Indicator */}
+          <div className="absolute top-2 right-2">
+            {completedRoutesCount >= 6 ? (
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                Completo
+              </span>
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-on-surface-variant/40" />
+            )}
+          </div>
+
+          <div 
+            className="relative flex items-center justify-center my-1" 
+            style={{ perspective: 1000 }}
+          >
+            <motion.div
+              className="w-16 h-16 flex items-center justify-center select-none"
+              style={{ transformStyle: "preserve-3d" }}
+              whileHover={{
+                scale: 1.4,
+                transition: {
+                  type: "spring", stiffness: 200, damping: 12
+                }
+              }}
+              animate={completedRoutesCount >= 6 ? {
+                scale: [1, 1.05, 1],
+              } : {}}
+              transition={completedRoutesCount >= 6 ? {
+                scale: {
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              } : undefined}
+            >
+              <img 
+                src={specialOro} 
+                alt="completa 6 rutas" 
+                referrerPolicy="no-referrer"
+                style={{ filter: completedRoutesCount >= 6 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+              />
+            </motion.div>
+          </div>
+
+          {/* Title info */}
+          <div className="space-y-1">
+            <span className="text-[11px] font-semibold text-[#FFFFFF] uppercase block">completa 6 rutas</span>
+            <span className="text-[11px] font-semibold text-[#8c9f9e] uppercase block">EXPLORADOR SUPREMO</span>
+          </div>
+        </div>
+      </div>
+
       {/* Badge Deep Details Modal */}
       {selectedBadge && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md">
@@ -359,9 +605,15 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                 </h3>
                 
                 <p className="text-xs text-on-surface-variant leading-relaxed text-center w-full whitespace-pre-line mt-1">
-                  {selectedBadge.isUnlocked 
-                    ? `¡Has desbloqueado esta medalla con un multiplicador de X${selectedBadge.multiplier}! Esto certifica que has alcanzado el grado correspondiente en la exploración.`
-                    : `Para ganar esta medalla, debes completar al menos ${selectedBadge.badge.requiredChips} geolocalizaciones (fichas) en cualquiera de las 6 rutas activas del pasaporte.`
+                  {selectedBadge.badge.id.startsWith('special_')
+                    ? (selectedBadge.isUnlocked
+                        ? `¡Felicidades! Has completado con éxito las rutas necesarias para desbloquear esta insignia especial.`
+                        : `Para ganar esta medalla especial, debes completar en su totalidad al menos ${selectedBadge.badge.requiredChips} rutas del pasaporte (8 fichas cada una).`
+                      )
+                    : (selectedBadge.isUnlocked
+                        ? `¡Has desbloqueado esta medalla con un multiplicador de X${selectedBadge.multiplier}! Esto certifica que has alcanzado el grado correspondiente en la exploración.`
+                        : `Para ganar esta medalla, debes completar al menos ${selectedBadge.badge.requiredChips} geolocalizaciones (fichas) en cualquiera de las 6 rutas activas del pasaporte.`
+                      )
                   }
                 </p>
 
@@ -370,7 +622,10 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                   <div className="w-full bg-[#001c27] border border-[#005049]/20 p-3 rounded-xl space-y-2.5 mt-3">
                     <p className="text-[10.5px] font-bold text-secondary uppercase tracking-wider flex items-center gap-1">
                       <Award className="w-3.5 h-3.5 text-secondary" />
-                      Rutas de desbloqueo ({selectedBadge.multiplier}/6)
+                      {selectedBadge.badge.id.startsWith('special_')
+                        ? `Rutas completadas (${selectedBadge.unlockedRouteNames.length}/${selectedBadge.badge.id === 'special_bronze' ? 2 : selectedBadge.badge.id === 'special_silver' ? 4 : 6})`
+                        : `Rutas de desbloqueo (${selectedBadge.multiplier}/6)`
+                      }
                     </p>
                     <ul className="text-xs space-y-1.5 text-on-surface-variant font-medium">
                       {selectedBadge.unlockedRouteNames.map((routeName, rIdx) => (
@@ -397,7 +652,10 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                       />
                     </div>
                     <p className="text-[9.5px] text-on-surface-variant/70 italic text-center w-full">
-                      (Nivel de fichas requerido: {selectedBadge.badge.requiredChips} en una sola ruta)
+                      {selectedBadge.badge.id.startsWith('special_')
+                        ? `(Rutas completadas requeridas: ${selectedBadge.badge.requiredChips})`
+                        : `(Nivel de fichas requerido: ${selectedBadge.badge.requiredChips} en una sola ruta)`
+                      }
                     </p>
                   </div>
                 )}

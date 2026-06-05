@@ -35,6 +35,7 @@ import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
 import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import logoCnft from '../assets/images/logo_cnft.png';
 
 const badgeImageMap: Record<string, string> = {
   castle: stampAlhambra,
@@ -346,8 +347,14 @@ export default function DashboardView({
         <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
 
         <div className="flex items-center gap-4 text-left max-w-xl">
-          <div className="w-16 h-16 rounded-2xl bg-[#001019] border border-secondary/35 flex items-center justify-center text-3xl select-none shadow-md hidden sm:flex shrink-0">
-            💎
+          <div className="w-24 h-24 flex items-center justify-center select-none shrink-0">
+            <img 
+              src={logoCnft} 
+              alt="cNFT Compass Reward Badge" 
+              referrerPolicy="no-referrer"
+              style={{ filter: "url(#remove-white)" }}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <span className="bg-secondary/15 text-secondary text-[9px] font-black px-2.5 py-0.5 rounded-full border border-secondary/20 uppercase tracking-widest block max-w-max mb-1.5">
@@ -612,7 +619,7 @@ export default function DashboardView({
             </div>
           </div>
 
-          {/* Dynamic XP Journey Track from 0 to 24000 XP */}
+          {/* Dynamic XP Journey Track from 0 to 40000 XP */}
           <div className="space-y-4 py-2">
             <div className="flex justify-between items-end text-xs font-bold text-on-surface-variant">
               <span className="flex items-center gap-1">
@@ -620,14 +627,14 @@ export default function DashboardView({
                 <span className="font-headline text-[10px] sm:text-xs font-black uppercase tracking-wider text-secondary">Ruta de Nivel & Experiencia (XP)</span>
               </span>
               <span className="font-mono text-[10px] sm:text-[11px] text-tertiary">
-                {totalXP.toLocaleString()} / 24,000 XP total
+                {totalXP.toLocaleString()} / 40,000 XP total
               </span>
             </div>
 
             <div className="relative w-full h-8 bg-surface-container-highest/40 rounded-xl border border-secondary/15 p-1 flex items-center overflow-visible select-none shadow-inner mt-4">
               {/* Milestones / Tick Marks */}
               <div className="absolute inset-x-0 inset-y-0 flex justify-between px-6 pointer-events-none">
-                {[0, 4000, 8000, 12000, 16000, 20000, 24000].map((milestone) => {
+                {[0, 8000, 16000, 24000, 32000, 40000].map((milestone) => {
                   const isReached = totalXP >= milestone;
                   return (
                     <div key={milestone} className="relative h-full flex flex-col justify-center items-center">
@@ -639,7 +646,7 @@ export default function DashboardView({
                       <span className={`absolute -bottom-5 font-mono text-[8px] font-black tracking-tight ${
                         isReached ? 'text-secondary font-extrabold' : 'text-on-surface-variant/40'
                       }`}>
-                        {milestone === 0 ? '0' : milestone === 24000 ? '24K' : `${milestone / 1000}K`}
+                        {milestone === 0 ? '0' : milestone === 40000 ? '40K' : `${milestone / 1000}K`}
                       </span>
                     </div>
                   );
@@ -649,13 +656,13 @@ export default function DashboardView({
               {/* Glowing progress fill back-bar */}
               <div 
                 className="bg-gradient-to-r from-secondary/40 via-secondary/70 to-[#319795] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(67,229,212,0.15)]"
-                style={{ width: `${Math.min(100, (totalXP / 24000) * 100)}%` }}
+                style={{ width: `${Math.min(100, (totalXP / 40000) * 100)}%` }}
               />
 
               {/* Dynamic floating Locator pin */}
               <div 
                 className="absolute -top-7 transform -translate-x-1/2 transition-all duration-500 z-20 pointer-events-none"
-                style={{ left: `${Math.min(100, (totalXP / 24000) * 100)}%` }}
+                style={{ left: `${Math.min(100, (totalXP / 40000) * 100)}%` }}
               >
                 <div className="bg-[#43e5d4] text-[#003732] flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase shadow-[0_4px_12px_rgba(67,229,212,0.35)] animate-bounce" style={{ animationDuration: '2.5s' }}>
                   <span>Nivel {level}</span>

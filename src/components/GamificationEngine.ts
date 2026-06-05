@@ -141,8 +141,17 @@ export function calculateUserProgress(locations: Location[]): DynamicProgressRes
     };
   });
 
-  // Calculate overall XP: each chip verified is 500 XP
-  const totalXP = overallCompletedPlaces * 500;
+  // Calculate special badge XP:
+  // Bronze (2 routes) = 2000 XP
+  // Silver (4 routes) = 3000 XP
+  // Gold (6 routes) = 6000 XP
+  let specialXP = 0;
+  if (completedRoutesCount >= 2) specialXP += 2000;
+  if (completedRoutesCount >= 4) specialXP += 3000;
+  if (completedRoutesCount >= 6) specialXP += 6000;
+
+  // Calculate overall XP: each chip verified is 500 XP + special badge bonus XP
+  const totalXP = (overallCompletedPlaces * 500) + specialXP;
 
   // Level Progression: Level is calculated from XP dynamically
   // Each level up takes 2,000 XP
