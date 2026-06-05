@@ -73,6 +73,52 @@ export default function App() {
   // Privacy Policy Page state
   const [showPrivacy, setShowPrivacy] = useState<boolean>(false);
 
+  // Simple client-side routing effect for clean URLs (/terminos and /privacidad)
+  useEffect(() => {
+    const handleUrlRouting = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      
+      if (path === '/terminos' || path === '/terminos/' || hash === '#/terminos' || hash === '#terminos') {
+        setShowTerms(true);
+        setShowPrivacy(false);
+      } else if (path === '/privacidad' || path === '/privacidad/' || hash === '#/privacidad' || hash === '#privacidad') {
+        setShowPrivacy(true);
+        setShowTerms(false);
+      } else {
+        setShowTerms(false);
+        setShowPrivacy(false);
+      }
+    };
+
+    // Check routing on load
+    handleUrlRouting();
+
+    // Listen to history popstate changes
+    window.addEventListener('popstate', handleUrlRouting);
+    return () => {
+      window.removeEventListener('popstate', handleUrlRouting);
+    };
+  }, []);
+
+  const handleShowTerms = () => {
+    window.history.pushState(null, '', '/terminos');
+    setShowTerms(true);
+    setShowPrivacy(false);
+  };
+
+  const handleShowPrivacy = () => {
+    window.history.pushState(null, '', '/privacidad');
+    setShowPrivacy(true);
+    setShowTerms(false);
+  };
+
+  const handleCloseTermsOrPrivacy = () => {
+    window.history.pushState(null, '', '/');
+    setShowTerms(false);
+    setShowPrivacy(false);
+  };
+
   // Navigation State
   const [activeTab, setActiveTab] = useState<string>('dashboard');
 
@@ -704,13 +750,13 @@ export default function App() {
 
   if (showTerms) {
     return (
-      <TermsOfServiceView onClose={() => setShowTerms(false)} />
+      <TermsOfServiceView onClose={handleCloseTermsOrPrivacy} />
     );
   }
 
   if (showPrivacy) {
     return (
-      <PrivacyPolicyView onClose={() => setShowPrivacy(false)} />
+      <PrivacyPolicyView onClose={handleCloseTermsOrPrivacy} />
     );
   }
 
@@ -732,8 +778,8 @@ export default function App() {
           setShowLanding(false);
           localStorage.setItem('passport_landing_entered', 'true');
         }} 
-        onShowTerms={() => setShowTerms(true)}
-        onShowPrivacy={() => setShowPrivacy(true)}
+        onShowTerms={handleShowTerms}
+        onShowPrivacy={handleShowPrivacy}
       />
     );
   }

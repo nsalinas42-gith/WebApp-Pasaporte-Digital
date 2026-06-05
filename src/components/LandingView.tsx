@@ -749,7 +749,7 @@ export default function LandingView({
               <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
               <div className="h-px bg-[#005049]/10 my-0.5" />
               <a 
-                href="#terms" 
+                href="/terminos" 
                 onClick={(e) => {
                   e.preventDefault();
                   if (onShowTerms) onShowTerms();
@@ -759,7 +759,7 @@ export default function LandingView({
                 {t('terminos')}
               </a>
               <a 
-                href="#privacy" 
+                href="/privacidad" 
                 onClick={(e) => {
                   e.preventDefault();
                   if (onShowPrivacy) onShowPrivacy();
