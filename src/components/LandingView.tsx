@@ -60,6 +60,8 @@ interface LandingViewProps {
   onResetToMockupState?: () => void;
   onResetToZeroState?: () => void;
   onEnterHiddenAdminPage?: () => void;
+  onShowTerms?: () => void;
+  onShowPrivacy?: () => void;
 }
 
 export default function LandingView({ 
@@ -71,7 +73,9 @@ export default function LandingView({
   setLockedRouteIds,
   onResetToMockupState,
   onResetToZeroState,
-  onEnterHiddenAdminPage
+  onEnterHiddenAdminPage,
+  onShowTerms,
+  onShowPrivacy
 }: LandingViewProps) {
   const { t } = useLanguage();
   
@@ -744,8 +748,26 @@ export default function LandingView({
               <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">{t('centro_ayuda')}</a>
               <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
               <div className="h-px bg-[#005049]/10 my-0.5" />
-              <a href="#terms" className="hover:text-[#43e5d4] hover:underline transition-all">{t('terminos')}</a>
-              <a href="#privacy" className="hover:text-[#43e5d4] hover:underline transition-all">{t('privacidad')}</a>
+              <a 
+                href="#terms" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onShowTerms) onShowTerms();
+                }}
+                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer"
+              >
+                {t('terminos')}
+              </a>
+              <a 
+                href="#privacy" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onShowPrivacy) onShowPrivacy();
+                }}
+                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer"
+              >
+                {t('privacidad')}
+              </a>
               <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">{t('cookies_policy')}</a>
             </div>
           </div>

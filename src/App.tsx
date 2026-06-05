@@ -31,6 +31,8 @@ import LeaderboardView from './components/LeaderboardView';
 import SettingsView from './components/SettingsView';
 import LandingView from './components/LandingView';
 import AdminHiddenView from './components/AdminHiddenView';
+import TermsOfServiceView from './components/TermsOfServiceView';
+import PrivacyPolicyView from './components/PrivacyPolicyView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
 import logoPintaMapas from './assets/images/Logo Pinta Mapas1.png';
@@ -64,6 +66,12 @@ export default function App() {
   const [showLanding, setShowLanding] = useState<boolean>(() => {
     return localStorage.getItem('passport_landing_entered') !== 'true';
   });
+
+  // Terms of Service Page state
+  const [showTerms, setShowTerms] = useState<boolean>(false);
+
+  // Privacy Policy Page state
+  const [showPrivacy, setShowPrivacy] = useState<boolean>(false);
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -694,6 +702,18 @@ export default function App() {
     );
   }
 
+  if (showTerms) {
+    return (
+      <TermsOfServiceView onClose={() => setShowTerms(false)} />
+    );
+  }
+
+  if (showPrivacy) {
+    return (
+      <PrivacyPolicyView onClose={() => setShowPrivacy(false)} />
+    );
+  }
+
   if (showLanding) {
     return (
       <LandingView 
@@ -712,6 +732,8 @@ export default function App() {
           setShowLanding(false);
           localStorage.setItem('passport_landing_entered', 'true');
         }} 
+        onShowTerms={() => setShowTerms(true)}
+        onShowPrivacy={() => setShowPrivacy(true)}
       />
     );
   }
