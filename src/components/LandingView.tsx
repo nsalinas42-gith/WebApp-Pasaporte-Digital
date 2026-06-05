@@ -46,6 +46,7 @@ import specialPlata from '../assets/images/guia_legendario_2.png';
 import specialOro from '../assets/images/explorador_supremo.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import caracasAvilaImg from '../assets/images/caracas_avila_1780683871791.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
 import UserWayAccessibility from './UserWayAccessibility';
 
@@ -209,10 +210,10 @@ export default function LandingView({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,80,73,0.15)_0%,transparent_70%)] pointer-events-none z-0"></div>
         <div className="absolute inset-0 bg-[#000f16] opacity-35 mix-blend-multiply z-0 pointer-events-none"></div>
 
-        {/* Immersive Cyber Colosseum Background Image */}
+        {/* Immersive Caracas Ávila Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center select-none pointer-events-none opacity-20 md:opacity-40 z-0 scale-105 transition-transform duration-1000"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1600&q=85')" }}
+          className="absolute inset-0 bg-cover bg-center select-none pointer-events-none opacity-30 md:opacity-50 z-0 scale-105 transition-transform duration-1000"
+          style={{ backgroundImage: `url(${caracasAvilaImg})` }}
         />
         
         {/* Holographic tech circle and matrices over Colosseum */}

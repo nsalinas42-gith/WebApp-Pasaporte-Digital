@@ -30,6 +30,7 @@ import { Location, UserProfile, UserStats } from '../types';
 import { useLanguage } from '../translations';
 
 import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import parqueCentralImg from '../assets/images/parque_central_caracas_1780684136722.png';
 import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
 import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
 import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
@@ -164,7 +165,8 @@ export default function DashboardView({
         <img 
           alt="Hero image for digital tourist passport" 
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsQHg6caflVmaOx_rC9dOwHEJHyEVhQh5QkG7Ji8dxOpM1KCEk4a3U5HP5WbbMyKIe8A72_S33rtiaOqMUbFZZ72nYi8SmxJrNZoMLP3je81iFDfdjt0l_ElNTbGkIj2HOL8w2DNHu6Qsm504T3iOeYuQaZc_l9DOF0f6QVoXjXjPpqfEij6Pvf6jq8a9--yoyFMPClrr_T8uNx5wW7ftfAFksc5HDdmaHBWx01KMeHdm_4r4ovtd-n65oZv46Pop-Qiq0fZVo7nK-"
+          src={parqueCentralImg}
+          referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent"></div>
         <div className="absolute inset-0 bg-black/25"></div>
