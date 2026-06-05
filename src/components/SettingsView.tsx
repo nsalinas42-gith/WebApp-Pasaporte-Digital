@@ -26,7 +26,6 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletCard } from './WalletCard';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import { LIST_AVATARS } from '../utils/avatars';
-import GoogleSignInButton from './GoogleSignInButton';
 
 const PRESET_AVATARS = LIST_AVATARS;
 

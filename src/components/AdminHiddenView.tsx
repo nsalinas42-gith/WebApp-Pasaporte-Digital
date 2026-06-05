@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 import { Location, UserProfile } from '../types';
 import { INITIAL_LOCATIONS } from '../data';
-import GoogleSignInButton from './GoogleSignInButton';
 import { 
   getAllRegisteredUsers, 
   resetUserProgress, 
@@ -44,7 +43,6 @@ interface AdminHiddenViewProps {
   onResetToZeroState: () => void;
   onToggleLocationCheckIn: (locationId: string) => void;
   onClose: () => void;
-  onGoogleLoginSuccess?: (decodedUser: any, rawToken: string) => void;
 }
 
 export default function AdminHiddenView({
@@ -55,8 +53,7 @@ export default function AdminHiddenView({
   onResetToMockupState,
   onResetToZeroState,
   onToggleLocationCheckIn,
-  onClose,
-  onGoogleLoginSuccess
+  onClose
 }: AdminHiddenViewProps) {
   const [selectedDbTable, setSelectedDbTable] = useState<'locations' | 'user' | 'system'>('locations');
   const [simulationLogs, setSimulationLogs] = useState<string[]>(() => [
@@ -409,11 +406,11 @@ export default function AdminHiddenView({
         {/* Right Column (4 cols): DB Explorer & Settings */}
         <div className="lg:col-span-4 space-y-8">
           
-          {/* Autenticación con Google (Inside Admin Panel) */}
+          {/* Estado de Cuenta de Usuario */}
           <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
             <div className="flex justify-between items-center border-[#005049]/15 border-b pb-2">
               <h3 className="font-headline text-sm font-bold text-secondary uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-5 h-5 text-secondary" style={{ display: 'inline-block' }} /> Autenticación con Google
+                <ShieldCheck className="w-5 h-5 text-secondary" style={{ display: 'inline-block' }} /> Autenticación de Usuario
               </h3>
               <div className="flex items-center gap-1.5 text-[9px] bg-secondary/10 border border-secondary/20 px-2.5 py-0.5 rounded-full text-secondary font-bold">
                 <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
@@ -422,33 +419,27 @@ export default function AdminHiddenView({
             </div>
             
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Vincula cuentas de Google de forma segura para sincronizar nombre, correo y avatar oficial directamente en la Bitácora Digital.
+              Las cuentas creadas con correo electrónico y contraseña se sincronizan en tiempo real directamente con Firebase Firestore.
             </p>
 
             <div className="flex flex-col gap-3 p-3.5 bg-[#000f16]/60 rounded-2xl border border-secondary/15">
-              <div className="text-left space-y-0.5">
+              <div className="text-left space-y-1">
                 <span className="text-[9px] uppercase font-bold text-[#8c9f9e] block">Estado de Conexión</span>
                 <span className="text-xs text-[#c8e7fb] font-semibold flex flex-wrap items-center gap-1">
                   {user && user.email && user.email !== 'felix.voyager@gmail.com' ? (
                     <>
-                      <span className="text-[#43e5d4] font-bold">● Conectado:</span> {user.name} ({user.email})
+                      <span className="text-[#43e5d4] font-bold">● Sesión Iniciada:</span> {user.name} ({user.email})
                     </>
                   ) : (
                     <>
-                      <span className="text-on-surface-variant/70 font-semibold">● No vinculado</span>
+                      <span className="text-on-surface-variant/70 font-semibold">● Modo Invitado (Local)</span>
                     </>
                   )}
                 </span>
+                <p className="text-[10px] text-on-surface-variant/60 leading-normal">
+                  Inicia sesión o regístrate en la pantalla principal para vincular tu progreso de forma permanente.
+                </p>
               </div>
-              <GoogleSignInButton
-                onSuccess={(decoded, token) => {
-                  if (onGoogleLoginSuccess) {
-                    onGoogleLoginSuccess(decoded, token);
-                  }
-                }}
-                className="w-full"
-                hideDebugConfig={true}
-              />
             </div>
           </div>
 

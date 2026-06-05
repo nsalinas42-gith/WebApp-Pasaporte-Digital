@@ -40,7 +40,6 @@ import { calculateUserProgress } from './components/GamificationEngine';
 import { onAuthStateChanged } from 'firebase/auth';
 import { 
   auth, 
-  authenticateWithGoogleCredential, 
   logoutFirebase, 
   saveUserProfileAndProgress, 
   getUserProfileAndProgress 
@@ -628,22 +627,7 @@ export default function App() {
     setFirebaseUid(null);
     localStorage.removeItem('passport_firebase_uid');
 
-    // 1. Revoke Google OAuth session and disable auto-select if GSI SDK is present
-    if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
-      try {
-        const idLib = (window as any).google.accounts.id;
-        idLib.disableAutoSelect();
-        if (user && user.email) {
-          idLib.revoke(user.email, (done: any) => {
-            console.log('Google Sign-In session revoked for:', user.email, done);
-          });
-        }
-      } catch (err) {
-        console.error('Error during Google Sign-In session revocation:', err);
-      }
-    }
-
-    // 2. Clear authentication and user data from storage
+    // Clear authentication and user data from storage
     localStorage.removeItem('passport_landing_entered');
     localStorage.removeItem('passport_user');
 
@@ -663,20 +647,17 @@ export default function App() {
     setShowLanding(true);
   };
 
-  const handleGoogleLoginSuccess = async (decodedUser: any, rawToken: string) => {
+  const handleAuthSuccess = async (email: string, name: string) => {
     try {
-      // 1. Authenticate with Google credential in Firebase Auth
-      let fbUser;
-      if (rawToken === 'firebase-popup-token' && auth.currentUser) {
-        fbUser = auth.currentUser;
-      } else {
-        fbUser = await authenticateWithGoogleCredential(rawToken);
+      const fbUser = auth.currentUser;
+      if (!fbUser) {
+        throw new Error("No authenticated Firebase user found.");
       }
       
       const updatedUser: UserProfile = {
-        name: fbUser.displayName || decodedUser.name || user.name,
-        email: fbUser.email || decodedUser.email || user.email,
-        avatarUrl: fbUser.photoURL || decodedUser.picture || user.avatarUrl,
+        name: name || fbUser.displayName || email.split('@')[0],
+        email: fbUser.email || email,
+        avatarUrl: fbUser.photoURL || user.avatarUrl || '',
         title: user.title || 'Explorador',
         level: user.level,
         xp: user.xp,
@@ -692,7 +673,7 @@ export default function App() {
         setUser({
           ...cloudData.profile,
           name: updatedUser.name,
-          avatarUrl: updatedUser.avatarUrl,
+          avatarUrl: updatedUser.avatarUrl || cloudData.profile.avatarUrl,
         });
         setStats(cloudData.stats);
         setLocations(cloudData.locations);
@@ -710,13 +691,13 @@ export default function App() {
       setShowLanding(false);
       localStorage.setItem('passport_landing_entered', 'true');
     } catch (e) {
-      console.error("GLogin Firebase sync error, falling back to local localstorage session:", e);
+      console.error("Auth sync error, falling back to local localstorage session:", e);
       // Fallback local login
       const updatedUser: UserProfile = {
         ...user,
-        name: decodedUser.name || user.name,
-        email: decodedUser.email || user.email,
-        avatarUrl: decodedUser.picture || user.avatarUrl,
+        name: name || user.name,
+        email: email || user.email,
+        avatarUrl: user.avatarUrl || '',
       };
       setUser(updatedUser);
       localStorage.setItem('passport_user', JSON.stringify(updatedUser));
@@ -739,7 +720,6 @@ export default function App() {
         onResetToMockupState={handleResetToMockupState}
         onResetToZeroState={handleResetToZeroState}
         onToggleLocationCheckIn={handleToggleLocationCheckIn}
-        onGoogleLoginSuccess={handleGoogleLoginSuccess}
         onClose={() => {
           setShowLanding(true);
           setActiveTab('dashboard');
@@ -769,7 +749,7 @@ export default function App() {
         setLockedRouteIds={setLockedRouteIds}
         onResetToMockupState={handleResetToMockupState}
         onResetToZeroState={handleResetToZeroState}
-        onGoogleLoginSuccess={handleGoogleLoginSuccess}
+        onAuthSuccess={handleAuthSuccess}
         onEnterHiddenAdminPage={() => {
           setShowLanding(false);
           setActiveTab('admin_hidden');

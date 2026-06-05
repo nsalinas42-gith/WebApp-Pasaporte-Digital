@@ -6,9 +6,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { 
   getAuth, 
-  GoogleAuthProvider, 
-  signInWithCredential, 
-  signInWithPopup, 
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -118,35 +115,7 @@ export function handleFirestoreError(error: unknown, operationType: ReturnOperat
   throw new Error(JSON.stringify(errInfo));
 }
 
-/**
- * Sign in user into Firebase Auth securely using the Google Credentials provided by the Google Identity Services button
- */
-export async function authenticateWithGoogleCredential(rawToken: string) {
-  try {
-    const credential = GoogleAuthProvider.credential(rawToken);
-    const userCredential = await signInWithCredential(auth, credential);
-    return userCredential.user;
-  } catch (error) {
-    console.error("Firebase Sign-In failed using decrypted Google credential:", error);
-    throw error;
-  }
-}
 
-/**
- * Sign in user into Firebase Auth securely using standard Firebase Google Pop-up (No Client ID required in client code)
- */
-export async function signInWithGooglePopup() {
-  try {
-    const provider = new GoogleAuthProvider();
-    provider.addScope('profile');
-    provider.addScope('email');
-    const userCredential = await signInWithPopup(auth, provider);
-    return userCredential.user;
-  } catch (error) {
-    console.error("Firebase Popup Sign-In failed:", error);
-    throw error;
-  }
-}
 
 /**
  * Complete Sign Out from Firebase Auth

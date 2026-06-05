@@ -42,8 +42,7 @@ import {
   recoverPassword, 
   recoverEmail 
 } from '../utils/firebase';
-import GoogleSignInButton from './GoogleSignInButton';
-import { DecodedGoogleUser } from '../utils/googleAuth';
+
 import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
 import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
 import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
@@ -61,7 +60,7 @@ import UserWayAccessibility from './UserWayAccessibility';
 
 interface LandingViewProps {
   onEnter: () => void;
-  onGoogleLoginSuccess?: (decodedUser: DecodedGoogleUser, rawToken: string) => void;
+  onAuthSuccess?: (email: string, name: string) => void;
   user?: UserProfile;
   locations?: Location[];
   lockedRouteIds?: string[];
@@ -75,7 +74,7 @@ interface LandingViewProps {
 
 export default function LandingView({ 
   onEnter, 
-  onGoogleLoginSuccess,
+  onAuthSuccess,
   user,
   locations,
   lockedRouteIds,
@@ -155,22 +154,17 @@ export default function LandingView({
       const fbUser = await signInWithEmail(emailForm, passwordForm);
       setAuthSuccessMsg("¡Sesión iniciada correctamente! Entrando...");
       
-      if (onGoogleLoginSuccess) {
-        onGoogleLoginSuccess(
-          {
-            name: fbUser.displayName || emailForm.split('@')[0],
-            email: fbUser.email || emailForm,
-            picture: ''
-          }, 
-          'firebase-popup-token'
-        );
+      if (onAuthSuccess) {
+        onAuthSuccess(fbUser.email || emailForm, fbUser.displayName || emailForm.split('@')[0]);
       } else {
         onEnter();
       }
     } catch (err: any) {
       console.error(err);
       let localizedError = "Error al iniciar sesión.";
-      if (err?.code === 'auth/wrong-password' || err?.message?.includes('password') || err?.message?.includes('credential') || err?.message?.includes('invalid-credential')) {
+      if (err?.code === 'auth/network-request-failed' || err?.message?.includes('network-request-failed')) {
+        localizedError = "auth/network-request-failed";
+      } else if (err?.code === 'auth/wrong-password' || err?.message?.includes('password') || err?.message?.includes('credential') || err?.message?.includes('invalid-credential')) {
         localizedError = "Contraseña incorrecta o correo inválido. Verifica tus datos.";
       } else if (err?.code === 'auth/user-not-found' || err?.message?.includes('user-not-found')) {
         localizedError = "No existe ninguna cuenta registrada con este correo electrónico.";
@@ -224,22 +218,17 @@ export default function LandingView({
       const fbUser = await signUpWithEmail(emailForm, passwordForm, nameForm, secondaryEmailForm);
       setAuthSuccessMsg("¡Cuenta creada y sincronizada exitosamente con Firebase!");
       
-      if (onGoogleLoginSuccess) {
-        onGoogleLoginSuccess(
-          {
-            name: nameForm,
-            email: emailForm,
-            picture: ''
-          }, 
-          'firebase-popup-token'
-        );
+      if (onAuthSuccess) {
+        onAuthSuccess(emailForm, nameForm);
       } else {
         onEnter();
       }
     } catch (err: any) {
       console.error(err);
       let localizedError = "Error al crear la cuenta.";
-      if (err?.code === 'auth/email-already-in-use' || err?.message?.includes('already-in-use')) {
+      if (err?.code === 'auth/network-request-failed' || err?.message?.includes('network-request-failed')) {
+        localizedError = "auth/network-request-failed";
+      } else if (err?.code === 'auth/email-already-in-use' || err?.message?.includes('already-in-use')) {
         localizedError = "El correo electrónico principal ya está registrado por otro usuario.";
       } else {
         localizedError = err?.message || localizedError;
@@ -271,7 +260,11 @@ export default function LandingView({
         setRecoveryMessage({ type: 'error', text: result.error || "El correo ingresado no está registrado." });
       }
     } catch (err: any) {
-      setRecoveryMessage({ type: 'error', text: err?.message || "Ocurrió un error inesperado al procesar la solicitud." });
+      let msg = err?.message || "Ocurrió un error inesperado al procesar la solicitud.";
+      if (err?.code === 'auth/network-request-failed' || msg.includes('network-request-failed')) {
+        msg = "Error de conexión (auth/network-request-failed): No se pudo establecer contacto con Firebase. Esto suele deberse a un bloqueador de anuncios (AdBlock, uBlock, Brave Shield) bloqueando 'identitytoolkit.googleapis.com'.";
+      }
+      setRecoveryMessage({ type: 'error', text: msg });
     }
   };
 
@@ -296,7 +289,11 @@ export default function LandingView({
         setRecoveryMessage({ type: 'error', text: result.error || "No se encontró ningún correo principal asociado con esta cuenta secundaria." });
       }
     } catch (err: any) {
-      setRecoveryMessage({ type: 'error', text: err?.message || "Ocurrió un error inesperado al buscar la cuenta." });
+      let msg = err?.message || "Ocurrió un error inesperado al buscar la cuenta.";
+      if (err?.code === 'auth/network-request-failed' || msg.includes('network-request-failed')) {
+        msg = "Error de conexión (auth/network-request-failed): No se pudo establecer contacto con Firebase. Esto suele deberse a un bloqueador de anuncios (AdBlock, uBlock, Brave Shield) bloqueando 'identitytoolkit.googleapis.com'.";
+      }
+      setRecoveryMessage({ type: 'error', text: msg });
     }
   };
 
@@ -593,10 +590,43 @@ export default function LandingView({
 
                 {/* Status Feedbacks */}
                 {authErrorMsg && (
-                  <div className="text-[11px] text-rose-400 bg-rose-950/40 border border-rose-500/20 p-2.5 rounded-xl flex items-start gap-2">
-                    <span className="font-extrabold">⚠️</span>
-                    <span>{authErrorMsg}</span>
-                  </div>
+                  authErrorMsg === 'auth/network-request-failed' ? (
+                    <div className="text-[11px] text-rose-300 bg-rose-950/60 border border-rose-500/30 p-4 rounded-xl flex flex-col gap-3 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                      <div className="flex items-center gap-2 font-bold text-rose-400">
+                        <span className="text-sm">⚠️</span>
+                        <span>Error de Red / Bloqueo de Firebase Detectado</span>
+                      </div>
+                      <p className="leading-relaxed text-left text-rose-200/90 font-sans">
+                        No se pudo conectar con los servidores de autenticación de Google (<code>auth/network-request-failed</code>). Esto ocurre habitualmente porque un <strong>bloqueador de anuncios/rastreadores</strong> (como uBlock Origin, AdBlock Plus o Brave Shields) o un firewall de red está impidiendo la conexión saliente con <code>identitytoolkit.googleapis.com</code>.
+                      </p>
+                      <div className="border-t border-rose-500/10 pt-2.5 space-y-1 text-left text-[10.5px]">
+                        <p className="font-semibold text-rose-400/90 font-sans">🔧 ¿Cómo solucionarlo?</p>
+                        <ul className="list-disc pl-4 space-y-1 text-rose-200/80 font-sans">
+                          <li>Desactive o pause temporalmente su bloqueador de anuncios o los escudos de Brave para este sitio web.</li>
+                          <li>Intente acceder utilizando una ventana de incógnito del navegador sin extensiones activas.</li>
+                          <li>Si la página está cargándose dentro de un marco de vista previa (iframe), ábrala en una pestaña nueva del navegador.</li>
+                        </ul>
+                      </div>
+                      <div className="border-t border-rose-500/10 pt-3 flex flex-col gap-2">
+                        <p className="text-[11px] text-amber-300/90 font-bold font-sans">Modo de Emergencia Interactiva:</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthErrorMsg(null);
+                            onEnter();
+                          }}
+                          className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-[10.5px] tracking-wider rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-md h-9"
+                        >
+                          Entrar en Modo Local (Invitado Libre)
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-rose-400 bg-rose-950/40 border border-rose-500/20 p-2.5 rounded-xl flex items-start gap-2">
+                      <span className="font-extrabold">⚠️</span>
+                      <span className="text-left leading-relaxed">{authErrorMsg}</span>
+                    </div>
+                  )
                 )}
 
                 {authSuccessMsg && (
@@ -642,34 +672,13 @@ export default function LandingView({
               </form>
             </div>
 
-            {/* Separator line with OR text */}
-            <div className="flex items-center gap-3 w-full max-w-md my-1 text-on-surface-variant/35 text-[10px] uppercase font-bold select-none">
-              <div className="flex-1 h-px bg-[#43e5d4]/10"></div>
-              <span>o continuar con</span>
-              <div className="flex-1 h-px bg-[#43e5d4]/10"></div>
-            </div>
-
-            {/* Top row with Google Sign In and Iniciar como Invitado */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-              <div className="w-full sm:w-auto min-w-[240px]">
-                <GoogleSignInButton
-                  key={user?.email || 'guest'}
-                  onSuccess={(decoded, token) => {
-                    if (onGoogleLoginSuccess) {
-                      onGoogleLoginSuccess(decoded, token);
-                    } else {
-                      onEnter();
-                    }
-                  }}
-                  hideDebugConfig={true}
-                />
-              </div>
-
+            {/* Action Row for Guest Access */}
+            <div className="flex flex-col items-center justify-center gap-4 w-full pt-1">
               <button
                 onClick={onEnter}
-                className="w-full sm:w-auto px-8 py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-full text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center min-w-[240px] shadow-[0_0_15px_rgba(67,229,212,0.15)]"
+                className="w-full max-w-md px-8 py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center shadow-[0_0_15px_rgba(67,229,212,0.12)]"
               >
-                {t('iniciar_como_invitado')}
+                {t('iniciar_como_invitado') || 'Explorar como Invitado'}
               </button>
             </div>
 
