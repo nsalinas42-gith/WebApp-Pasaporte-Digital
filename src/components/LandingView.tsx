@@ -46,7 +46,7 @@ import specialPlata from '../assets/images/guia_legendario_2.png';
 import specialOro from '../assets/images/explorador_supremo.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
-import caracasAvilaImg from '../assets/images/caracas_avila_1780683871791.png';
+import caracasAvilaImg from '../assets/images/caracas_sky_avila_1780684422323.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
 import UserWayAccessibility from './UserWayAccessibility';
 
@@ -212,7 +212,7 @@ export default function LandingView({
 
         {/* Immersive Caracas Ávila Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center select-none pointer-events-none opacity-30 md:opacity-50 z-0 scale-105 transition-transform duration-1000"
+          className="absolute inset-0 bg-cover bg-[center_top] select-none pointer-events-none opacity-35 md:opacity-55 z-0 scale-105 transition-transform duration-1000"
           style={{ backgroundImage: `url(${caracasAvilaImg})` }}
         />
         
