@@ -493,21 +493,51 @@ async function sha256(message: string): Promise<string> {
  * Sign in using Firebase Auth with email and password first, and then retrieve user metadata.
  */
 export async function signInWithEmail(email: string, password: string) {
+  let userCredential;
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const userId = userCredential.user.uid;
-    
-    // Update lastLogin in Firestore
-    const userDocRef = doc(db, 'users', userId);
-    await setDoc(userDocRef, {
-      lastLogin: serverTimestamp()
-    }, { merge: true });
-
-    return userCredential.user;
-  } catch (error) {
-    console.error("Sign-In with email failed:", error);
-    throw error;
+    userCredential = await signInWithEmailAndPassword(auth, email, password);
+  } catch (authError) {
+    console.error("Firebase Auth sign-in failed:", authError);
+    throw authError;
   }
+
+  const userId = userCredential.user.uid;
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    
+    // Check if user document exists
+    let userSnap;
+    try {
+      userSnap = await getDoc(userDocRef);
+    } catch (readErr) {
+      console.warn("Could not read user profile during sign-in:", readErr);
+    }
+
+    if (userSnap && userSnap.exists()) {
+      await setDoc(userDocRef, {
+        lastLogin: serverTimestamp()
+      }, { merge: true });
+    } else {
+      // Document is missing or unreadable - create a fallback profile that satisfies create rules
+      await setDoc(userDocRef, {
+        uid: userId,
+        name: email.split('@')[0],
+        email: email,
+        avatarUrl: '',
+        title: 'Explorador',
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp()
+      });
+    }
+  } catch (firestoreError) {
+    console.warn(
+      "Sign-in Firestore profile sync failed (auth is still successful):", 
+      firestoreError
+    );
+    // Do NOT throw or abort sign-in; the user is authenticated in Auth, and state listeners will sync later.
+  }
+
+  return userCredential.user;
 }
 
 /**
@@ -515,9 +545,16 @@ export async function signInWithEmail(email: string, password: string) {
  * Persist passwordHash (SHA-256 hashed) and secondaryEmail in Firestore.
  */
 export async function signUpWithEmail(email: string, password: string, name: string, secondaryEmail: string) {
+  let userCredential;
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const userId = userCredential.user.uid;
+    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  } catch (authError) {
+    console.error("Firebase Auth sign-up failed:", authError);
+    throw authError;
+  }
+
+  const userId = userCredential.user.uid;
+  try {
     const hashHex = await sha256(password);
 
     // Save initial user profile with optional recovery fields
@@ -533,12 +570,15 @@ export async function signUpWithEmail(email: string, password: string, name: str
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp(),
     });
-
-    return userCredential.user;
-  } catch (error) {
-    console.error("Sign-Up with email failed:", error);
-    throw error;
+  } catch (firestoreError) {
+    console.warn(
+      "Sign-up Firestore profile initialization deferred (auth is successful):", 
+      firestoreError
+    );
+    // Do NOT throw on Firestore sync delay; onAuthSuccess and debounced syncs will create the files.
   }
+
+  return userCredential.user;
 }
 
 /**

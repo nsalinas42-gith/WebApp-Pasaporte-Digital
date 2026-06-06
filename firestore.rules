@@ -94,7 +94,7 @@ service cloud.firestore {
         ((isOwner(userId) || isAdmin()) 
           && isValidUser(incoming()) 
           && (!('lastLogin' in incoming()) || incoming().lastLogin == request.time)
-          && (!('createdAt' in incoming()) || incoming().createdAt == existing().createdAt))
+          && (!('createdAt' in incoming()) || !('createdAt' in existing()) || incoming().createdAt == existing().createdAt))
         ||
         // Unauthenticated user password recovery updates
         (incoming().diff(existing()).affectedKeys().hasOnly(['recoveryToken', 'recoveryTokenExpires', 'lastLogin']))
