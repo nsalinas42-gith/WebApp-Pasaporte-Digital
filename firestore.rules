@@ -34,24 +34,28 @@ service cloud.firestore {
 
     // Validation Blueprint for User Document
     function isValidUser(data) {
-      return data.uid is string && data.uid.size() <= 128
-        && data.name is string && data.name.size() <= 200
-        && data.email is string && data.email.size() <= 200
-        && (data.avatarUrl == null || (data.avatarUrl is string && data.avatarUrl.size() <= 1000))
-        && (data.title == null || (data.title is string && data.title.size() <= 128))
-        && (data.secondaryEmail == null || (data.secondaryEmail is string && data.secondaryEmail.size() <= 200))
-        && (data.passwordHash == null || (data.passwordHash is string && data.passwordHash.size() <= 128))
-        && (data.recoveryToken == null || (data.recoveryToken is string && data.recoveryToken.size() <= 128))
-        && (data.recoveryTokenExpires == null || (data.recoveryTokenExpires is string && data.recoveryTokenExpires.size() <= 128));
+      return (!('uid' in data) || (data.uid is string && data.uid.size() <= 128))
+        && (!('name' in data) || (data.name is string && data.name.size() <= 200))
+        && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+        && (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 1000))
+        && (!('title' in data) || (data.title is string && data.title.size() <= 128))
+        && (!('bio' in data) || (data.bio is string && data.bio.size() <= 2000))
+        && (!('secondaryEmail' in data) || (data.secondaryEmail is string && data.secondaryEmail.size() <= 200))
+        && (!('passwordHash' in data) || (data.passwordHash is string && data.passwordHash.size() <= 128))
+        && (!('recoveryToken' in data) || (data.recoveryToken is string && data.recoveryToken.size() <= 128))
+        && (!('recoveryTokenExpires' in data) || (data.recoveryTokenExpires is string && data.recoveryTokenExpires.size() <= 128));
     }
 
     // Validation Blueprint for User Progress Document
     function isValidUserProgress(data) {
-      return data.uid is string && data.uid.size() <= 128
-        && data.level is number
-        && data.xp is number
-        && data.xpToNextLevel is number
-        && (data.locations == null || (data.locations is string && data.locations.size() <= 131072));
+      return (!('uid' in data) || (data.uid is string && data.uid.size() <= 128))
+        && (!('level' in data) || (data.level is number))
+        && (!('xp' in data) || (data.xp is number))
+        && (!('xpToNextLevel' in data) || (data.xpToNextLevel is number))
+        && (!('linkedWallet' in data) || (data.linkedWallet is string && data.linkedWallet.size() <= 200))
+        && (!('title' in data) || (data.title is string && data.title.size() <= 128))
+        && (!('bio' in data) || (data.bio is string && data.bio.size() <= 2000))
+        && (!('locations' in data) || (data.locations is string && data.locations.size() <= 131072));
     }
 
     // Validation Blueprint for Settings Document
@@ -79,15 +83,22 @@ service cloud.firestore {
     // Rules for /users/{userId}
     match /users/{userId} {
       allow get, list: if true; // Public retrieval/query enabled for custom email/password registry & recovery
-      allow create: if true // Multi-provider user registrations are enabled and schema-enforced
+      allow create: if isSignedIn()
         && isValidId(userId)
         && isValidUser(incoming())
+        && incoming().keys().hasAll(['uid', 'name', 'email'])
         && incoming().createdAt == request.time
         && incoming().lastLogin == request.time;
-      allow update: if true // Allows recovery token updates and standard authenticated updates
-        && isValidUser(incoming())
-        && incoming().lastLogin == request.time
-        && incoming().createdAt == existing().createdAt;
+      allow update: if (
+        // Standard owner or admin updates
+        ((isOwner(userId) || isAdmin()) 
+          && isValidUser(incoming()) 
+          && (!('lastLogin' in incoming()) || incoming().lastLogin == request.time)
+          && (!('createdAt' in incoming()) || incoming().createdAt == existing().createdAt))
+        ||
+        // Unauthenticated user password recovery updates
+        (incoming().diff(existing()).affectedKeys().hasOnly(['recoveryToken', 'recoveryTokenExpires', 'lastLogin']))
+      );
       allow delete: if isAdmin();
     }
 
@@ -98,10 +109,11 @@ service cloud.firestore {
       allow create: if isOwner(userId)
         && isValidId(userId)
         && isValidUserProgress(incoming())
+        && incoming().keys().hasAll(['uid', 'level', 'xp', 'xpToNextLevel'])
         && incoming().updatedAt == request.time;
       allow update: if (isOwner(userId) || isAdmin())
         && isValidUserProgress(incoming())
-        && incoming().updatedAt == request.time;
+        && (!('updatedAt' in incoming()) || incoming().updatedAt == request.time);
       allow delete: if isAdmin();
     }
   }
