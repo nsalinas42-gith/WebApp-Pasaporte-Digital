@@ -23,17 +23,39 @@ import {
   getDocFromServer,
   onSnapshot,
   query,
-  where
+  where,
+  getDocFromCache,
+  getDocsFromCache,
+  enableIndexedDbPersistence,
+  setLogLevel
 } from 'firebase/firestore';
 import { UserProfile, UserStats, Location } from '../types';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase app safely
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// Silence verbose connection failure logging from firestore internal SDK on sandboxed environments
+try {
+  setLogLevel('error');
+} catch (e) {
+  console.warn("Could not set Firestore log level:", e);
+}
+
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 }, firebaseConfig.firestoreDatabaseId);
+
 export const auth = getAuth(app);
+
+// Enable offline persistence if allowed in the current browser/iframe sandbox
+try {
+  enableIndexedDbPersistence(db).catch((err) => {
+    console.warn("IndexedDB persistence could not be enabled/is already active (expected in some sandboxed containers):", err.code);
+  });
+} catch (e) {
+  console.warn("IndexedDB persistence could not be initialized:", e);
+}
 
 // Test database connection on boot as required by Firebase SDK Verification guidelines
 async function testConnection() {
@@ -150,9 +172,22 @@ export async function saveUserProfileAndProgress(
 
   try {
     const userDocRef = doc(db, 'users', userId);
-    const userDocSnap = await getDoc(userDocRef);
+    let userExists = false;
+    let userDocSnap;
+    try {
+      userDocSnap = await getDoc(userDocRef);
+      userExists = userDocSnap.exists();
+    } catch (e) {
+      console.warn("Could not check user profile existence online. Trying cache...");
+      try {
+        userDocSnap = await getDocFromCache(userDocRef);
+        userExists = userDocSnap.exists();
+      } catch (cacheErr) {
+        console.warn("User profile cache miss.", cacheErr);
+      }
+    }
 
-    if (userDocSnap.exists()) {
+    if (userExists) {
       // Record user metadata profile (Update - Excluding createdAt to maintain immutability)
       await setDoc(userDocRef, {
         uid: userId,
@@ -218,7 +253,14 @@ export async function getUserProfileAndProgress(userId: string): Promise<{
   const progressDocPath = `user_progress/${userId}`;
 
   try {
-    const progressDoc = await getDoc(doc(db, 'user_progress', userId));
+    let progressDoc;
+    try {
+      progressDoc = await getDoc(doc(db, 'user_progress', userId));
+    } catch (err: any) {
+      console.warn("Could not fetch user progress online. Falling back to cache...", err.message || err);
+      progressDoc = await getDocFromCache(doc(db, 'user_progress', userId));
+    }
+
     if (!progressDoc.exists()) {
       return null;
     }
@@ -226,7 +268,13 @@ export async function getUserProfileAndProgress(userId: string): Promise<{
     const data = progressDoc.data();
     
     // Attempt retrieving user profile metadata details
-    const userDoc = await getDoc(doc(db, 'users', userId));
+    let userDoc;
+    try {
+      userDoc = await getDoc(doc(db, 'users', userId));
+    } catch (err) {
+      console.warn("Could not fetch user profile online. Falling back to cache...");
+      userDoc = await getDocFromCache(doc(db, 'users', userId));
+    }
     const userData = userDoc.exists() ? userDoc.data() : null;
 
     const profile: UserProfile = {
@@ -269,7 +317,13 @@ export async function getUserProfileAndProgress(userId: string): Promise<{
  */
 export async function getAllRegisteredUsers(): Promise<{ uid: string; name: string; email: string; avatarUrl?: string; createdAt?: any; lastLogin?: any }[]> {
   try {
-    const usersSnap = await getDocs(collection(db, 'users'));
+    let usersSnap;
+    try {
+      usersSnap = await getDocs(collection(db, 'users'));
+    } catch (err) {
+      console.warn("Could not get users online. Trying cache...");
+      usersSnap = await getDocsFromCache(collection(db, 'users'));
+    }
     const list: any[] = [];
     usersSnap.forEach((doc) => {
       const data = doc.data();

@@ -272,7 +272,7 @@ export default function App() {
     }
   }, [txHash]);
 
-  // Synchronize Google Auth with Firebase Auth when active, and set up state
+  // Synchronize User Session State with Firebase Auth when active, and set up state
   const [firebaseUid, setFirebaseUid] = useState<string | null>(() => {
     return localStorage.getItem('passport_firebase_uid');
   });
