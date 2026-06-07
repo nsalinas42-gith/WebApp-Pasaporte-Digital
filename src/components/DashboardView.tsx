@@ -93,6 +93,21 @@ export default function DashboardView({
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
+  const [isPostalClaimed, setIsPostalClaimed] = useState(false);
+  const [isLoadingPostal, setIsLoadingPostal] = useState(false);
+  const [postalTxHash, setPostalTxHash] = useState<string | null>(null);
+
+  const handleClaimPostal = () => {
+    if (completedRoutesCount === 0 || isPostalClaimed) return;
+    setIsLoadingPostal(true);
+    setTimeout(() => {
+      const generatedHash = '3G14p87Qv8bFMyWkFqJn5UAs67Xm98DghrJt9e5WwXyz' + Math.floor(Math.random() * 1000);
+      setPostalTxHash(generatedHash);
+      setIsPostalClaimed(true);
+      setIsLoadingPostal(false);
+    }, 2000);
+  };
+
   // Compute stats dynamically from the Gamification Engine
   const { 
     totalXP, 
@@ -343,12 +358,87 @@ export default function DashboardView({
         </div>
       </section>
 
-      {/* 5. INTERACTIVE SOLANA WEB3 PORTAL */}
-      <section id="campaign-nft-claim-row" className="bg-gradient-to-tr from-[#001d2a] to-[#003732] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col md:flex-row items-center gap-6 justify-between relative overflow-hidden">
+      {/* 4.5. INTERACTIVE POSTAL DIGITAL PORTAL */}
+      <section id="campaign-postal-claim-row" className="bg-gradient-to-tr from-[#001d2a] to-[#003237] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden mb-6">
         {/* Subtle pulsating backdrop beam */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
 
-        <div className="flex items-center gap-4 text-left max-w-xl">
+        <div className="flex items-center gap-4 text-left w-full max-w-2xl">
+          <div className="w-24 h-24 flex items-center justify-center select-none shrink-0">
+            <img 
+              src={logoCnft} 
+              alt="Postal Digital Compass Reward Badge" 
+              referrerPolicy="no-referrer"
+              style={{ filter: "url(#remove-white)" }}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div>
+            <span className="bg-secondary/15 text-secondary text-[9px] font-black px-2.5 py-0.5 rounded-full border border-secondary/20 uppercase tracking-widest block max-w-max mb-1.5">
+              {t('solana_reward')}
+            </span>
+            <h4 className="font-headline text-lg font-bold text-on-surface">
+              Completa cada ruta y reclama una POSTAL DIGITAL
+            </h4>
+            <p className="text-xs text-on-surface-variant/80 leading-relaxed mt-0.5">
+              Por cada ruta completada podrás reclamar esta Postal Digital, usando tu Billetera (Wallet), para acuñarlo de forma segura, una vez acuñada podrás descargarla y presumir tu POSTAL con un certificado digital en la blockchain de Solana.
+            </p>
+          </div>
+        </div>
+
+        {/* Claim actions controls centered below */}
+        <div className="w-full flex justify-center mt-2">
+          <div className="shrink-0 w-full sm:w-auto text-center space-y-2">
+            {isPostalClaimed ? (
+              <div className="space-y-1.5 text-center">
+                <a
+                  href={`https://solscan.io/tx/${postalTxHash || '3G14p87Qv...'}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full sm:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>{t('verificar_receipt')}</span>
+                </a>
+                <p className="text-[10px] text-center text-on-surface-variant/60 italic font-mono select-all">
+                  TX: {postalTxHash?.slice(0, 8)}...{postalTxHash?.slice(-8)}
+                </p>
+              </div>
+            ) : (
+              <button
+                onClick={handleClaimPostal}
+                disabled={completedRoutesCount === 0 || isLoadingPostal}
+                className={`w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer outline-none ${
+                  completedRoutesCount > 0 
+                    ? isLoadingPostal 
+                      ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
+                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(67,229,212,0.25)]'
+                    : 'bg-[#43e5d4]/5 border border-[#43e5d4]/15 text-secondary/30 cursor-not-allowed opacity-50'
+                }`}
+              >
+                {isLoadingPostal ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
+                    <span>Acuñando Postal...</span>
+                  </>
+                ) : (
+                  <>
+                    {completedRoutesCount > 0 ? <Sparkles className="w-3.5 h-3.5 animate-bounce" /> : <Lock className="w-3.5 h-3.5" />}
+                    <span>RECLAMAR TU POSTAL DIGITAL ({completedRoutesCount}/6)</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. INTERACTIVE SOLANA WEB3 PORTAL */}
+      <section id="campaign-nft-claim-row" className="bg-gradient-to-tr from-[#001d2a] to-[#003732] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden">
+        {/* Subtle pulsating backdrop beam */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+
+        <div className="flex items-center gap-4 text-left w-full max-w-2xl">
           <div className="w-24 h-24 flex items-center justify-center select-none shrink-0">
             <img 
               src={logoCnft} 
@@ -371,48 +461,50 @@ export default function DashboardView({
           </div>
         </div>
 
-        {/* Claim actions controls */}
-        <div className="shrink-0 w-full md:w-auto space-y-2">
-          {isNFTClaimed ? (
-            <div className="space-y-1.5 text-right">
-              <a
-                href={`https://solscan.io/tx/${txHash || '3G14p87Qv...'}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex w-full md:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
+        {/* Claim actions controls centered below */}
+        <div className="w-full flex justify-center mt-2">
+          <div className="shrink-0 w-full sm:w-auto text-center space-y-2">
+            {isNFTClaimed ? (
+              <div className="space-y-1.5 text-center">
+                <a
+                  href={`https://solscan.io/tx/${txHash || '3G14p87Qv...'}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full sm:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>{t('verificar_receipt')}</span>
+                </a>
+                <p className="text-[10px] text-center text-on-surface-variant/60 italic font-mono select-all">
+                  TX: {txHash?.slice(0, 8)}...{txHash?.slice(-8)}
+                </p>
+              </div>
+            ) : (
+              <button
+                onClick={onClaimNFT}
+                disabled={!isEligibleForNFT || isLoadingClaim}
+                className={`w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer outline-none ${
+                  isEligibleForNFT 
+                    ? isLoadingClaim 
+                      ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
+                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(67,229,212,0.25)]'
+                    : 'bg-[#43e5d4]/5 border border-[#43e5d4]/15 text-secondary/30 cursor-not-allowed opacity-50'
+                }`}
               >
-                <ExternalLink className="w-4 h-4" />
-                <span>{t('verificar_receipt')}</span>
-              </a>
-              <p className="text-[10px] text-center text-on-surface-variant/60 italic font-mono select-all">
-                TX: {txHash?.slice(0, 8)}...{txHash?.slice(-8)}
-              </p>
-            </div>
-          ) : (
-            <button
-              onClick={onClaimNFT}
-              disabled={!isEligibleForNFT || isLoadingClaim}
-              className={`w-full md:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer outline-none ${
-                isEligibleForNFT 
-                  ? isLoadingClaim 
-                    ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                    : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(67,229,212,0.25)]'
-                  : 'bg-[#43e5d4]/5 border border-[#43e5d4]/15 text-secondary/30 cursor-not-allowed opacity-50'
-              }`}
-            >
-              {isLoadingClaim ? (
-                <>
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
-                  <span>{t('acuñando_cnft')}</span>
-                </>
-              ) : (
-                <>
-                  {isEligibleForNFT ? <Sparkles className="w-3.5 h-3.5 animate-bounce" /> : <Lock className="w-3.5 h-3.5" />}
-                  <span>{t('reclamar_cnft_btn').replace('{unlocked}', String(unlockedCount))}</span>
-                </>
-              )}
-            </button>
-          )}
+                {isLoadingClaim ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
+                    <span>{t('acuñando_cnft')}</span>
+                  </>
+                ) : (
+                  <>
+                    {isEligibleForNFT ? <Sparkles className="w-3.5 h-3.5 animate-bounce" /> : <Lock className="w-3.5 h-3.5" />}
+                    <span>{t('reclamar_cnft_btn').replace('{unlocked}', String(unlockedCount))}</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </section>
       {/* Title block */}

@@ -205,7 +205,7 @@ export default function TermsOfServiceView({ onClose }: TermsOfServiceViewProps)
       {/* 3. FOOTER */}
       <footer id="terms-footer" className="bg-[#00080d] border-t border-[#005049]/20 py-8 px-6 text-center text-xs text-on-surface-variant/40">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 BITÁCORA DIGITAL PINTA MAPAS. Todos los derechos reservados.</p>
+          <p>© 2026 BITACORA DIGITAL | PINTA MAPAS. Todos los derechos reservados.</p>
           <div className="flex items-center gap-2">
             <span className="text-[10px] bg-secondary/10 px-1.5 py-0.5 rounded text-secondary border border-secondary/20">SSL SECURE</span>
             <span className="text-[10px] bg-[#001c27] border border-secondary/35 text-secondary px-2 py-0.5 rounded-lg font-mono">SOLANA SECURED</span>

@@ -57,7 +57,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Política de Cookies',
     'centro_ayuda': 'Centro de Ayuda',
     'contacto': 'Contacto',
-    'derechos_reservados': '© 2024 BITÁCORA DIGITAL PINTA MAPAS. Todos los derechos reservados.',
+    'derechos_reservados': '© 2026 BITACORA DIGITAL | PINTA MAPAS. Todos los derechos reservados.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
@@ -377,7 +377,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'cookies_policy': 'Cookie Policy',
     'centro_ayuda': 'Help Center',
     'contacto': 'Contact Us',
-    'derechos_reservados': '© 2024 BITÁCORA DIGITAL PINTA MAPAS. All rights reserved.',
+    'derechos_reservados': '© 2026 BITACORA DIGITAL | PINTA MAPAS. All rights reserved.',
 
     // Sidebar & Navigation
     'dashboard': 'Dashboard',
