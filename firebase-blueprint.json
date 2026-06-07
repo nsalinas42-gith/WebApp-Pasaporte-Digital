@@ -104,6 +104,34 @@
         }
       },
       "required": ["walletEnabled", "network"]
+    },
+    "Postcard": {
+      "title": "Postal Digital",
+      "description": "Tarjeta postal digital autorizada cargada por el Administrador",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador único de la postal"
+        },
+        "name": {
+          "type": "string",
+          "description": "Título o nombre de la postal"
+        },
+        "routeKey": {
+          "type": "string",
+          "description": "Clave de la ruta asociada"
+        },
+        "imageKey": {
+          "type": "string",
+          "description": "Clave que mapea la imagen importada"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "name", "routeKey", "imageKey"]
     }
   },
   "firestore": {
@@ -118,6 +146,10 @@
     "settings/{settingId}": {
       "schema": "GlobalSettings",
       "description": "Contiene parámetros del sistema como la configuración de Solana"
+    },
+    "postcards/{postcardId}": {
+      "schema": "Postcard",
+      "description": "Tarjetas postales digitales administradas por el Administrador"
     }
   }
 }

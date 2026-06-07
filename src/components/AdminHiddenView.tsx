@@ -31,7 +31,12 @@ import {
   resetUserProgress, 
   deleteUserEntirely,
   saveSolanaGlobalSettings,
-  subscribeSolanaGlobalSettings
+  subscribeSolanaGlobalSettings,
+  saveCloudPostcard,
+  deleteCloudPostcard,
+  subscribeCloudPostcards,
+  resetCloudPostcardsToDefault,
+  POSTCARD_IMAGE_MAP
 } from '../utils/firebase';
 
 import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
@@ -143,24 +148,20 @@ export default function AdminHiddenView({
   const [actionStatusMsg, setActionStatusMsg] = useState<string | null>(null);
 
   // Dynamic Postcards Configuration states
-  const [postcards, setPostcards] = useState<any[]>(() => {
-    const saved = localStorage.getItem('pinta_mapas_custom_postcards');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // Fallback
-      }
-    }
-    return [];
-  });
+  const [postcards, setPostcards] = useState<any[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('pinta_mapas_custom_postcards');
-    if (!saved) {
-      localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(DEFAULT_POSTCARDS));
-      setPostcards(DEFAULT_POSTCARDS);
-    }
+    // Realtime subscription to cloud postcards
+    const unsubscribe = subscribeCloudPostcards((cardList) => {
+      // Map stored cards back to image assets for display
+      const mapped = cardList.map((card) => ({
+        ...card,
+        image: POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
+      }));
+      setPostcards(mapped);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const [newPostcardId, setNewPostcardId] = useState('');
@@ -177,62 +178,63 @@ export default function AdminHiddenView({
     ]);
   };
 
-  const handleAddPostcard = (e: React.FormEvent) => {
+  const handleAddPostcard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPostcardId || !newPostcardName) {
       alert("Por favor introduce el ID único y el Título de la Postal.");
       return;
     }
-    
-    // Resolve designed image
-    const imageToSave = POSTALES_IMAGES[newPostcardImage] || postal1;
 
-    const newCard = {
-      id: newPostcardId.toLowerCase().trim().replace(/\s+/g, '_'),
-      name: newPostcardName.trim(),
-      routeKey: newPostcardRouteKey,
-      image: imageToSave
-    };
+    const preparedId = newPostcardId.toLowerCase().trim().replace(/\s+/g, '_');
 
     // Check duplicate
-    if (postcards.some(p => p.id === newCard.id)) {
+    if (postcards.some(p => p.id === preparedId)) {
       alert("Ya existe una postal registrada con ese ID.");
       return;
     }
 
-    const updated = [...postcards, newCard];
-    setPostcards(updated);
-    localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(updated));
-    window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
-    
-    // Reset inputs
-    setNewPostcardId('');
-    setNewPostcardName('');
-    setNewPostcardImage('postal_1.png');
-    
-    addLog(`Nueva Postal '${newCard.name}' cargada en la cola de acuñación.`);
-    setActionStatusMsg(`Postal "${newCard.name}" agregada con éxito.`);
-    setTimeout(() => setActionStatusMsg(null), 3500);
+    try {
+      await saveCloudPostcard({
+        id: preparedId,
+        name: newPostcardName.trim(),
+        routeKey: newPostcardRouteKey,
+        imageKey: newPostcardImage
+      });
+
+      // Reset inputs
+      setNewPostcardId('');
+      setNewPostcardName('');
+      setNewPostcardImage('postal_1.png');
+      
+      addLog(`Nueva Postal '${newPostcardName}' cargada en la cola de acuñación en Firestore.`);
+      setActionStatusMsg(`Postal "${newPostcardName}" agregada con éxito.`);
+      setTimeout(() => setActionStatusMsg(null), 3500);
+    } catch (err: any) {
+      alert(`Error al guardar postal: ${err.message || err}`);
+    }
   };
 
-  const handleDeletePostcard = (postcardId: string, name: string) => {
-    const updated = postcards.filter(p => p.id !== postcardId);
-    setPostcards(updated);
-    localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(updated));
-    window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
-    addLog(`Postal '${name}' eliminada del gestor por el Administrador.`);
-    setActionStatusMsg(`Postal "${name}" removida.`);
-    setTimeout(() => setActionStatusMsg(null), 3000);
-  };
-
-  const handleResetPostcardsToDefault = () => {
-    if (window.confirm("¿Seguro que deseas restablecer las 6 postales originales de Caracas? Esto eliminará cualquier postal cargada manualmente.")) {
-      setPostcards(DEFAULT_POSTCARDS);
-      localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(DEFAULT_POSTCARDS));
-      window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
-      addLog(`Colección de postales restablecida a las 6 iniciales.`);
-      setActionStatusMsg(`Postales restablecidas con éxito.`);
+  const handleDeletePostcard = async (postcardId: string, name: string) => {
+    try {
+      await deleteCloudPostcard(postcardId);
+      addLog(`Postal '${name}' eliminada del gestor por el Administrador.`);
+      setActionStatusMsg(`Postal "${name}" removida.`);
       setTimeout(() => setActionStatusMsg(null), 3000);
+    } catch (err: any) {
+      alert(`Error al eliminar postal: ${err.message || err}`);
+    }
+  };
+
+  const handleResetPostcardsToDefault = async () => {
+    if (window.confirm("¿Seguro que deseas restablecer las 6 postales originales de Caracas? Esto eliminará cualquier postal cargada manualmente en Firestore.")) {
+      try {
+        await resetCloudPostcardsToDefault();
+        addLog(`Colección de postales restablecida a las 6 iniciales en Firestore.`);
+        setActionStatusMsg(`Postales restablecidas con éxito.`);
+        setTimeout(() => setActionStatusMsg(null), 3000);
+      } catch (err: any) {
+        alert(`Error al restablecer postales: ${err.message || err}`);
+      }
     }
   };
 

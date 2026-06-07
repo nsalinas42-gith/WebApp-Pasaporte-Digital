@@ -30,6 +30,14 @@ import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
 import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from '../assets/images/05E_Guia_Local.png';
 import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import postal1 from '../assets/images/postales/postal_1.png';
+import postal2 from '../assets/images/postales/postal_2.png';
+import { subscribeCloudPostcards, POSTCARD_IMAGE_MAP } from '../utils/firebase';
+
+const POSTALES_IMAGES: Record<string, string> = {
+  'postal_1.png': postal1,
+  'postal_2.png': postal2,
+};
 
 interface PostalesDigitalesViewProps {
   locations: Location[];
@@ -136,72 +144,19 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
   };
 
   // Map each route location structure
-  const [postcardCards, setPostcardCards] = useState<any[]>(() => {
-    const saved = localStorage.getItem('pinta_mapas_custom_postcards');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // Fallback
-      }
-    }
-    return [
-      {
-        id: 'alhambra',
-        name: 'Postales - Casco Histórico de Caracas',
-        routeKey: 'alhambra',
-        image: stampAlhambra,
-      },
-      {
-        id: 'mezquita_cordoba',
-        name: 'Postales - Circuito Museos de Caracas',
-        routeKey: 'mezquita_cordoba',
-        image: stampCordoba,
-      },
-      {
-        id: 'acueducto_segovia',
-        name: 'Postales - Casco Histórico Vol. 3',
-        routeKey: 'acueducto_segovia',
-        image: stampSegovia,
-      },
-      {
-        id: 'alcazar_sevilla',
-        name: 'Postales - Casco Histórico Vol. 4',
-        routeKey: 'alcazar_sevilla',
-        image: stampSevilla,
-      },
-      {
-        id: 'sagrada_familia',
-        name: 'Postales - Casco Histórico Vol. 5',
-        routeKey: 'sagrada_familia',
-        image: stampSagrada,
-      },
-      {
-        id: 'castillo_olite',
-        name: 'Postales - Casco Histórico Vol. 6',
-        routeKey: 'castillo_olite',
-        image: stampOlite,
-      }
-    ];
-  });
+  const [postcardCards, setPostcardCards] = useState<any[]>([]);
 
-  // Listen to custom updates to synchronize cards instantly across admin and public view
+  // Listen to cloud updates to synchronize cards instantly
   useEffect(() => {
-    const syncPostcards = () => {
-      const saved = localStorage.getItem('pinta_mapas_custom_postcards');
-      if (saved) {
-        try {
-          setPostcardCards(JSON.parse(saved));
-        } catch (e) {
-          console.error("Error updates sync:", e);
-        }
-      }
-    };
+    const unsubscribe = subscribeCloudPostcards((cardList) => {
+      const mapped = cardList.map((card) => ({
+        ...card,
+        image: POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
+      }));
+      setPostcardCards(mapped);
+    });
 
-    window.addEventListener('pinta-mapas-postcards-updated', syncPostcards);
-    return () => {
-      window.removeEventListener('pinta-mapas-postcards-updated', syncPostcards);
-    };
+    return () => unsubscribe();
   }, []);
 
   // Check if a specific route is completed (all 8 places checked in)

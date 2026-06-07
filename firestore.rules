@@ -65,6 +65,14 @@ service cloud.firestore {
         && (data.network == 'MAINET' || data.network == 'DEVNET');
     }
 
+    // Validation Blueprint for Postcard Document
+    function isValidPostcard(data) {
+      return data.id is string && data.id.size() <= 200
+        && data.name is string && data.name.size() <= 200
+        && data.routeKey is string && data.routeKey.size() <= 100
+        && data.imageKey is string && data.imageKey.size() <= 100;
+    }
+
     // Rules for /test/{docId}
     match /test/{docId} {
       allow read: if true;
@@ -114,6 +122,19 @@ service cloud.firestore {
       allow update: if (isOwner(userId) || isAdmin())
         && isValidUserProgress(incoming())
         && (!('updatedAt' in incoming()) || incoming().updatedAt == request.time);
+      allow delete: if isAdmin();
+    }
+
+    // Rules for /postcards/{postcardId}
+    match /postcards/{postcardId} {
+      allow get, list: if true; // Public retrieval/query enabled so anyone can view authorized postcards
+      allow create: if isAdmin()
+        && isValidId(postcardId)
+        && isValidPostcard(incoming())
+        && incoming().keys().hasAll(['id', 'name', 'routeKey', 'imageKey'])
+        && (!('createdAt' in incoming()) || incoming().createdAt == request.time);
+      allow update: if isAdmin()
+        && isValidPostcard(incoming());
       allow delete: if isAdmin();
     }
   }

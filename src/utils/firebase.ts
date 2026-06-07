@@ -32,6 +32,13 @@ import {
 import { UserProfile, UserStats, Location } from '../types';
 import firebaseConfig from '../../firebase-applet-config.json';
 
+import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
+import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
+import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
+import stampSagrada from '../assets/images/05E_Guia_Local.png';
+import stampOlite from '../assets/images/06F_guia_local_experto.png';
+
 // Initialize Firebase app safely
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
@@ -651,5 +658,112 @@ export async function recoverEmail(secondaryEmailInput: string): Promise<{ succe
   } catch (error: any) {
     console.error("Email recovery failed:", error);
     return { success: false, error: error?.message || String(error) };
+  }
+}
+
+export const DEFAULT_POSTCARDS_CLOUD = [
+  { id: 'alhambra', name: 'Postales - Casco Histórico de Caracas', routeKey: 'alhambra', imageKey: 'alhambra' },
+  { id: 'mezquita_cordoba', name: 'Postales - Circuito Museos de Caracas', routeKey: 'mezquita_cordoba', imageKey: 'mezquita_cordoba' },
+  { id: 'acueducto_segovia', name: 'Postales - Casco Histórico Vol. 3', routeKey: 'acueducto_segovia', imageKey: 'acueducto_segovia' },
+  { id: 'alcazar_sevilla', name: 'Postales - Casco Histórico Vol. 4', routeKey: 'alcazar_sevilla', imageKey: 'alcazar_sevilla' },
+  { id: 'sagrada_familia', name: 'Postales - Casco Histórico Vol. 5', routeKey: 'sagrada_familia', imageKey: 'sagrada_familia' },
+  { id: 'castillo_olite', name: 'Postales - Casco Histórico Vol. 6', routeKey: 'castillo_olite', imageKey: 'castillo_olite' }
+];
+
+export const POSTCARD_IMAGE_MAP: Record<string, string> = {
+  'alhambra': stampAlhambra,
+  'mezquita_cordoba': stampCordoba,
+  'acueducto_segovia': stampSegovia,
+  'alcazar_sevilla': stampSevilla,
+  'sagrada_familia': stampSagrada,
+  'castillo_olite': stampOlite,
+};
+
+/**
+ * Real-time subscription to postcard cards list from Cloud Firestore
+ */
+export function subscribeCloudPostcards(
+  callback: (postcards: any[]) => void,
+  onError?: (err: any) => void
+) {
+  const collectionRef = collection(db, 'postcards');
+  return onSnapshot(collectionRef, (snap) => {
+    const list: any[] = [];
+    snap.forEach((doc) => {
+      list.push(doc.data());
+    });
+    
+    // Sort postcards by ID (or custom field if desired)
+    list.sort((a, b) => a.id.localeCompare(b.id));
+    
+    if (list.length > 0) {
+      callback(list);
+    } else {
+      // If collection is empty, trigger callback with defaults so user gets standard postcard cards
+      callback(DEFAULT_POSTCARDS_CLOUD);
+    }
+  }, (err) => {
+    console.error("Error subscribing to cloud postcards: ", err);
+    callback(DEFAULT_POSTCARDS_CLOUD);
+    if (onError) onError(err);
+  });
+}
+
+/**
+ * Saves a new postcard to Cloud Firestore
+ */
+export async function saveCloudPostcard(postcard: { id: string; name: string; routeKey: string; imageKey: string }) {
+  const docRef = doc(db, 'postcards', postcard.id);
+  try {
+    await setDoc(docRef, {
+      id: postcard.id,
+      name: postcard.name,
+      routeKey: postcard.routeKey,
+      imageKey: postcard.imageKey,
+      createdAt: serverTimestamp(),
+    });
+    console.log(`Cloud postcard successfully saved: ${postcard.name}`);
+  } catch (error) {
+    handleFirestoreError(error, ReturnOperationType.WRITE, `postcards/${postcard.id}`);
+  }
+}
+
+/**
+ * Deletes a postcard from Cloud Firestore
+ */
+export async function deleteCloudPostcard(postcardId: string) {
+  const docRef = doc(db, 'postcards', postcardId);
+  try {
+    await deleteDoc(docRef);
+    console.log(`Cloud postcard deleted: ${postcardId}`);
+  } catch (error) {
+    handleFirestoreError(error, ReturnOperationType.DELETE, `postcards/${postcardId}`);
+  }
+}
+
+/**
+ * Resets cloud postcards to the 6 default postcards in Firestore
+ */
+export async function resetCloudPostcardsToDefault() {
+  try {
+    const collectionRef = collection(db, 'postcards');
+    const snap = await getDocs(collectionRef);
+    const deletePromises = snap.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+
+    const addPromises = DEFAULT_POSTCARDS_CLOUD.map(async (card) => {
+      const docRef = doc(db, 'postcards', card.id);
+      await setDoc(docRef, {
+        id: card.id,
+        name: card.name,
+        routeKey: card.routeKey,
+        imageKey: card.imageKey,
+        createdAt: serverTimestamp(),
+      });
+    });
+    await Promise.all(addPromises);
+    console.log("Cloud postcards collection successfully reset to defaults.");
+  } catch (error) {
+    handleFirestoreError(error, ReturnOperationType.WRITE, 'postcards');
   }
 }
