@@ -54,6 +54,7 @@ import specialPlata from '../assets/images/guia_legendario_2.png';
 import specialOro from '../assets/images/explorador_supremo.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import logoAvatar from '../assets/images/logo.avatar.png';
 import caracasAvilaImg from '../assets/images/caracas_sky_avila_1780684422323.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
 import UserWayAccessibility from './UserWayAccessibility';
@@ -1094,10 +1095,10 @@ export default function LandingView({
 
       {/* 5. FOOTER SECTION */}
       <footer className="bg-[#00080d] border-t border-[#005049]/20 pt-16 pb-10 px-6 md:px-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 text-left pb-12 border-b border-[#005049]/15">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[3fr_4fr_3fr] gap-8 text-left pb-12 border-b border-[#005049]/15">
           {/* Logo & Manifesto Column */}
-          <div className="col-span-1 sm:col-span-2 md:col-span-6 space-y-4">
-            <div className="flex items-center gap-2 select-none">
+          <div className="col-span-1 space-y-4 flex flex-col items-center text-center">
+            <div className="flex items-center justify-center gap-2 select-none">
               <img 
                 src={logoPintaMapas} 
                 alt="Pinta Mapas" 
@@ -1108,23 +1109,47 @@ export default function LandingView({
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
               {t('footer_manifesto')}
             </p>
-             {/* Relocated Admin Panel replacing Login Button */}
-            <div className="bg-[#001019] border border-[#43e5d4]/20 rounded-2xl p-4 space-y-4 max-w-sm">
-              <div className="flex items-center gap-2 border-b border-[#43e5d4]/15 pb-2">
+            <div className="flex flex-col items-center gap-2">
+              <img 
+                src={logoAvatar} 
+                alt="Logo Avatar" 
+                referrerPolicy="no-referrer"
+                className="max-w-[124px] h-auto object-contain block"
+              />
+              <span className="text-[10px] text-on-surface-variant/60 font-mono font-medium block mt-1">
+                (Idea, conceptualización y desarrollo | Nelson Salinas)
+              </span>
+            </div>
+          </div>
+
+          {/* Comunidad Column (Center) */}
+          <div className="col-span-1 space-y-3.5 flex flex-col items-start text-left">
+            <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10 w-full text-left">
+              {t('comunidad')}
+            </h4>
+            <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80 items-start">
+              <a href="#instagram" className="hover:text-[#43e5d4] hover:underline transition-all">Instagram</a>
+              <a href="#twitter" className="hover:text-[#43e5d4] hover:underline transition-all">Twitter / X</a>
+              <a href="#discord" className="hover:text-[#43e5d4] hover:underline transition-all">Discord</a>
+            </div>
+
+            {/* Relocated Admin Panel Card */}
+            <div className="bg-[#001019] border border-[#43e5d4]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
+              <div className="flex items-center justify-center gap-2 border-b border-[#43e5d4]/15 pb-2">
                 <Lock className="w-4 h-4 text-[#43e5d4]" />
-                <span className="font-headline text-[11px] font-bold text-[#43e5d4] uppercase tracking-widest block text-left">
+                <span className="font-headline text-[11px] font-bold text-[#43e5d4] uppercase tracking-widest block">
                   Panel de Administrador
                 </span>
-                <span className="text-[8px] uppercase bg-[#43e5d4]/10 px-1.5 py-0.5 rounded text-[#43e5d4] font-mono ml-auto">
+                <span className="text-[8px] uppercase bg-[#43e5d4]/10 px-1.5 py-0.5 rounded text-[#43e5d4] font-mono">
                   SECURE GATE
                 </span>
               </div>
 
-              <div className="space-y-2 text-left">
+              <div className="space-y-2 text-center flex flex-col items-center">
                 <p className="text-[10px] text-on-surface-variant leading-relaxed">
                   Ingresa la clave autorizada para abrir directamente el panel de control supremo del administrador.
                 </p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full justify-center">
                   <input
                     type="password"
                     value={adminPassword}
@@ -1139,7 +1164,7 @@ export default function LandingView({
                       }
                     }}
                     placeholder="Contraseña (009286)..."
-                    className="flex-1 bg-[#00080d] border border-[#43e5d4]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#43e5d4] transition-all"
+                    className="flex-1 bg-[#00080d] border border-[#43e5d4]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#43e5d4] transition-all text-center"
                   />
                   <button
                     type="button"
@@ -1158,20 +1183,8 @@ export default function LandingView({
             </div>
           </div>
 
-          {/* Comunidad Column */}
-          <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
-            <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
-              {t('comunidad')}
-            </h4>
-            <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
-              <a href="#instagram" className="hover:text-[#43e5d4] hover:underline transition-all">Instagram</a>
-              <a href="#twitter" className="hover:text-[#43e5d4] hover:underline transition-all">Twitter / X</a>
-              <a href="#discord" className="hover:text-[#43e5d4] hover:underline transition-all">Discord</a>
-            </div>
-          </div>
-
           {/* Legal y Soporte Column */}
-          <div className="col-span-1 md:col-span-3 md:ml-auto space-y-3.5">
+          <div className="col-span-1 space-y-3.5 md:pl-8">
             <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10">
               {t('soporte')} y {t('legal')}
             </h4>
