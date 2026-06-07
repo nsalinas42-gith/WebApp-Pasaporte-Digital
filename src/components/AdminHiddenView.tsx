@@ -34,6 +34,70 @@ import {
   subscribeSolanaGlobalSettings
 } from '../utils/firebase';
 
+import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
+import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
+import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
+import stampSagrada from '../assets/images/05E_Guia_Local.png';
+import stampOlite from '../assets/images/06F_guia_local_experto.png';
+
+// Import local postales folder images
+import postal1 from '../assets/images/postales/postal_1.png';
+import postal2 from '../assets/images/postales/postal_2.png';
+
+const DEFAULT_POSTCARDS = [
+  {
+    id: 'alhambra',
+    name: 'Postales - Casco Histórico de Caracas',
+    routeKey: 'alhambra',
+    image: stampAlhambra,
+  },
+  {
+    id: 'mezquita_cordoba',
+    name: 'Postales - Circuito Museos de Caracas',
+    routeKey: 'mezquita_cordoba',
+    image: stampCordoba,
+  },
+  {
+    id: 'acueducto_segovia',
+    name: 'Postales - Casco Histórico Vol. 3',
+    routeKey: 'acueducto_segovia',
+    image: stampSegovia,
+  },
+  {
+    id: 'alcazar_sevilla',
+    name: 'Postales - Casco Histórico Vol. 4',
+    routeKey: 'alcazar_sevilla',
+    image: stampSevilla,
+  },
+  {
+    id: 'sagrada_familia',
+    name: 'Postales - Casco Histórico Vol. 5',
+    routeKey: 'sagrada_familia',
+    image: stampSagrada,
+  },
+  {
+    id: 'castillo_olite',
+    name: 'Postales - Casco Histórico Vol. 6',
+    routeKey: 'castillo_olite',
+    image: stampOlite,
+  },
+];
+
+const PRESET_IMAGES: Record<string, string> = {
+  'preset-1': stampAlhambra,
+  'preset-2': stampCordoba,
+  'preset-3': stampSegovia,
+  'preset-4': stampSevilla,
+  'preset-5': stampSagrada,
+  'preset-6': stampOlite
+};
+
+const POSTALES_IMAGES: Record<string, string> = {
+  'postal_1.png': postal1,
+  'postal_2.png': postal2,
+};
+
 interface AdminHiddenViewProps {
   locations: Location[];
   user: UserProfile;
@@ -78,6 +142,100 @@ export default function AdminHiddenView({
   const [dbUserSearch, setDbUserSearch] = useState<string>('');
   const [actionStatusMsg, setActionStatusMsg] = useState<string | null>(null);
 
+  // Dynamic Postcards Configuration states
+  const [postcards, setPostcards] = useState<any[]>(() => {
+    const saved = localStorage.getItem('pinta_mapas_custom_postcards');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // Fallback
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem('pinta_mapas_custom_postcards');
+    if (!saved) {
+      localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(DEFAULT_POSTCARDS));
+      setPostcards(DEFAULT_POSTCARDS);
+    }
+  }, []);
+
+  const [newPostcardId, setNewPostcardId] = useState('');
+  const [newPostcardName, setNewPostcardName] = useState('');
+  const [newPostcardRouteKey, setNewPostcardRouteKey] = useState(locations[0]?.id || 'alhambra');
+  const [newPostcardImage, setNewPostcardImage] = useState('postal_1.png');
+
+  // Helper utility for generating localized security logs
+  const addLog = (message: string) => {
+    const timestamp = `[${new Date().toISOString().slice(11, 19)}]`;
+    setSimulationLogs(prev => [
+      `${timestamp} ${message}`,
+      ...prev.slice(0, 50)
+    ]);
+  };
+
+  const handleAddPostcard = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPostcardId || !newPostcardName) {
+      alert("Por favor introduce el ID único y el Título de la Postal.");
+      return;
+    }
+    
+    // Resolve designed image
+    const imageToSave = POSTALES_IMAGES[newPostcardImage] || postal1;
+
+    const newCard = {
+      id: newPostcardId.toLowerCase().trim().replace(/\s+/g, '_'),
+      name: newPostcardName.trim(),
+      routeKey: newPostcardRouteKey,
+      image: imageToSave
+    };
+
+    // Check duplicate
+    if (postcards.some(p => p.id === newCard.id)) {
+      alert("Ya existe una postal registrada con ese ID.");
+      return;
+    }
+
+    const updated = [...postcards, newCard];
+    setPostcards(updated);
+    localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(updated));
+    window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
+    
+    // Reset inputs
+    setNewPostcardId('');
+    setNewPostcardName('');
+    setNewPostcardImage('postal_1.png');
+    
+    addLog(`Nueva Postal '${newCard.name}' cargada en la cola de acuñación.`);
+    setActionStatusMsg(`Postal "${newCard.name}" agregada con éxito.`);
+    setTimeout(() => setActionStatusMsg(null), 3500);
+  };
+
+  const handleDeletePostcard = (postcardId: string, name: string) => {
+    const updated = postcards.filter(p => p.id !== postcardId);
+    setPostcards(updated);
+    localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(updated));
+    window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
+    addLog(`Postal '${name}' eliminada del gestor por el Administrador.`);
+    setActionStatusMsg(`Postal "${name}" removida.`);
+    setTimeout(() => setActionStatusMsg(null), 3000);
+  };
+
+  const handleResetPostcardsToDefault = () => {
+    if (window.confirm("¿Seguro que deseas restablecer las 6 postales originales de Caracas? Esto eliminará cualquier postal cargada manualmente.")) {
+      setPostcards(DEFAULT_POSTCARDS);
+      localStorage.setItem('pinta_mapas_custom_postcards', JSON.stringify(DEFAULT_POSTCARDS));
+      window.dispatchEvent(new Event('pinta-mapas-postcards-updated'));
+      addLog(`Colección de postales restablecida a las 6 iniciales.`);
+      setActionStatusMsg(`Postales restablecidas con éxito.`);
+      setTimeout(() => setActionStatusMsg(null), 3000);
+    }
+  };
+
   const fetchUsers = async () => {
     setIsLoadingDbUsers(true);
     try {
@@ -120,9 +278,7 @@ export default function AdminHiddenView({
     }
   };
 
-  const addLog = (message: string) => {
-    setSimulationLogs(prev => [`[${new Date().toISOString().slice(11, 19)}] ${message}`, ...prev.slice(0, 8)]);
-  };
+  // Toggle custom routing mechanisms
 
   const handleToggleRouteLock = (id: string) => {
     if (lockedRouteIds.includes(id)) {
@@ -383,6 +539,138 @@ export default function AdminHiddenView({
                 )}
               </div>
             </div>
+          </div>
+
+          {/* POSTCARD REGISTRATION & MANAGEMENT CARD */}
+          <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-6 shadow-lg text-left">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#005049]/15 pb-4">
+              <div>
+                <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
+                  <Award className="w-5 h-5 text-secondary animate-bounce-slow" />
+                  Gestor de Acuñación de Postales (Web3 Setup)
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Carga, modifica y autoriza nuevas postales con insignias asignadas para que los usuarios puedan acuñarlas como cNFTs de Solana.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleResetPostcardsToDefault}
+                className="py-1.5 px-3 bg-amber-500/10 border border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/20 text-amber-400 text-[10px] font-black uppercase rounded-lg cursor-pointer transition-all shrink-0"
+              >
+                Reestablecer Postales Iniciales
+              </button>
+            </div>
+
+            {/* List of currently active postcards */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-black text-secondary uppercase tracking-wider">Postales Autorizadas ({postcards.length})</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                {postcards.map((p) => {
+                  const associatedRoute = locations.find(l => l.id === p.routeKey);
+                  return (
+                    <div key={p.id} className="bg-[#000d14] border border-[#005049]/15 p-3 rounded-2xl flex gap-3 items-center justify-between group hover:border-secondary/35 transition-all">
+                      <div className="flex items-center gap-3 truncate">
+                        <img 
+                          src={p.image} 
+                          alt={p.name}
+                          onError={(e) => {
+                            // custom fallback image placeholder
+                            e.currentTarget.src = stampAlhambra;
+                          }}
+                          className="w-11 h-11 rounded-lg border border-[#005049]/30 object-cover bg-surface-container shrink-0"
+                        />
+                        <div className="text-left truncate space-y-0.5">
+                          <p className="text-xs font-bold text-on-surface truncate leading-tight">{p.name}</p>
+                          <p className="text-[10px] font-mono text-secondary truncate">ID: {p.id}</p>
+                          <p className="text-[9px] text-[#8c9f9e]/70 truncate">
+                            Ruta: {associatedRoute ? associatedRoute.name : p.routeKey}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePostcard(p.id, p.name)}
+                        className="p-1 px-2.5 bg-red-950/20 text-rose-400 border border-red-500/15 hover:border-rose-500 rounded-lg hover:bg-red-500/10 cursor-pointer transition-all self-center"
+                        title="Eliminar de la cola de acuñación"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Form to load / add a new postcard card */}
+            <form onSubmit={handleAddPostcard} className="space-y-4 pt-4 border-t border-[#005049]/15">
+              <h4 className="text-xs font-black text-secondary uppercase tracking-wider">Cargar Nueva Postal Digital</h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-[#8c9f9e] uppercase tracking-wider">ID Único de la Postal</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ej: ruta_caracas_centro"
+                    value={newPostcardId}
+                    onChange={(e) => setNewPostcardId(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface placeholder:text-[#8c9f9e]/30 outline-none focus:border-secondary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-[#8c9f9e] uppercase tracking-wider">Título de la Postal</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ej: Postales - Casco Histórico Vol. 7"
+                    value={newPostcardName}
+                    onChange={(e) => setNewPostcardName(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface placeholder:text-[#8c9f9e]/30 outline-none focus:border-secondary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-[#8c9f9e] uppercase tracking-wider">Vincular a Ruta de la Bitácora</label>
+                  <select
+                    value={newPostcardRouteKey}
+                    onChange={(e) => setNewPostcardRouteKey(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none focus:border-secondary cursor-pointer"
+                  >
+                    {locations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>
+                        {loc.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-[#8c9f9e] uppercase tracking-wider">Diseño / Imagen Core (De carpeta postales)</label>
+                  <select
+                    value={newPostcardImage}
+                    onChange={(e) => setNewPostcardImage(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none focus:border-secondary cursor-pointer font-mono text-secondary"
+                  >
+                    <option value="postal_1.png">postal_1.png</option>
+                    <option value="postal_2.png">postal_2.png</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-secondary text-on-secondary font-black text-xs uppercase tracking-widest rounded-xl hover:brightness-105 active:scale-95 transition-all outline-none cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>Cargar Postal Digital Autorizada</span>
+                </button>
+              </div>
+            </form>
           </div>
 
           {/* SIMULATED SYSTEM EVENT LOG */}

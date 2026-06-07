@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState } from 'react';
 import { 
   LayoutDashboard, 
   Compass, 
@@ -13,7 +14,10 @@ import {
   HelpCircle, 
   LogOut, 
   Sparkles,
-  Lock
+  Lock,
+  Image,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
@@ -48,6 +52,7 @@ export default function Sidebar({
   lockedRouteIds = []
 }: SidebarProps) {
   const { t, translateLocation } = useLanguage();
+  const [isRoutesExpanded, setIsRoutesExpanded] = useState(true);
   
   // Simple calculation of progress width for level up
   const percentageToNextLevel = Math.min(100, Math.round((user.xp / user.xpToNextLevel) * 100));
@@ -56,6 +61,7 @@ export default function Sidebar({
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
     { id: 'exploration', label: t('exploration'), icon: Compass },
     { id: 'stamps', label: t('my_stamps'), icon: Layers },
+    { id: 'postales_digitales', label: t('postales_digitales'), icon: Image },
     { id: 'leaderboard', label: t('leaderboard'), icon: Trophy },
     { id: 'settings', label: t('settings'), icon: Settings },
   ];
@@ -94,24 +100,47 @@ export default function Sidebar({
             <div key={item.id} className="space-y-1">
               <button
                 id={`nav-link-${item.id}`}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all relative ${
+                onClick={() => {
+                  if (item.id === 'exploration') {
+                    if (activeTab === 'exploration') {
+                      setIsRoutesExpanded(!isRoutesExpanded);
+                    } else {
+                      setActiveTab('exploration');
+                      setIsRoutesExpanded(true);
+                    }
+                  } else {
+                    setActiveTab(item.id);
+                  }
+                }}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all relative ${
                   isActive
                     ? 'text-secondary font-bold bg-[#01262d] border-l-4 border-secondary shadow-[inset_0_0_12px_rgba(67,229,212,0.03)]'
                     : 'text-on-surface-variant hover:bg-surface-container-high hover:text-secondary'
                 }`}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-secondary' : 'text-on-surface-variant'}`} />
-                <span className="font-sans text-sm font-medium">{item.label}</span>
-                {item.id === 'exploration' && unlockedCount < totalCount && (
-                  <span className="absolute right-3 bg-secondary/15 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
-                    {totalCount - unlockedCount}
-                  </span>
+                <div className="flex items-center gap-4">
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-secondary' : 'text-on-surface-variant'}`} />
+                  <span className="font-sans text-sm font-medium">{item.label}</span>
+                </div>
+
+                {item.id === 'exploration' && (
+                  <div className="flex items-center gap-2">
+                    {unlockedCount < totalCount && (
+                      <span className="bg-secondary/15 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
+                        {totalCount - unlockedCount}
+                      </span>
+                    )}
+                    {isRoutesExpanded ? (
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'text-secondary' : 'text-on-surface-variant/80'}`} />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-on-surface-variant/50" />
+                    )}
+                  </div>
                 )}
               </button>
 
               {/* Exploration nested sub-menu for Route pages */}
-              {item.id === 'exploration' && (
+              {item.id === 'exploration' && isRoutesExpanded && (
                 <div className="pl-5 pr-1 py-1 space-y-1 border-l border-[#005049]/20 ml-6 animate-in slide-in-from-top-1 duration-150">
                   {locations.map((loc, idx) => {
                     const transLoc = translateLocation(loc);

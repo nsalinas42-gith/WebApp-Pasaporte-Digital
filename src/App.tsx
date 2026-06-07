@@ -19,7 +19,8 @@ import {
   X,
   Camera,
   CheckCircle2,
-  LogOut
+  LogOut,
+  Image
 } from 'lucide-react';
 import { Location, UserProfile, UserStats, LeaderboardEntry } from './types';
 import { INITIAL_LOCATIONS, INITIAL_USER, LEADERBOARD_DATA } from './data';
@@ -27,6 +28,7 @@ import Sidebar from './components/Sidebar';
 import DashboardView from './components/DashboardView';
 import ExplorationView from './components/ExplorationView';
 import StampsView from './components/StampsView';
+import PostalesDigitalesView from './components/PostalesDigitalesView';
 import LeaderboardView from './components/LeaderboardView';
 import SettingsView from './components/SettingsView';
 import LandingView from './components/LandingView';
@@ -834,6 +836,14 @@ export default function App() {
             >
               {t('my_stamps')}
             </button>
+            <button
+              onClick={() => setActiveTab('postales_digitales')}
+              className={`text-sm font-semibold transition-colors focus:outline-none ${
+                activeTab === 'postales_digitales' ? 'text-secondary font-bold' : 'text-on-surface-variant hover:text-secondary'
+              }`}
+            >
+              {t('postales_digitales')}
+            </button>
           </nav>
 
           <div className="flex items-center gap-1.5 sm:gap-4 select-none">
@@ -973,6 +983,12 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'postales_digitales' && (
+          <PostalesDigitalesView 
+            locations={translatedLocations}
+          />
+        )}
+
         {activeTab === 'leaderboard' && (
           <LeaderboardView 
             entries={LEADERBOARD_DATA}
@@ -998,66 +1014,95 @@ export default function App() {
       </main>
 
       {/* Mobile-Only Bottom App Navigation Dock */}
-      <nav id="mobile-navigation-dock" className="fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur-xl md:hidden flex justify-around items-center h-20 z-50 border-t border-[#005049]/30">
+      <nav id="mobile-navigation-dock" className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg bg-background/90 backdrop-blur-xl md:hidden flex justify-around items-center h-16 z-50 rounded-2xl border border-[#005049]/35 shadow-[0_12px_40px_rgba(0,16,25,0.85)] px-3">
         
         {/* Mobile Tab link Dashboard */}
         <button 
           onClick={() => setActiveTab('dashboard')}
-          className={`flex flex-col items-center gap-1.5 transition-all text-xs outline-none ${
-            activeTab === 'dashboard' ? 'text-secondary font-bold' : 'text-on-surface-variant'
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'dashboard' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
           }`}
         >
-          <LayoutDashboard className="w-5 h-5" />
-          <span>{t('dashboard')}</span>
+          <LayoutDashboard className="w-5.5 h-5.5" />
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            {t('dashboard')}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
         </button>
 
         {/* Mobile Tab link Exploration */}
         <button 
           onClick={() => setActiveTab('exploration')}
-          className={`flex flex-col items-center gap-1.5 transition-all text-xs relative outline-none ${
-            activeTab === 'exploration' ? 'text-secondary font-bold' : 'text-on-surface-variant'
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'exploration' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
           }`}
         >
-          <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: activeTab === 'exploration' ? '12s' : '0s' }} />
-          <span>{t('exploration')}</span>
+          <Compass className="w-5.5 h-5.5 animate-spin" style={{ animationDuration: activeTab === 'exploration' ? '12s' : '0s' }} />
           {unlockedCount < totalCount && (
-            <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+            <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-background">
               {totalCount - unlockedCount}
             </span>
           )}
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            {t('exploration')}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
         </button>
 
         {/* Mobile Tab link Stamps */}
         <button 
           onClick={() => setActiveTab('stamps')}
-          className={`flex flex-col items-center gap-1.5 transition-all text-xs outline-none ${
-            activeTab === 'stamps' ? 'text-secondary font-bold' : 'text-on-surface-variant'
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'stamps' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
           }`}
         >
-          <Layers className="w-5 h-5" />
-          <span>{t('my_stamps')}</span>
+          <Layers className="w-5.5 h-5.5" />
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            {t('my_stamps')}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
+        </button>
+
+        {/* Mobile Tab link Postales Digitales */}
+        <button 
+          onClick={() => setActiveTab('postales_digitales')}
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'postales_digitales' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          }`}
+        >
+          <Image className="w-5.5 h-5.5" />
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            Postales
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
         </button>
 
         {/* Mobile Tab link Rank */}
         <button 
           onClick={() => setActiveTab('leaderboard')}
-          className={`flex flex-col items-center gap-1.5 transition-all text-xs outline-none ${
-            activeTab === 'leaderboard' ? 'text-secondary font-bold' : 'text-on-surface-variant'
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'leaderboard' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
           }`}
         >
-          <Trophy className="w-5 h-5" />
-          <span>{t('leaderboard')}</span>
+          <Trophy className="w-5.5 h-5.5" />
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            {t('leaderboard')}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
         </button>
 
         {/* Mobile Tab link Profile (Settings) */}
         <button 
           onClick={() => setActiveTab('settings')}
-          className={`flex flex-col items-center gap-1.5 transition-all text-xs outline-none ${
-            activeTab === 'settings' ? 'text-secondary font-bold' : 'text-on-surface-variant'
+          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
+            activeTab === 'settings' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
           }`}
         >
-          <Settings className="w-5 h-5" />
-          <span>{t('settings')}</span>
+          <Settings className="w-5.5 h-5.5" />
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+            {t('settings')}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          </div>
         </button>
       </nav>
 
