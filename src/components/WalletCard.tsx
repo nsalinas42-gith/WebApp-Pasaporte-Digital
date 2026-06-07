@@ -42,16 +42,48 @@ export const WalletCard: FC = () => {
     }
   }, [connected]);
 
-  // Fetch / simulate balance
+  // Fetch / simulate balance with automatic RPC fallback to guard against rate-limiting (429/403)
   const fetchBalance = async () => {
-    if (connected && publicKey && connection) {
+    if (connected && publicKey) {
       try {
         setIsLoadingBalance(true);
-        const balanceLamports = await connection.getBalance(publicKey);
-        setBalance(balanceLamports / LAMPORTS_PER_SOL);
+        
+        // Build an array of RPC endpoints to attempt based on current network configuration
+        const isMainnet = globalNetwork === 'MAINET';
+        const endpoints = [
+          connection?.rpcEndpoint, // Try established connection first
+          isMainnet ? 'https://rpc.ankr.com/solana' : 'https://rpc.ankr.com/solana_devnet',
+          isMainnet ? 'https://api.mainnet-beta.solana.com' : 'https://api.devnet.solana.com'
+        ].filter(Boolean) as string[];
+
+        let fetchedBalance: number | null = null;
+        let lastError: any = null;
+
+        for (const endpointUrl of endpoints) {
+          try {
+            const { Connection } = await import('@solana/web3.js');
+            const conn = endpointUrl === connection?.rpcEndpoint && connection 
+              ? connection 
+              : new Connection(endpointUrl, 'confirmed');
+
+            const balanceLamports = await conn.getBalance(publicKey);
+            fetchedBalance = balanceLamports / LAMPORTS_PER_SOL;
+            break; // Success! Break loop
+          } catch (err) {
+            lastError = err;
+            console.warn(`RPC endpoint ${endpointUrl} failed to fetch balance:`, err);
+          }
+        }
+
+        if (fetchedBalance !== null) {
+          setBalance(fetchedBalance);
+        } else {
+          console.error('All SOL balance RPC endpoints failed:', lastError);
+          setBalance(0.0000);
+        }
       } catch (error) {
-        console.error('Error fetching balance:', error);
-        setBalance(null);
+        console.error('Error in fetchBalance routine:', error);
+        setBalance(0.0000);
       } finally {
         setIsLoadingBalance(false);
       }
@@ -75,7 +107,7 @@ export const WalletCard: FC = () => {
     } else {
       setBalance(null);
     }
-  }, [isActive, connected, publicKey, connection]);
+  }, [isActive, connected, publicKey, connection, globalNetwork]);
 
   const handleToggleActive = () => {
     const nextState = !isActive;
@@ -144,7 +176,7 @@ export const WalletCard: FC = () => {
           <button
             type="button"
             onClick={handleToggleActive}
-            title={isActive ? "Desactivar billetera" : "Activar billetera"}
+            title={isActive ? "Cerrar sesión de la wallet" : "Activar billetera"}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all duration-300 text-[10px] font-mono font-black uppercase tracking-widest cursor-pointer select-none ${
               isActive 
                 ? 'bg-[#43e5d4]/10 border-secondary text-secondary shadow-[0_0_12px_rgba(67,229,212,0.12)]' 

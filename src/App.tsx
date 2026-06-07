@@ -33,6 +33,7 @@ import LandingView from './components/LandingView';
 import AdminHiddenView from './components/AdminHiddenView';
 import TermsOfServiceView from './components/TermsOfServiceView';
 import PrivacyPolicyView from './components/PrivacyPolicyView';
+import ProyectoView from './components/ProyectoView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
 import logoPintaMapas from './assets/images/Logo Pinta Mapas1.png';
@@ -72,7 +73,10 @@ export default function App() {
   // Privacy Policy Page state
   const [showPrivacy, setShowPrivacy] = useState<boolean>(false);
 
-  // Simple client-side routing effect for clean URLs (/terminos and /privacidad)
+  // Proyecto Page state
+  const [showProyecto, setShowProyecto] = useState<boolean>(false);
+
+  // Simple client-side routing effect for clean URLs (/terminos, /privacidad, and /proyecto)
   useEffect(() => {
     const handleUrlRouting = () => {
       const path = window.location.pathname;
@@ -81,12 +85,19 @@ export default function App() {
       if (path === '/terminos' || path === '/terminos/' || hash === '#/terminos' || hash === '#terminos') {
         setShowTerms(true);
         setShowPrivacy(false);
+        setShowProyecto(false);
       } else if (path === '/privacidad' || path === '/privacidad/' || hash === '#/privacidad' || hash === '#privacidad') {
         setShowPrivacy(true);
         setShowTerms(false);
+        setShowProyecto(false);
+      } else if (path === '/proyecto' || path === '/proyecto/' || hash === '#/proyecto' || hash === '#proyecto') {
+        setShowProyecto(true);
+        setShowTerms(false);
+        setShowPrivacy(false);
       } else {
         setShowTerms(false);
         setShowPrivacy(false);
+        setShowProyecto(false);
       }
     };
 
@@ -104,18 +115,28 @@ export default function App() {
     window.history.pushState(null, '', '/terminos');
     setShowTerms(true);
     setShowPrivacy(false);
+    setShowProyecto(false);
   };
 
   const handleShowPrivacy = () => {
     window.history.pushState(null, '', '/privacidad');
     setShowPrivacy(true);
     setShowTerms(false);
+    setShowProyecto(false);
+  };
+
+  const handleShowProyecto = () => {
+    window.history.pushState(null, '', '/proyecto');
+    setShowProyecto(true);
+    setShowTerms(false);
+    setShowPrivacy(false);
   };
 
   const handleCloseTermsOrPrivacy = () => {
     window.history.pushState(null, '', '/');
     setShowTerms(false);
     setShowPrivacy(false);
+    setShowProyecto(false);
   };
 
   // Navigation State
@@ -740,6 +761,12 @@ export default function App() {
     );
   }
 
+  if (showProyecto) {
+    return (
+      <ProyectoView onClose={handleCloseTermsOrPrivacy} />
+    );
+  }
+
   if (showLanding) {
     return (
       <LandingView 
@@ -760,6 +787,7 @@ export default function App() {
         }} 
         onShowTerms={handleShowTerms}
         onShowPrivacy={handleShowPrivacy}
+        onShowProyecto={handleShowProyecto}
       />
     );
   }

@@ -33,7 +33,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'saber_mas': 'Saber más',
     'iniciar_como_invitado': 'Iniciar como Invitado',
     'empieza_ahora_gratis': 'Empieza Ahora Gratis',
-    'listo_comenzar_coleccion': '¿Listo para comenzar tu colección?',
+    'listo_comenzar_coleccion': 'Sobre el Proyecto',
 
     // Landing How It Works
     'como_funciona': '¿Cómo funciona?',
@@ -353,7 +353,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'saber_mas': 'Learn more',
     'iniciar_como_invitado': 'Start as Guest',
     'empieza_ahora_gratis': 'Start Now For Free',
-    'listo_comenzar_coleccion': 'Ready to start your collection?',
+    'listo_comenzar_coleccion': 'About the Project',
 
     // Landing How It Works
     'como_funciona': 'How it works',

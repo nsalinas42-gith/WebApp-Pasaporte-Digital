@@ -70,6 +70,7 @@ interface LandingViewProps {
   onEnterHiddenAdminPage?: () => void;
   onShowTerms?: () => void;
   onShowPrivacy?: () => void;
+  onShowProyecto?: () => void;
 }
 
 export default function LandingView({ 
@@ -83,7 +84,8 @@ export default function LandingView({
   onResetToZeroState,
   onEnterHiddenAdminPage,
   onShowTerms,
-  onShowPrivacy
+  onShowPrivacy,
+  onShowProyecto
 }: LandingViewProps) {
   const { t } = useLanguage();
   
@@ -345,6 +347,12 @@ export default function LandingView({
         {/* Right Actions */}
         {/* Desktop actions: visible on medium screens and larger */}
         <div className="hidden md:flex items-center gap-4">
+          <button
+            onClick={onShowProyecto}
+            className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#001c2c]/80 hover:bg-[#43e5d4]/10 border border-[#43e5d4]/30 text-secondary hover:text-white rounded-full transition-all outline-none cursor-pointer"
+          >
+            Sobre el Proyecto
+          </button>
           <LanguageSelector />
           <UserWayAccessibility />
         </div>
@@ -371,6 +379,20 @@ export default function LandingView({
               id="mobile-navigation-submenu" 
               className="absolute right-0 top-[52px] w-64 rounded-2xl bg-[#001721] border border-secondary/40 shadow-[0_15px_35px_rgba(0,0,0,0.6)] z-55 p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
+              {/* Project Info Quick Link */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (onShowProyecto) onShowProyecto();
+                }}
+                className="w-full text-center py-2 bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4]/30 text-secondary hover:text-white transition-all rounded-xl text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
+              >
+                Sobre el Proyecto
+              </button>
+
+              {/* Separation line */}
+              <div className="h-px bg-[#005049]/20 my-0.5" />
+
               {/* Language Selector block */}
               <div className="flex flex-col gap-2">
                 <span className="text-[9px] font-black tracking-widest uppercase font-mono text-secondary opacity-80 flex items-center gap-1.5">
@@ -684,7 +706,7 @@ export default function LandingView({
 
             {/* Bottom centered Saber Mas button */}
             <button
-              onClick={scrollToHowItWorks}
+              onClick={onShowProyecto}
               className="w-auto px-8 py-2 bg-transparent hover:bg-white/5 border border-[#43e5d4]/40 text-[#43e5d4] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
             >
               {t('saber_mas')}
@@ -1053,14 +1075,17 @@ export default function LandingView({
 
       {/* 4. CALL TO ACTION SECTION */}
       <section className="py-20 bg-[#001d2c]/40 border-y border-[#005049]/20 text-center space-y-6 px-4">
+        <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#43e5d4] max-w-2xl mx-auto leading-relaxed">
+          {t('footer_manifesto')}
+        </p>
         <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface max-w-xl mx-auto leading-tight">
           {t('listo_comenzar_coleccion')}
         </h2>
         <button
-          onClick={onEnter}
+          onClick={onShowProyecto}
           className="px-10 py-5 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(67,229,212,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
         >
-          {t('empieza_ahora_gratis')}
+          {t('saber_mas')}
         </button>
       </section>
 
@@ -1154,6 +1179,16 @@ export default function LandingView({
               <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">{t('centro_ayuda')}</a>
               <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
               <div className="h-px bg-[#005049]/10 my-0.5" />
+              <a 
+                href="/proyecto" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onShowProyecto) onShowProyecto();
+                }}
+                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer font-bold text-secondary"
+              >
+                Sobre el Proyecto
+              </a>
               <a 
                 href="/terminos" 
                 onClick={(e) => {

@@ -1,11 +1,11 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 
-// Default styles that can be overridden by your app
+// Importar los estilos por defecto de la interfaz del adaptador
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 interface SolanaProviderProps {
@@ -13,17 +13,23 @@ interface SolanaProviderProps {
 }
 
 export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
-  // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
+  // Definir la red a la que nos conectaremos (Devnet para pruebas, Mainnet para producción)
   const network = WalletAdapterNetwork.Devnet;
 
-  // You can also provide a custom RPC endpoint.
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // Configurar el endpoint RPC. Se prefiere un proveedor de alto rendimiento como Ankr para evitar el rate-limiting de nodos públicos oficiales.
+  const endpoint = useMemo(() => {
+    if (network === WalletAdapterNetwork.Devnet) {
+      return 'https://rpc.ankr.com/solana_devnet';
+    }
+    return clusterApiUrl(network);
+  }, [network]);
 
+  // Inicializar los adaptadores de las wallets que deseas soportar
   const wallets = useMemo(
     () => [
+      new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]
   );
 
@@ -37,3 +43,4 @@ export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
     </ConnectionProvider>
   );
 };
+
