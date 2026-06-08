@@ -1330,7 +1330,7 @@ export default function LandingView({
                       type="email"
                       value={adminEmail}
                       onChange={(e) => setAdminEmail(e.target.value)}
-                      placeholder="ingresa correo"
+                      placeholder="Introduce tu correo"
                       className="w-full bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
                     />
 
@@ -1348,7 +1348,7 @@ export default function LandingView({
                             handleVerifyAdminPassword();
                           }
                         }}
-                        placeholder="ingresa contraseña"
+                        placeholder="introduce tu contraseña"
                         className="flex-1 bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
                       />
                       <button
