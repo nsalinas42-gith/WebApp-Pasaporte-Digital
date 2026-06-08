@@ -325,7 +325,7 @@ export default function AdminHiddenView({
 
         <button
           onClick={onClose}
-          className="px-5 py-2.5 bg-[#001c27] hover:bg-[#43e5d4]/10 border border-[#43e5d4]/30 hover:border-[#43e5d4] text-[#43e5d4] transition-all text-xs font-black uppercase tracking-wider rounded-xl flex items-center gap-2 cursor-pointer outline-none"
+          className="px-5 py-2.5 bg-[#001c27] hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 hover:border-[#1A56DB] text-[#1A56DB] transition-all text-xs font-black uppercase tracking-wider rounded-xl flex items-center gap-2 cursor-pointer outline-none"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al Inicio
@@ -362,7 +362,7 @@ export default function AdminHiddenView({
 
             <div className="bg-[#00121a] border border-[#005049]/20 p-5 rounded-2xl text-left space-y-1 shadow-md">
               <span className="text-[9px] text-[#8c9f9e] font-black uppercase tracking-wider block">Solana Devnet</span>
-              <span className="text-xs font-bold font-mono text-[#43e5d4] flex items-center gap-1 bg-[#43e5d4]/10 border border-[#43e5d4]/20 px-2 py-1 rounded max-w-fit mt-1">
+              <span className="text-xs font-bold font-mono text-[#1A56DB] flex items-center gap-1 bg-[#1A56DB]/10 border border-[#1A56DB]/20 px-2 py-1 rounded max-w-fit mt-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
                 CONECTADO
               </span>
@@ -374,7 +374,7 @@ export default function AdminHiddenView({
             <div className="flex justify-between items-center border-b border-[#005049]/15 pb-3">
               <div>
                 <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-[#43e5d4]" />
+                  <Activity className="w-5 h-5 text-[#1A56DB]" />
                   Control Maestro de Geolocalización (Check-ins Manuales)
                 </h3>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
@@ -431,7 +431,7 @@ export default function AdminHiddenView({
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#005049]/15 pb-4">
               <div>
                 <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#43e5d4]" />
+                  <Users className="w-5 h-5 text-[#1A56DB]" />
                   Gestión Central de Exploradores (Firestore Database)
                 </h3>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
@@ -441,7 +441,7 @@ export default function AdminHiddenView({
               
               <button
                 onClick={fetchUsers}
-                className="py-1.5 px-3.5 bg-[#43e5d4]/10 border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#43e5d4]/20 text-[#43e5d4] text-[10px] font-black uppercase rounded-lg cursor-pointer transition-all shrink-0 flex items-center gap-1.5"
+                className="py-1.5 px-3.5 bg-[#1A56DB]/10 border border-[#1A56DB]/30 hover:border-[#1A56DB] hover:bg-[#1A56DB]/20 text-[#1A56DB] text-[10px] font-black uppercase rounded-lg cursor-pointer transition-all shrink-0 flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3 animate-pulse" />
                 Actualizar base
@@ -458,7 +458,7 @@ export default function AdminHiddenView({
                 placeholder="Buscar por nombre o correo electrónico..."
                 value={dbUserSearch}
                 onChange={(e) => setDbUserSearch(e.target.value)}
-                className="w-full bg-[#000d14] border border-[#005049]/25 rounded-xl py-2 px-10 text-xs text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-all font-sans"
+                className="w-full bg-[#000d14] border border-[#005049]/25 rounded-xl py-2 px-10 text-xs text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#1A56DB] transition-all font-sans"
               />
             </div>
 
@@ -473,7 +473,7 @@ export default function AdminHiddenView({
               <div className="max-h-64 overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-[#005049]/40 scrollbar-track-transparent">
                 {isLoadingDbUsers ? (
                   <div className="py-12 flex flex-col items-center justify-center gap-2 text-[#8c9f9e]/50">
-                    <RefreshCw className="w-6 h-6 animate-spin text-[#43e5d4]" />
+                    <RefreshCw className="w-6 h-6 animate-spin text-[#1A56DB]" />
                     <span className="text-xs font-mono uppercase tracking-wider">Conectando con Firestore...</span>
                   </div>
                 ) : dbUsers.filter((u: any) => {
@@ -499,7 +499,7 @@ export default function AdminHiddenView({
                             src={u.avatarUrl} 
                             alt={u.name} 
                             referrerPolicy="no-referrer"
-                            className="w-10 h-10 rounded-xl object-cover border border-[#43e5d4]/20 bg-[#000d14]"
+                            className="w-10 h-10 rounded-xl object-cover border border-[#1A56DB]/20 bg-[#000d14]"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center font-bold text-secondary shrink-0">
@@ -522,7 +522,7 @@ export default function AdminHiddenView({
                       <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 border-[#005049]/10 pt-2.5 sm:pt-0">
                         <button
                           onClick={() => handleResetProgressInCloud(u.uid, u.name)}
-                          className="flex items-center gap-1 py-1.5 px-3 bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4]/25 hover:border-[#43e5d4] text-[#43e5d4] text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer"
+                          className="flex items-center gap-1 py-1.5 px-3 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/25 hover:border-[#1A56DB] text-[#1A56DB] text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer"
                         >
                           <RefreshCw className="w-3 h-3" />
                           Reiniciar
@@ -718,7 +718,7 @@ export default function AdminHiddenView({
                 <span className="text-xs text-[#c8e7fb] font-semibold flex flex-wrap items-center gap-1">
                   {user && user.email && user.email !== 'felix.voyager@gmail.com' ? (
                     <>
-                      <span className="text-[#43e5d4] font-bold">● Sesión Iniciada:</span> {user.name} ({user.email})
+                      <span className="text-[#1A56DB] font-bold">● Sesión Iniciada:</span> {user.name} ({user.email})
                     </>
                   ) : (
                     <>
@@ -760,7 +760,7 @@ export default function AdminHiddenView({
                   }}
                   className={`w-full py-3 px-4 rounded-xl font-bold uppercase text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
                     globalWalletEnabled
-                      ? 'bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4] text-[#43e5d4]'
+                      ? 'bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB] text-[#1A56DB]'
                       : 'bg-red-500/10 hover:bg-red-500/20 border border-red-500 text-red-500 font-bold'
                   }`}
                 >
@@ -809,7 +809,7 @@ export default function AdminHiddenView({
                     }}
                     className={`flex-1 py-2 text-center text-[10px] font-black uppercase tracking-widest rounded-lg transition-all cursor-pointer ${
                       globalNetwork === 'DEVNET'
-                        ? 'bg-[#43e5d4]/10 border border-[#43e5d4]/30 text-[#43e5d4]'
+                        ? 'bg-[#1A56DB]/10 border border-[#1A56DB]/30 text-[#1A56DB]'
                         : 'text-[#8c9f9e] hover:text-on-surface'
                     }`}
                   >
@@ -870,7 +870,7 @@ export default function AdminHiddenView({
           <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-4 shadow-lg text-left">
             <div className="flex items-center justify-between border-b border-[#005049]/15 pb-2">
               <h3 className="font-headline text-sm font-bold text-on-surface flex items-center gap-1.5 uppercase">
-                <Database className="w-4 h-4 text-[#43e5d4]" />
+                <Database className="w-4 h-4 text-[#1A56DB]" />
                 Explorador de Datos (LocalDB)
               </h3>
             </div>
@@ -903,7 +903,7 @@ export default function AdminHiddenView({
               </button>
             </div>
 
-            <div className="bg-[#000d14] p-3 rounded-xl border border-[#005049]/15 font-mono text-[10px] text-[#43e5d4] h-52 overflow-y-auto select-all shadow-inner">
+            <div className="bg-[#000d14] p-3 rounded-xl border border-[#005049]/15 font-mono text-[10px] text-[#1A56DB] h-52 overflow-y-auto select-all shadow-inner">
               {selectedDbTable === 'locations' && (
                 <pre>{JSON.stringify(locations.map(l => ({ id: l.id, isCheckedIn: l.isCheckedIn, points: l.points, childrenCount: l.places?.length })), null, 2)}</pre>
               )}
@@ -927,7 +927,7 @@ export default function AdminHiddenView({
                   onResetToMockupState();
                   addLog("Se ha restablecido los datos al estado de Demo Mágnum (4/6 sellos).");
                 }}
-                className="py-2 px-2.5 bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4]/25 text-[#43e5d4] font-bold text-[9px] uppercase tracking-wide rounded-xl cursor-pointer transition-all"
+                className="py-2 px-2.5 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/25 text-[#1A56DB] font-bold text-[9px] uppercase tracking-wide rounded-xl cursor-pointer transition-all"
               >
                 Regresar a Mockup
               </button>

@@ -41,7 +41,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
       className="bg-[#000f16] text-[#c9d1d6] min-h-screen font-sans flex flex-col justify-between"
     >
       {/* 1. TOP HEADER BAR */}
-      <header id="proyecto-header" className="sticky top-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(67,229,212,0.04)]">
+      <header id="proyecto-header" className="sticky top-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(26, 86, 219,0.04)]">
         <div id="proyecto-header-logo-container" className="flex items-center gap-2 cursor-pointer" onClick={onClose}>
           <img 
             id="proyecto-header-logo"
@@ -55,7 +55,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
         <button
           id="proyecto-back-button"
           onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 bg-[#001c2c]/80 hover:bg-[#43e5d4]/10 border border-[#43e5d4]/30 text-secondary hover:text-white transition-all rounded-full text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-[#001c2c]/80 hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 text-secondary hover:text-white transition-all rounded-full text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 text-secondary" />
           <span>Regresar</span>
@@ -67,23 +67,23 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
         
         {/* Title Block */}
         <div id="proyecto-title-block" className="space-y-4 text-center">
-          <div id="proyecto-icon-wrapper" className="w-16 h-16 rounded-2xl bg-[#43e5d4]/10 border border-[#43e5d4]/20 flex items-center justify-center text-[#43e5d4] mx-auto mb-2 shadow-[0_0_15px_rgba(67,229,212,0.1)]">
-            <Map className="w-8 h-8 text-[#43e5d4]" />
+          <div id="proyecto-icon-wrapper" className="w-16 h-16 rounded-2xl bg-[#1A56DB]/10 border border-[#1A56DB]/20 flex items-center justify-center text-[#1A56DB] mx-auto mb-2 shadow-[0_0_15px_rgba(26, 86, 219,0.1)]">
+            <Map className="w-8 h-8 text-[#1A56DB]" />
           </div>
           <h1 id="proyecto-title-heading" className="font-headline text-3xl sm:text-5xl font-black text-on-surface uppercase tracking-tight leading-none">
             Sobre el Proyecto
           </h1>
           <p className="text-secondary font-mono tracking-wider text-xs sm:text-sm uppercase font-bold">
-            Nombre del Proyecto: <span className="text-white bg-[#43e5d4]/10 px-2.5 py-1 rounded-md border border-[#43e5d4]/20 ml-1">Pinta Mapas</span>
+            Nombre del Proyecto: <span className="text-white bg-[#1A56DB]/10 px-2.5 py-1 rounded-md border border-[#1A56DB]/20 ml-1">Pinta Mapas</span>
           </p>
-          <div id="proyecto-title-divider" className="w-20 h-1 bg-[#43e5d4] mx-auto rounded-full"></div>
+          <div id="proyecto-title-divider" className="w-20 h-1 bg-[#1A56DB] mx-auto rounded-full"></div>
         </div>
 
         {/* Core Sections Grid */}
         <div id="proyecto-sections-grid" className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Section 1 */}
-          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#43e5d4]/30 transition-all">
+          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#1A56DB]/30 transition-all">
             <div className="space-y-4">
               <h3 className="font-headline text-lg sm:text-xl font-black text-on-surface">
                 1. ¿Qué estamos construyendo?
@@ -95,13 +95,13 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3 rounded-xl border border-[#005049]/10">
                   <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0 mt-2" />
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
-                    <strong className="text-[#43e5d4]">El componente físico:</strong> Mapas gigantes en blanco y negro impresos en papel bond que ilustran detalladamente lugares emblemáticos, flora, fauna, monumentos y personajes históricos (comenzando con el Casco Histórico de Caracas).
+                    <strong className="text-[#1A56DB]">El componente físico:</strong> Mapas gigantes en blanco y negro impresos en papel bond que ilustran detalladamente lugares emblemáticos, flora, fauna, monumentos y personajes históricos (comenzando con el Casco Histórico de Caracas).
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3 rounded-xl border border-[#005049]/10">
                   <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0 mt-2" />
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
-                    <strong className="text-[#43e5d4]">El componente digital (Bitácora Digital):</strong> Una aplicación web (MVP asegurado bajo la red de Solana) que funciona como un <em>Digital Passport</em>. Permite llevar un registro digital, interactuar con mapas interactivos a través de códigos QR y Google MyMaps, y conectar con activos digitales en la blockchain.
+                    <strong className="text-[#1A56DB]">El componente digital (Bitácora Digital):</strong> Una aplicación web (MVP asegurado bajo la red de Solana) que funciona como un <em>Digital Passport</em>. Permite llevar un registro digital, interactuar con mapas interactivos a través de códigos QR y Google MyMaps, y conectar con activos digitales en la blockchain.
                   </span>
                 </li>
               </ul>
@@ -109,7 +109,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
           </div>
 
           {/* Section 2 */}
-          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#43e5d4]/30 transition-all">
+          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#1A56DB]/30 transition-all">
             <div className="space-y-4">
               <h3 className="font-headline text-lg sm:text-xl font-black text-on-surface">
                 2. ¿Para quién es?
@@ -138,7 +138,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
           </div>
 
           {/* Section 3 */}
-          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#43e5d4]/30 transition-all">
+          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#1A56DB]/30 transition-all">
             <div className="space-y-4">
               <h3 className="font-headline text-lg sm:text-xl font-black text-on-surface">
                 3. ¿Qué problema resuelve?
@@ -150,13 +150,13 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3 rounded-xl border border-[#005049]/10">
                   <span className="text-rose-400 font-bold shrink-0 mt-0.5">•</span>
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
-                    <strong className="text-[#43e5d4]">El uso excesivo de pantallas:</strong> Ofrece una actividad táctil y de trabajo en equipo (el coloreado físico) para permitir "desconectar de los dispositivos y volver a conectar con el entorno", mitigando las horas excesivas frente al móvil.
+                    <strong className="text-[#1A56DB]">El uso excesivo de pantallas:</strong> Ofrece una actividad táctil y de trabajo en equipo (el coloreado físico) para permitir "desconectar de los dispositivos y volver a conectar con el entorno", mitigando las horas excesivas frente al móvil.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3 rounded-xl border border-[#005049]/10">
                   <span className="text-rose-400 font-bold shrink-0 mt-0.5">•</span>
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
-                    <strong className="text-[#43e5d4]">Falta de conexión con la identidad local:</strong> Resuelve el desinterés o desconocimiento del patrimonio cultural e histórico local a través de una experiencia de aprendizaje autónomo y dinámico, tanto visual como kinestésico.
+                    <strong className="text-[#1A56DB]">Falta de conexión con la identidad local:</strong> Resuelve el desinterés o desconocimiento del patrimonio cultural e histórico local a través de una experiencia de aprendizaje autónomo y dinámico, tanto visual como kinestésico.
                   </span>
                 </li>
               </ul>
@@ -164,7 +164,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
           </div>
 
           {/* Section 4 */}
-          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#43e5d4]/30 transition-all">
+          <div className="bg-[#001721] border border-[#005049]/25 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col justify-between hover:border-[#1A56DB]/30 transition-all">
             <div className="space-y-4">
               <h3 className="font-headline text-lg sm:text-xl font-black text-on-surface">
                 4. ¿Cuál es la acción principal de la app?
@@ -174,19 +174,19 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
               </p>
               <ul className="space-y-3 pt-2 text-left">
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3.5 rounded-xl border border-[#005049]/10">
-                  <span className="text-[#43e5d4] font-black shrink-0">1.</span>
+                  <span className="text-[#1A56DB] font-black shrink-0">1.</span>
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
                     <strong>Escaneo de códigos QR</strong> en el mapa físico de Pinta Mapas.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3.5 rounded-xl border border-[#005049]/10">
-                  <span className="text-[#43e5d4] font-black shrink-0">2.</span>
+                  <span className="text-[#1A56DB] font-black shrink-0">2.</span>
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
                     <strong>GPS Check-in (Validación en tiempo real):</strong> La tecnología de geolocalización integrada valida la presencia física del usuario directamente en el monumento histórico.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5 bg-[#001019]/40 p-3.5 rounded-xl border border-[#005049]/10">
-                  <span className="text-[#43e5d4] font-black shrink-0">3.</span>
+                  <span className="text-[#1A56DB] font-black shrink-0">3.</span>
                   <span className="text-xs text-on-surface-variant/90 leading-relaxed">
                     <strong>Reclamar e-Insignias y cNFTs:</strong> Desbloquear Compressed NFTs (cNFTs) de Solana y medallas de nivel que comprueban de manera permanente su trayectoria de exploración.
                   </span>
@@ -198,7 +198,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
         </div>
 
         {/* Section 5 - Wide Block */}
-        <div className="bg-[#001721] border border-[#43e5d4]/20 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.5)] hover:border-[#43e5d4]/40 transition-all text-left">
+        <div className="bg-[#001721] border border-[#1A56DB]/20 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_10px_35px_rgba(0,0,0,0.5)] hover:border-[#1A56DB]/40 transition-all text-left">
           <h3 className="font-headline text-lg sm:text-xl font-black text-on-surface">
             5. ¿Cuál es la versión mínima que vamos a terminar?
           </h3>
@@ -250,12 +250,12 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
           </div>
 
           {/* Card: Próximos pasos */}
-          <div className="bg-[#001721] border border-secondary/20 rounded-3xl p-6 space-y-3.5 shadow-md text-left relative overflow-hidden group hover:border-[#43e5d4]/40 transition-all flex flex-col justify-between">
+          <div className="bg-[#001721] border border-secondary/20 rounded-3xl p-6 space-y-3.5 shadow-md text-left relative overflow-hidden group hover:border-[#1A56DB]/40 transition-all flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/15 transition-all" />
             <div className="space-y-3 z-10">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-secondary" />
-                <h4 className="font-headline text-[#43e5d4] font-black text-sm uppercase tracking-wide">
+                <h4 className="font-headline text-[#1A56DB] font-black text-sm uppercase tracking-wide">
                   Próximos pasos:
                 </h4>
               </div>
@@ -264,7 +264,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
               </p>
             </div>
             <div className="pt-2">
-              <span className="inline-block px-2.5 py-1 text-[9px] font-black tracking-widest uppercase bg-[#43e5d4]/10 text-secondary rounded border border-secondary/20">
+              <span className="inline-block px-2.5 py-1 text-[9px] font-black tracking-widest uppercase bg-[#1A56DB]/10 text-secondary rounded border border-secondary/20">
                 Fase de Pruebas
               </span>
             </div>
@@ -306,7 +306,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
           <button
             id="proyecto-back-button-bottom"
             onClick={onClose}
-            className="px-10 py-4 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs uppercase tracking-wider hover:scale-[1.03] transform active:scale-95 transition-all outline-none cursor-pointer shadow-[0_0_20px_rgba(67,229,212,0.2)] flex items-center gap-2"
+            className="px-10 py-4 bg-[#1A56DB] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs uppercase tracking-wider hover:scale-[1.03] transform active:scale-95 transition-all outline-none cursor-pointer shadow-[0_0_20px_rgba(26, 86, 219,0.2)] flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Volver a la Bitácora</span>

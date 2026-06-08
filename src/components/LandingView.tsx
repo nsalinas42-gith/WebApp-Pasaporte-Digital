@@ -331,7 +331,7 @@ export default function LandingView({
   };
 
   return (
-    <div className="bg-[#000f16] text-on-background min-h-screen font-sans overflow-x-hidden selection:bg-[#43e5d4] selection:text-[#003732] flex flex-col justify-between">
+    <div className="bg-[#000f16] text-on-background min-h-screen font-sans overflow-x-hidden selection:bg-[#1A56DB] selection:text-[#003732] flex flex-col justify-between">
       
       {/* 1. TOP NAVBAR */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center pl-4 sm:pl-6 md:pl-16 pr-[15px] h-16 sm:h-20 bg-[#000f16]/90 backdrop-blur-md border-b border-[#005049]/20">
@@ -350,7 +350,7 @@ export default function LandingView({
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={onShowProyecto}
-            className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#001c2c]/80 hover:bg-[#43e5d4]/10 border border-[#43e5d4]/30 text-secondary hover:text-white rounded-full transition-all outline-none cursor-pointer"
+            className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#001c2c]/80 hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 text-secondary hover:text-white rounded-full transition-all outline-none cursor-pointer"
           >
             Sobre el Proyecto
           </button>
@@ -364,7 +364,7 @@ export default function LandingView({
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-expanded={isMobileMenuOpen}
-            className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.08)] select-none shrink-0"
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] select-none shrink-0"
             title="Soporte y configuración"
           >
             {isMobileMenuOpen ? (
@@ -386,7 +386,7 @@ export default function LandingView({
                   setIsMobileMenuOpen(false);
                   if (onShowProyecto) onShowProyecto();
                 }}
-                className="w-full text-center py-2 bg-[#43e5d4]/10 hover:bg-[#43e5d4]/20 border border-[#43e5d4]/30 text-secondary hover:text-white transition-all rounded-xl text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
+                className="w-full text-center py-2 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/30 text-secondary hover:text-white transition-all rounded-xl text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
               >
                 Sobre el Proyecto
               </button>
@@ -436,9 +436,9 @@ export default function LandingView({
         />
         
         {/* Holographic tech circle and matrices over Colosseum */}
-        <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#43e5d4]/10 pointer-events-none z-0 flex items-center justify-center animate-spin" style={{ animationDuration: '60s' }}>
-          <div className="w-[500px] h-[500px] rounded-full border border-dashed border-[#43e5d4]/5"></div>
-          <div className="absolute w-[400px] h-[400px] rounded-full border border-[#43e5d4]/15"></div>
+        <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#1A56DB]/10 pointer-events-none z-0 flex items-center justify-center animate-spin" style={{ animationDuration: '60s' }}>
+          <div className="w-[500px] h-[500px] rounded-full border border-dashed border-[#1A56DB]/5"></div>
+          <div className="absolute w-[400px] h-[400px] rounded-full border border-[#1A56DB]/15"></div>
         </div>
 
         {/* Shadow overlays mapping */}
@@ -450,7 +450,7 @@ export default function LandingView({
           <div className="space-y-4">
             <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-black text-on-surface tracking-tight leading-none leading-[1.05]">
               {t('descubre_mundo')}<br />
-              <span className="text-secondary bg-clip-text bg-gradient-to-r from-[#43e5d4] to-[#c7ffd3] glow-text shadow-glow">
+              <span className="text-secondary bg-clip-text bg-gradient-to-r from-[#1A56DB] to-[#c7ffd3] glow-text shadow-glow">
                 {t('colecciona_historia')}
               </span>
             </h1>
@@ -461,7 +461,7 @@ export default function LandingView({
           </div>
 
           {/* Holographic label tag under header */}
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 hidden md:block text-[9px] font-mono tracking-widest text-[#43e5d4]/40 font-bold uppercase select-none">
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 hidden md:block text-[9px] font-mono tracking-widest text-[#1A56DB]/40 font-bold uppercase select-none">
             Digital Passport • SOLANA SECURED
           </div>
 
@@ -469,10 +469,10 @@ export default function LandingView({
           <div className="space-y-6 pt-4 max-w-2xl mx-auto flex flex-col items-center w-full">
             
             {/* Email/Password Auth Module (Required specs) */}
-            <div className="w-full max-w-md mx-auto bg-[#00171f]/80 backdrop-blur-md rounded-2xl p-6 border border-[#43e5d4]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
+            <div className="w-full max-w-md mx-auto bg-[#00171f]/80 backdrop-blur-md rounded-2xl p-6 border border-[#1A56DB]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
               
               {/* Tab selection toggles */}
-              <div className="flex border-b border-[#43e5d4]/10 pb-2">
+              <div className="flex border-b border-[#1A56DB]/10 pb-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -482,7 +482,7 @@ export default function LandingView({
                   }}
                   className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
                     authMode === 'login'
-                      ? 'text-[#43e5d4] border-b-2 border-[#43e5d4]'
+                      ? 'text-[#1A56DB] border-b-2 border-[#1A56DB]'
                       : 'text-on-surface-variant/40 hover:text-on-surface'
                   }`}
                 >
@@ -497,7 +497,7 @@ export default function LandingView({
                   }}
                   className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
                     authMode === 'register'
-                      ? 'text-[#43e5d4] border-b-2 border-[#43e5d4]'
+                      ? 'text-[#1A56DB] border-b-2 border-[#1A56DB]'
                       : 'text-on-surface-variant/40 hover:text-on-surface'
                   }`}
                 >
@@ -514,7 +514,7 @@ export default function LandingView({
                 
                 {authMode === 'register' && (
                   <div className="space-y-1">
-                    <label htmlFor="auth-name-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                    <label htmlFor="auth-name-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
                       Nombre Completo
                     </label>
                     <div className="relative">
@@ -528,14 +528,14 @@ export default function LandingView({
                         placeholder="Tu nombre completo"
                         value={nameForm}
                         onChange={(e) => setNameForm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                        className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#1A56DB]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#1A56DB] transition-colors"
                       />
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-1">
-                  <label htmlFor="auth-email-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                  <label htmlFor="auth-email-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
                     {authMode === 'register' ? 'Correo Electrónico Principal' : 'Correo Electrónico'}
                   </label>
                   <div className="relative">
@@ -549,13 +549,13 @@ export default function LandingView({
                       placeholder="ejemplo@correo.com"
                       value={emailForm}
                       onChange={(e) => setEmailForm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                      className="w-full pl-10 pr-4 py-2 text-xs bg-black/40 border border-[#1A56DB]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#1A56DB] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="auth-password-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#43e5d4]/80">
+                  <label htmlFor="auth-password-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
                     Contraseña
                   </label>
                   <div className="relative">
@@ -569,13 +569,13 @@ export default function LandingView({
                       placeholder="Mínimo 6 caracteres"
                       value={passwordForm}
                       onChange={(e) => setPasswordForm(e.target.value)}
-                      className="w-full pl-10 pr-10 py-2 text-xs bg-black/40 border border-[#43e5d4]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#43e5d4] transition-colors"
+                      className="w-full pl-10 pr-10 py-2 text-xs bg-black/40 border border-[#1A56DB]/20 rounded-xl text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-[#1A56DB] transition-colors"
                     />
                     <button
                       id="toggle-password-vis"
                       type="button"
                       onClick={() => setShowPasswordField(!showPasswordField)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant/40 hover:text-[#43e5d4] transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant/40 hover:text-[#1A56DB] transition-colors"
                     >
                       {showPasswordField ? (
                         <EyeOff className="h-4 w-4" />
@@ -653,7 +653,7 @@ export default function LandingView({
                 )}
 
                 {authSuccessMsg && (
-                  <div className="text-[11px] text-[#43e5d4] bg-[#003732]/40 border border-[#43e5d4]/20 p-2.5 rounded-xl flex items-start gap-2">
+                  <div className="text-[11px] text-[#1A56DB] bg-[#003732]/40 border border-[#1A56DB]/20 p-2.5 rounded-xl flex items-start gap-2">
                     <span className="font-extrabold">✓</span>
                     <span>{authSuccessMsg}</span>
                   </div>
@@ -664,7 +664,7 @@ export default function LandingView({
                   id="submit-auth-btn"
                   type="submit"
                   disabled={isLoadingAuth}
-                  className="w-full py-2.5 bg-gradient-to-r from-[#43e5d4] to-[#04c0ae] hover:from-[#c7ffd3] hover:to-[#43e5d4] text-[#003732] font-black uppercase text-xs tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-55 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(67,229,212,0.15)]"
+                  className="w-full py-2.5 bg-gradient-to-r from-[#1A56DB] to-[#04c0ae] hover:from-[#c7ffd3] hover:to-[#1A56DB] text-[#003732] font-black uppercase text-xs tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-55 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(26, 86, 219,0.15)]"
                 >
                   {isLoadingAuth ? (
                     <span className="h-3 w-3 border-2 border-[#003732] border-t-transparent rounded-full animate-spin"></span>
@@ -699,7 +699,7 @@ export default function LandingView({
             <div className="flex flex-col items-center justify-center gap-4 w-full pt-1">
               <button
                 onClick={onEnter}
-                className="w-full max-w-md px-8 py-3 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center shadow-[0_0_15px_rgba(67,229,212,0.12)]"
+                className="w-full max-w-md px-8 py-3 bg-[#1A56DB] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center shadow-[0_0_15px_rgba(26, 86, 219,0.12)]"
               >
                 {t('iniciar_como_invitado') || 'Explorar como Invitado'}
               </button>
@@ -708,7 +708,7 @@ export default function LandingView({
             {/* Bottom centered Saber Mas button */}
             <button
               onClick={onShowProyecto}
-              className="w-auto px-8 py-2 bg-transparent hover:bg-white/5 border border-[#43e5d4]/40 text-[#43e5d4] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
+              className="w-auto px-8 py-2 bg-transparent hover:bg-white/5 border border-[#1A56DB]/40 text-[#1A56DB] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
             >
               {t('saber_mas')}
             </button>
@@ -724,17 +724,17 @@ export default function LandingView({
           <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface uppercase tracking-wider relative inline-block">
             {t('como_funciona')}
           </h2>
-          <div className="w-16 h-1 bg-[#43e5d4] mx-auto rounded-full"></div>
+          <div className="w-16 h-1 bg-[#1A56DB] mx-auto rounded-full"></div>
         </div>
 
         {/* Bento Grid layout matching the reference mockup */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           
           {/* CARD 1: Adquiere tu Mapa Físico (col-span-12 md:col-span-7) */}
-          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors min-h-[240px]">
+          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
             <div className="space-y-4 max-w-sm text-left">
-              <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
-                <Map className="w-5 h-5 text-[#43e5d4]" />
+              <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
+                <Map className="w-5 h-5 text-[#1A56DB]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
                 {t('physical_map_title')}
@@ -745,7 +745,7 @@ export default function LandingView({
             </div>
 
             {/* Tenous watermark map SVG */}
-            <div className="absolute bottom-[-15%] right-[-5%] w-56 h-56 text-[#43e5d4]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#43e5d4]/[0.08] transition-all duration-500">
+            <div className="absolute bottom-[-15%] right-[-5%] w-56 h-56 text-[#1A56DB]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#1A56DB]/[0.08] transition-all duration-500">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
                 <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
                 <line x1="9" y1="3" x2="9" y2="18" />
@@ -755,10 +755,10 @@ export default function LandingView({
           </div>
 
           {/* CARD 2: Visita los Sitios (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
-                <Compass className="w-5 h-5 text-[#43e5d4]" />
+              <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
+                <Compass className="w-5 h-5 text-[#1A56DB]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
                 {t('visit_sites_title')}
@@ -769,14 +769,14 @@ export default function LandingView({
             </div>
             
             {/* Design detail bottom line */}
-            <div className="h-1 w-12 bg-[#43e5d4]/30 rounded"></div>
+            <div className="h-1 w-12 bg-[#1A56DB]/30 rounded"></div>
           </div>
 
           {/* CARD 3: GPS Check-in (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#43e5d4]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20">
-                <MapPin className="w-5 h-5 text-[#43e5d4]" />
+              <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
+                <MapPin className="w-5 h-5 text-[#1A56DB]" />
               </div>
               <h3 className="font-headline text-lg font-extrabold text-on-surface">
                 {t('gps_checkin_title')}
@@ -789,19 +789,19 @@ export default function LandingView({
             {/* Bottom notification indicator inside card */}
             <div className="flex items-center gap-2 pt-2 border-t border-[#1a3848]/40">
               <CheckCircle className="w-4 h-4 text-secondary" />
-              <span className="text-[10px] font-black tracking-widest text-[#43e5d4] uppercase">
+              <span className="text-[10px] font-black tracking-widest text-[#1A56DB] uppercase">
                 {t('realtime_validation')}
               </span>
             </div>
           </div>
 
           {/* CARD 4: Gana cNFTs Exclusivos (col-span-12 md:col-span-7) */}
-          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#43e5d4]/40 transition-colors min-h-[240px]">
+          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
             
             <div className="space-y-4 max-w-sm text-left flex-1 flex flex-col justify-between relative z-10">
               <div>
-                <div className="w-11 h-11 rounded-xl bg-[#43e5d4]/10 flex items-center justify-center text-[#43e5d4] border border-[#43e5d4]/20 mb-4">
-                  <Sparkles className="w-5 h-5 text-[#43e5d4]" />
+                <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20 mb-4">
+                  <Sparkles className="w-5 h-5 text-[#1A56DB]" />
                 </div>
                 <h3 className="font-headline text-lg font-extrabold text-on-surface">
                   {t('earn_cnft_title')}
@@ -813,20 +813,20 @@ export default function LandingView({
 
               {/* Three little icons row inside card */}
               <div className="flex gap-3 pt-4 select-none">
-                <div className="p-1.5 rounded bg-[#43e5d4]/10 border border-[#43e5d4]/20" title="Trophy">
-                  <Trophy className="w-3.5 h-3.5 text-[#43e5d4]" />
+                <div className="p-1.5 rounded bg-[#1A56DB]/10 border border-[#1A56DB]/20" title="Trophy">
+                  <Trophy className="w-3.5 h-3.5 text-[#1A56DB]" />
                 </div>
-                <div className="p-1.5 rounded bg-[#43e5d4]/10 border border-[#43e5d4]/20" title="License Badge">
-                  <Award className="w-3.5 h-3.5 text-[#43e5d4]" />
+                <div className="p-1.5 rounded bg-[#1A56DB]/10 border border-[#1A56DB]/20" title="License Badge">
+                  <Award className="w-3.5 h-3.5 text-[#1A56DB]" />
                 </div>
-                <div className="p-1.5 rounded bg-[#43e5d4]/10 border border-[#43e5d4]/20" title="Block Ledger">
-                  <Layers className="w-3.5 h-3.5 text-[#43e5d4]" />
+                <div className="p-1.5 rounded bg-[#1A56DB]/10 border border-[#1A56DB]/20" title="Block Ledger">
+                  <Layers className="w-3.5 h-3.5 text-[#1A56DB]" />
                 </div>
               </div>
             </div>
 
             {/* Tenous watermark NFT SVG */}
-            <div className="absolute bottom-[-15%] right-[-5%] w-56 h-56 text-[#43e5d4]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#43e5d4]/[0.08] transition-all duration-500">
+            <div className="absolute bottom-[-15%] right-[-5%] w-56 h-56 text-[#1A56DB]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#1A56DB]/[0.08] transition-all duration-500">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
                 <path d="M2 17l10 5 10-5" />
@@ -838,7 +838,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 5: Insignias Digitales (Badges) (col-span-12) */}
-          <div className="col-span-1 md:col-span-12 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl hover:border-[#43e5d4]/40 transition-colors text-left space-y-6">
+          <div className="col-span-1 md:col-span-12 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl hover:border-[#1A56DB]/40 transition-colors text-left space-y-6">
             <div className="space-y-2">
               <h3 className="font-headline text-lg sm:text-xl font-extrabold text-on-surface">
                 Insignias Digitales (Badges)
@@ -853,7 +853,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -874,7 +874,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -895,7 +895,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -916,7 +916,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -937,7 +937,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -958,7 +958,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -982,8 +982,8 @@ export default function LandingView({
 
             {/* Special Badges Header */}
             <div className="space-y-2">
-              <h3 className="font-headline text-lg sm:text-xl font-extrabold text-[#43e5d4] flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#43e5d4]" />
+              <h3 className="font-headline text-lg sm:text-xl font-extrabold text-[#1A56DB] flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#1A56DB]" />
                 Insignias Especiales
               </h3>
               <p className="text-xs sm:text-sm text-[#8c9f9e]/90 leading-relaxed">
@@ -997,7 +997,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -1022,7 +1022,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -1047,7 +1047,7 @@ export default function LandingView({
               <motion.div 
                 whileHover="hover"
                 variants={{
-                  hover: { borderColor: "rgba(67, 229, 212, 0.45)" }
+                  hover: { borderColor: "rgba(26, 86, 219, 0.45)" }
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className="w-full max-w-[280px] sm:max-w-none flex flex-col items-center text-center space-y-3 p-3 sm:p-4 rounded-2xl bg-[#000f16]/40 border border-[#005049]/10 shadow-lg cursor-pointer transition-colors"
@@ -1076,7 +1076,7 @@ export default function LandingView({
 
       {/* 4. CALL TO ACTION SECTION */}
       <section className="py-20 bg-[#001d2c]/40 border-y border-[#005049]/20 text-center space-y-6 px-4">
-        <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#43e5d4] max-w-2xl mx-auto leading-relaxed">
+        <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#1A56DB] max-w-2xl mx-auto leading-relaxed">
           {t('footer_manifesto')}
         </p>
         <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface max-w-xl mx-auto leading-tight">
@@ -1084,7 +1084,7 @@ export default function LandingView({
         </h2>
         <button
           onClick={onShowProyecto}
-          className="px-10 py-5 bg-[#43e5d4] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(67,229,212,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
+          className="px-10 py-5 bg-[#1A56DB] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(26, 86, 219,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
         >
           {t('saber_mas')}
         </button>
@@ -1128,19 +1128,19 @@ export default function LandingView({
               {t('comunidad')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80 items-start">
-              <a href="#instagram" className="hover:text-[#43e5d4] hover:underline transition-all">Instagram</a>
-              <a href="#twitter" className="hover:text-[#43e5d4] hover:underline transition-all">Twitter / X</a>
-              <a href="#discord" className="hover:text-[#43e5d4] hover:underline transition-all">Discord</a>
+              <a href="#instagram" className="hover:text-[#1A56DB] hover:underline transition-all">Instagram</a>
+              <a href="#twitter" className="hover:text-[#1A56DB] hover:underline transition-all">Twitter / X</a>
+              <a href="#discord" className="hover:text-[#1A56DB] hover:underline transition-all">Discord</a>
             </div>
 
             {/* Relocated Admin Panel Card */}
-            <div className="bg-[#001019] border border-[#43e5d4]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
-              <div className="flex items-center justify-center gap-2 border-b border-[#43e5d4]/15 pb-2">
-                <Lock className="w-4 h-4 text-[#43e5d4]" />
-                <span className="font-headline text-[11px] font-bold text-[#43e5d4] uppercase tracking-widest block">
+            <div className="bg-[#001019] border border-[#1A56DB]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
+              <div className="flex items-center justify-center gap-2 border-b border-[#1A56DB]/15 pb-2">
+                <Lock className="w-4 h-4 text-[#1A56DB]" />
+                <span className="font-headline text-[11px] font-bold text-[#1A56DB] uppercase tracking-widest block">
                   Panel de Administrador
                 </span>
-                <span className="text-[8px] uppercase bg-[#43e5d4]/10 px-1.5 py-0.5 rounded text-[#43e5d4] font-mono">
+                <span className="text-[8px] uppercase bg-[#1A56DB]/10 px-1.5 py-0.5 rounded text-[#1A56DB] font-mono">
                   SECURE GATE
                 </span>
               </div>
@@ -1164,12 +1164,12 @@ export default function LandingView({
                       }
                     }}
                     placeholder="Contraseña (009286)..."
-                    className="flex-1 bg-[#00080d] border border-[#43e5d4]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#43e5d4] transition-all text-center"
+                    className="flex-1 bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
                   />
                   <button
                     type="button"
                     onClick={handleVerifyAdminPassword}
-                    className="px-3.5 py-1.5 bg-[#43e5d4]/10 border border-[#43e5d4]/40 text-[#43e5d4] text-[11px] font-black rounded-xl hover:brightness-110 hover:border-[#43e5d4] hover:bg-[#43e5d4]/20 active:scale-95 transition-all outline-none uppercase cursor-pointer"
+                    className="px-3.5 py-1.5 bg-[#1A56DB]/10 border border-[#1A56DB]/40 text-[#1A56DB] text-[11px] font-black rounded-xl hover:brightness-110 hover:border-[#1A56DB] hover:bg-[#1A56DB]/20 active:scale-95 transition-all outline-none uppercase cursor-pointer"
                   >
                     Entrar
                   </button>
@@ -1189,8 +1189,8 @@ export default function LandingView({
               {t('soporte')} y {t('legal')}
             </h4>
             <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80">
-              <a href="#help" className="hover:text-[#43e5d4] hover:underline transition-all">{t('centro_ayuda')}</a>
-              <a href="#contact" className="hover:text-[#43e5d4] hover:underline transition-all">{t('contacto')}</a>
+              <a href="#help" className="hover:text-[#1A56DB] hover:underline transition-all">{t('centro_ayuda')}</a>
+              <a href="#contact" className="hover:text-[#1A56DB] hover:underline transition-all">{t('contacto')}</a>
               <div className="h-px bg-[#005049]/10 my-0.5" />
               <a 
                 href="/proyecto" 
@@ -1198,7 +1198,7 @@ export default function LandingView({
                   e.preventDefault();
                   if (onShowProyecto) onShowProyecto();
                 }}
-                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer font-bold text-secondary"
+                className="hover:text-[#1A56DB] hover:underline transition-all cursor-pointer font-bold text-secondary"
               >
                 Sobre el Proyecto
               </a>
@@ -1208,7 +1208,7 @@ export default function LandingView({
                   e.preventDefault();
                   if (onShowTerms) onShowTerms();
                 }}
-                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer"
+                className="hover:text-[#1A56DB] hover:underline transition-all cursor-pointer"
               >
                 {t('terminos')}
               </a>
@@ -1218,11 +1218,11 @@ export default function LandingView({
                   e.preventDefault();
                   if (onShowPrivacy) onShowPrivacy();
                 }}
-                className="hover:text-[#43e5d4] hover:underline transition-all cursor-pointer"
+                className="hover:text-[#1A56DB] hover:underline transition-all cursor-pointer"
               >
                 {t('privacidad')}
               </a>
-              <a href="#cookies" className="hover:text-[#43e5d4] hover:underline transition-all">{t('cookies_policy')}</a>
+              <a href="#cookies" className="hover:text-[#1A56DB] hover:underline transition-all">{t('cookies_policy')}</a>
             </div>
           </div>
         </div>
@@ -1251,8 +1251,8 @@ export default function LandingView({
             
             {/* Header */}
             <div className="p-5 border-b border-[#005049]/20 flex items-center justify-between bg-[#001c27]">
-              <h3 className="font-headline text-xs sm:text-sm font-black text-[#43e5d4] uppercase tracking-wider flex items-center gap-2">
-                <Key className="w-4 h-4 text-[#43e5d4]" />
+              <h3 className="font-headline text-xs sm:text-sm font-black text-[#1A56DB] uppercase tracking-wider flex items-center gap-2">
+                <Key className="w-4 h-4 text-[#1A56DB]" />
                 Asistencia de Credenciales
               </h3>
               <button
@@ -1268,7 +1268,7 @@ export default function LandingView({
             <div className="p-5 space-y-4">
               
               {/* Option Toggles */}
-              <div className="grid grid-cols-2 gap-2 border border-[#43e5d4]/15 p-1 rounded-xl bg-black/30">
+              <div className="grid grid-cols-2 gap-2 border border-[#1A56DB]/15 p-1 rounded-xl bg-black/30">
                 <button
                   type="button"
                   onClick={() => {
@@ -1280,7 +1280,7 @@ export default function LandingView({
                   className={`text-center py-2 text-[10px] sm:text-xs font-bold uppercase rounded-lg cursor-pointer transition-all ${
                     recoveryOption === 'A'
                       ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30'
-                      : 'text-on-surface-variant/70 hover:text-[#43e5d4]'
+                      : 'text-on-surface-variant/70 hover:text-[#1A56DB]'
                   }`}
                 >
                   Olvidé mi contraseña
@@ -1296,7 +1296,7 @@ export default function LandingView({
                   className={`text-center py-2 text-[10px] sm:text-xs font-bold uppercase rounded-lg cursor-pointer transition-all ${
                     recoveryOption === 'B'
                       ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30'
-                      : 'text-on-surface-variant/70 hover:text-[#43e5d4]'
+                      : 'text-on-surface-variant/70 hover:text-[#1A56DB]'
                   }`}
                 >
                   Olvidé mi correo
@@ -1326,14 +1326,14 @@ export default function LandingView({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-black uppercase text-[#43e5d4]/70">Correo Principal Registrado</label>
+                    <label className="block text-[10px] font-black uppercase text-[#1A56DB]/70">Correo Principal Registrado</label>
                     <input
                       type="email"
                       required
                       placeholder="ejemplo@correo.com"
                       value={primaryEmailRecoveryInput}
                       onChange={(e) => setPrimaryEmailRecoveryInput(e.target.value)}
-                      className="w-full bg-[#00080d] border border-[#43e5d4]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#43e5d4] transition-colors"
+                      className="w-full bg-[#00080d] border border-[#1A56DB]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#1A56DB] transition-colors"
                     />
                   </div>
 
@@ -1364,7 +1364,7 @@ export default function LandingView({
                       placeholder="backup_mail@ejemplo.com"
                       value={secondaryEmailRecoveryInput}
                       onChange={(e) => setSecondaryEmailRecoveryInput(e.target.value)}
-                      className="w-full bg-[#00080d] border border-[#43e5d4]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#43e5d4] transition-colors"
+                      className="w-full bg-[#00080d] border border-[#1A56DB]/20 rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:border-[#1A56DB] transition-colors"
                     />
                   </div>
 
@@ -1381,7 +1381,7 @@ export default function LandingView({
               {recoveryMessage && (
                 <div className={`p-3.5 rounded-xl text-left space-y-1 ${
                   recoveryMessage.type === 'success'
-                    ? 'bg-[#002f2a]/80 text-[#43e5d4] border border-[#43e5d4]/20'
+                    ? 'bg-[#002f2a]/80 text-[#1A56DB] border border-[#1A56DB]/20'
                     : 'bg-rose-950/40 text-rose-300 border border-rose-500/20'
                 }`}>
                   <div className="font-black flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
@@ -1398,7 +1398,7 @@ export default function LandingView({
               <button
                 type="button"
                 onClick={() => setShowRecoveryModal(false)}
-                className="px-6 py-1.5 border border-[#43e5d4]/30 text-[#43e5d4] rounded-lg text-xs uppercase tracking-widest font-bold hover:bg-[#43e5d4]/10 transition-colors cursor-pointer"
+                className="px-6 py-1.5 border border-[#1A56DB]/30 text-[#1A56DB] rounded-lg text-xs uppercase tracking-widest font-bold hover:bg-[#1A56DB]/10 transition-colors cursor-pointer"
               >
                 Volver al Login
               </button>

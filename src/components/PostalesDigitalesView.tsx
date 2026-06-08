@@ -240,11 +240,11 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         ctx.drawImage(img, 50, 50, 700, 700);
 
         // Technical borders & Gold frames
-        ctx.strokeStyle = "#43e5d4";
+        ctx.strokeStyle = "#1A56DB";
         ctx.lineWidth = 12;
         ctx.strokeRect(6, 6, 788, 788);
 
-        ctx.strokeStyle = "rgba(67, 229, 212, 0.35)";
+        ctx.strokeStyle = "rgba(26, 86, 219, 0.35)";
         ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, 760, 760);
 
@@ -253,11 +253,11 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         ctx.fillRect(35, 660, 730, 100);
 
         // Tech cyan separator bar
-        ctx.fillStyle = "#43e5d4";
+        ctx.fillStyle = "#1A56DB";
         ctx.fillRect(35, 658, 730, 3);
 
         // Top Header Watermark text
-        ctx.fillStyle = "rgba(67, 229, 212, 0.3)";
+        ctx.fillStyle = "rgba(26, 86, 219, 0.3)";
         ctx.font = "bold 11px monospace";
         ctx.fillText("BITACORA DIGITAL PINTA MAPAS - SOLANA SECURED CERTIFICATE", 50, 42);
 
@@ -270,7 +270,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         ctx.font = "500 12px 'Space Grotesk', system-ui, sans-serif";
         ctx.fillText(routeName.toUpperCase(), 60, 715);
 
-        ctx.fillStyle = "#43e5d4";
+        ctx.fillStyle = "#1A56DB";
         ctx.font = "bold 12px monospace";
         ctx.fillText(`TRANSACCIÓN BLOCKCHAIN TX: ${txHash.slice(0, 12)}...${txHash.slice(-12)}`, 60, 742);
 
@@ -284,7 +284,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
             margin: 1,
             width: 100,
             color: {
-              dark: '#43e5d4', // Solana theme cyan
+              dark: '#1A56DB', // Solana theme cyan
               light: '#001019' // custom dark background
             }
           });
@@ -302,7 +302,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
           });
         } catch (qrErr) {
           console.error("QR Code generation failed, fallback to aesthetic matrix", qrErr);
-          ctx.fillStyle = "#43e5d4";
+          ctx.fillStyle = "#1A56DB";
           for (let x = 0; x < 6; x++) {
             for (let y = 0; y < 6; y++) {
               if (x === 0 || x === 5 || y === 0 || y === 5 || (x === 2 && y === 2)) {
@@ -342,7 +342,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     ctx.fillRect(0, 0, 800, 800);
 
     // Grid details for tech vibe
-    ctx.strokeStyle = "rgba(67, 229, 212, 0.08)";
+    ctx.strokeStyle = "rgba(26, 86, 219, 0.08)";
     ctx.lineWidth = 1;
     for (let x = 50; x < 800; x += 50) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 800); ctx.stroke();
@@ -352,34 +352,34 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     }
 
     // Outer gold cyan borders
-    ctx.strokeStyle = "#43e5d4";
+    ctx.strokeStyle = "#1A56DB";
     ctx.lineWidth = 12;
     ctx.strokeRect(6, 6, 788, 788);
 
     // Decorative inner target elements
-    ctx.strokeStyle = "rgba(67, 229, 212, 0.25)";
+    ctx.strokeStyle = "rgba(26, 86, 219, 0.25)";
     ctx.strokeRect(25, 25, 750, 750);
 
     // Center reward badge circle
     ctx.beginPath();
     ctx.arc(400, 320, 180, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(67, 229, 212, 0.05)";
+    ctx.fillStyle = "rgba(26, 86, 219, 0.05)";
     ctx.fill();
-    ctx.strokeStyle = "#43e5d4";
+    ctx.strokeStyle = "#1A56DB";
     ctx.lineWidth = 3;
     ctx.stroke();
 
     // Secondary decorative gear ring
     ctx.beginPath();
     ctx.arc(400, 320, 200, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(67, 229, 212, 0.15)";
+    ctx.strokeStyle = "rgba(26, 86, 219, 0.15)";
     ctx.lineWidth = 1;
     ctx.setLineDash([8, 12]);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // Big central stamp representation text
-    ctx.fillStyle = "#43e5d4";
+    ctx.fillStyle = "#1A56DB";
     ctx.font = "bold 32px monospace";
     ctx.textAlign = "center";
     ctx.fillText("CERTIFICATE cNFT", 400, 305);
@@ -396,7 +396,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     ctx.textAlign = "left";
     ctx.fillStyle = "rgba(0, 16, 25, 0.95)";
     ctx.fillRect(35, 620, 730, 140);
-    ctx.fillStyle = "#43e5d4";
+    ctx.fillStyle = "#1A56DB";
     ctx.fillRect(35, 617, 730, 4);
 
     // Titles
@@ -408,7 +408,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     ctx.font = "500 13px 'Space Grotesk', system-ui, sans-serif";
     ctx.fillText(routeName.toUpperCase(), 60, 685);
 
-    ctx.fillStyle = "#43e5d4";
+    ctx.fillStyle = "#1A56DB";
     ctx.font = "bold 13px monospace";
     ctx.fillText(`SOLANA TRANSACTION TX: ${txHash}`, 60, 715);
 
@@ -426,7 +426,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         margin: 1,
         width: 120,
         color: {
-          dark: '#43e5d4',
+          dark: '#1A56DB',
           light: '#001019'
         }
       });
@@ -444,7 +444,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
       });
     } catch (qrErr) {
       console.error("Fallback QR Code generation failed", qrErr);
-      ctx.fillStyle = "#43e5d4";
+      ctx.fillStyle = "#1A56DB";
       for (let x = 0; x < 6; x++) {
         for (let y = 0; y < 6; y++) {
           const draw = (x === 0 || x === 5 || y === 0 || y === 5 || (x + y) % 3 === 0);
@@ -565,7 +565,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
               key={p.id}
               className={`group flex flex-col bg-surface-container-low border rounded-2xl overflow-hidden transition-all duration-300 relative ${
                 status.isMinted 
-                  ? 'border-[#43e5d4]/40 shadow-[0_0_15px_rgba(67,229,212,0.06)]' 
+                  ? 'border-[#1A56DB]/40 shadow-[0_0_15px_rgba(26, 86, 219,0.06)]' 
                   : isCompleted 
                     ? 'border-secondary/20 hover:border-secondary/45' 
                     : 'border-[#005049]/15'
@@ -648,7 +648,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
                           href={`https://solscan.io/tx/${status.txHash}`} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="text-[#43e5d4] hover:underline flex items-center gap-0.5"
+                          className="text-[#1A56DB] hover:underline flex items-center gap-0.5"
                         >
                           SOLFLARE <ExternalLink className="w-2.5 h-2.5" />
                         </a>
@@ -664,7 +664,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
                             ? 'bg-[#181109] border border-amber-500/20 text-amber-400/60 cursor-not-allowed'
                             : status.isMinting
                               ? 'bg-secondary/10 text-secondary border border-secondary border-dashed cursor-wait'
-                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_4px_12px_rgba(67,229,212,0.15)]'
+                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_4px_12px_rgba(26, 86, 219,0.15)]'
                           : 'bg-surface-container-high text-on-surface-variant/30 cursor-not-allowed border border-[#005049]/10'
                       }`}
                     >

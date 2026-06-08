@@ -795,10 +795,10 @@ export default function App() {
   }
 
   return (
-    <div className="bg-background text-on-background min-h-screen selection:bg-[#43e5d4] selection:text-[#003732] font-sans pb-20 md:pb-0">
+    <div className="bg-background text-on-background min-h-screen selection:bg-[#1A56DB] selection:text-[#003732] font-sans pb-20 md:pb-0">
       
       {/* Upper Navigation Header Bar for both Mobile & Desktop */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(67,229,212,0.04)]">
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 sm:px-6 md:px-12 h-16 sm:h-20 bg-[#001621]/90 backdrop-blur-xl border-b border-[#005049]/35 shadow-[0_0_20px_rgba(26, 86, 219,0.04)]">
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
           <img 
             src={logoPintaMapas} 
@@ -848,7 +848,7 @@ export default function App() {
 
           <div className="flex items-center gap-1.5 sm:gap-4 select-none">
             {/* Dynamic XP Pill indicator */}
-            <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 bg-[#001e2c] border border-secondary/30 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-secondary text-[10px] sm:text-xs font-bold leading-none shadow-[0_0_15px_rgba(67,229,212,0.05)] shrink-0">
+            <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 bg-[#001e2c] border border-secondary/30 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-secondary text-[10px] sm:text-xs font-bold leading-none shadow-[0_0_15px_rgba(26, 86, 219,0.05)] shrink-0">
                <Trophy className="w-3 h-3 text-secondary fill-secondary/10" />
                <span>{user.xpToNextLevel - user.xp} XP</span>
             </div>
@@ -864,7 +864,7 @@ export default function App() {
                 }}
                 className="relative cursor-pointer group shrink-0"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-[#43e5d4] group-active:scale-95 duration-150 flex items-center justify-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-secondary/40 overflow-hidden bg-surface-container-high transition-all group-hover:border-[#1A56DB] group-active:scale-95 duration-150 flex items-center justify-center">
                   {user.avatarUrl ? (
                     <img 
                       alt="Profile" 
@@ -887,7 +887,7 @@ export default function App() {
               {isProfileMenuOpen && (
                 <div 
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute right-0 mt-3 w-52 bg-[#001019]/95 backdrop-blur-xl border border-[#43e5d4]/45 rounded-2xl shadow-[0_10px_35px_rgba(67,229,212,0.25)] py-2.5 z-50 text-left animate-in fade-in slide-in-from-top-3 duration-200"
+                  className="absolute right-0 mt-3 w-52 bg-[#001019]/95 backdrop-blur-xl border border-[#1A56DB]/45 rounded-2xl shadow-[0_10px_35px_rgba(26, 86, 219,0.25)] py-2.5 z-50 text-left animate-in fade-in slide-in-from-top-3 duration-200"
                 >
                   <div className="px-4 pb-2.5 pt-1.5 border-b border-[#005049]/20">
                     <p className="text-xs font-black text-on-surface truncate tracking-wide">{user.name}</p>
@@ -901,7 +901,7 @@ export default function App() {
                         setActiveTab('settings');
                         setIsProfileMenuOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs font-extrabold text-on-surface hover:text-[#43e5d4] hover:bg-[#43e5d4]/10 transition-colors flex items-center gap-2.5 rounded-lg outline-none cursor-pointer"
+                      className="w-full text-left px-3 py-2 text-xs font-extrabold text-on-surface hover:text-[#1A56DB] hover:bg-[#1A56DB]/10 transition-colors flex items-center gap-2.5 rounded-lg outline-none cursor-pointer"
                     >
                       <Settings className="w-4 h-4 text-secondary" style={{ display: 'inline' }} />
                       <span className="ml-2">{t('settings')}</span>
@@ -1024,7 +1024,7 @@ export default function App() {
           }`}
         >
           <LayoutDashboard className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             {t('dashboard')}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1043,7 +1043,7 @@ export default function App() {
               {totalCount - unlockedCount}
             </span>
           )}
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             {t('exploration')}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1057,7 +1057,7 @@ export default function App() {
           }`}
         >
           <Layers className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             {t('my_stamps')}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1071,7 +1071,7 @@ export default function App() {
           }`}
         >
           <Image className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             Postales
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1085,7 +1085,7 @@ export default function App() {
           }`}
         >
           <Trophy className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             {t('leaderboard')}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1099,7 +1099,7 @@ export default function App() {
           }`}
         >
           <Settings className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#43e5d4] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(67,229,212,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
             {t('settings')}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
           </div>
@@ -1147,7 +1147,7 @@ export default function App() {
       {/* CLAIM NFT SUCCESS CELEBRATION BOX */}
       {showClaimSuccessPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/95 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gradient-to-tr from-[#002332] to-[#005049]/90 border-2 border-[#43e5d4] p-8 rounded-2xl text-center space-y-6 glow-cyan animate-in zoom-in duration-300">
+          <div className="w-full max-w-md bg-gradient-to-tr from-[#002332] to-[#005049]/90 border-2 border-[#1A56DB] p-8 rounded-2xl text-center space-y-6 glow-cyan animate-in zoom-in duration-300">
             <div className="relative w-28 h-28 mx-auto">
               <div className="absolute inset-0 rounded-full blur-xl bg-secondary/35 animate-pulse" />
               <div className="relative w-28 h-28 mx-auto rounded-full bg-[#001621] border-2 border-secondary flex items-center justify-center text-5xl animate-bounce" style={{ animationDuration: '3s' }}>
@@ -1156,7 +1156,7 @@ export default function App() {
             </div>
 
             <div className="space-y-2 text-center text-left">
-              <span className="inline-block bg-[#43e5d4]/10 text-secondary text-[10px] font-black px-3 py-1 rounded-full border border-secondary/20 uppercase tracking-widest">
+              <span className="inline-block bg-[#1A56DB]/10 text-secondary text-[10px] font-black px-3 py-1 rounded-full border border-secondary/20 uppercase tracking-widest">
                 Transacción Solana Verificada
               </span>
               <h3 className="font-headline text-2xl font-black text-on-surface">
@@ -1168,7 +1168,7 @@ export default function App() {
             </div>
 
             {/* Simulated on-chain hash details */}
-            <div className="bg-background/80 p-4 rounded-xl border border-[#43e5d4]/20 text-xs font-mono text-on-surface-variant text-left space-y-1.5 overflow-hidden">
+            <div className="bg-background/80 p-4 rounded-xl border border-[#1A56DB]/20 text-xs font-mono text-on-surface-variant text-left space-y-1.5 overflow-hidden">
               <div className="flex justify-between font-sans font-bold text-[9px] uppercase text-secondary">
                 <span>Solana Ledger Receipt</span>
                 <span>cNFT (Compressed)</span>
@@ -1191,7 +1191,7 @@ export default function App() {
       {/* TOP NOTIFICATION POPUPS FOR GAME ACTIONS */}
       {showPhotoNotification && (
         <div id="selfie-success-alert" className="fixed top-24 right-4 z-[90] bg-surface-container border border-secondary p-4 rounded-xl shadow-lg glow-mint text-left flex items-center gap-3 animate-in fade-in slide-in-from-right duration-250 max-w-xs">
-          <div className="p-2 bg-[#43e5d4]/10 text-secondary border border-[#43e5d4]/15 rounded-lg shrink-0">
+          <div className="p-2 bg-[#1A56DB]/10 text-secondary border border-[#1A56DB]/15 rounded-lg shrink-0">
             <Camera className="w-5 h-5 animate-pulse" />
           </div>
           <div className="text-xs">

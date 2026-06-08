@@ -159,7 +159,7 @@ export const WalletCard: FC = () => {
   return (
     <div className="bg-gradient-to-tr from-[#001c2a] to-[#002f2d] rounded-2xl border border-secondary/35 p-6 space-y-5 shadow-lg text-left relative overflow-hidden group">
       {/* Background radial accent */}
-      <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#43e5d4]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#43e5d4]/10 transition-colors duration-500"></div>
+      <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#1A56DB]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#1A56DB]/10 transition-colors duration-500"></div>
 
       {/* Header section redesigned correctly with the title and connected trigger */}
       <div className="flex flex-col gap-1.5 border-b border-[#005049]/25 pb-3">
@@ -179,7 +179,7 @@ export const WalletCard: FC = () => {
             title={isActive ? "Cerrar sesión de la wallet" : "Activar billetera"}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all duration-300 text-[10px] font-mono font-black uppercase tracking-widest cursor-pointer select-none ${
               isActive 
-                ? 'bg-[#43e5d4]/10 border-secondary text-secondary shadow-[0_0_12px_rgba(67,229,212,0.12)]' 
+                ? 'bg-[#1A56DB]/10 border-secondary text-secondary shadow-[0_0_12px_rgba(26, 86, 219,0.12)]' 
                 : 'bg-[#001c27]/40 border-slate-700/60 text-slate-400'
             }`}
           >
@@ -272,7 +272,7 @@ export const WalletCard: FC = () => {
           {/* Standard block representation details */}
           <div className="bg-[#000f16]/25 border border-[#005049]/10 rounded-xl p-2.5 flex items-center justify-between text-[10px]">
             <span className="text-on-surface-variant/60 font-medium">Estándar compatible:</span>
-            <span className="font-extrabold font-mono text-[#c8e7fb] flex items-center gap-1 bg-[#43e5d4]/5 px-2 py-0.5 rounded border border-[#43e5d4]/10">
+            <span className="font-extrabold font-mono text-[#c8e7fb] flex items-center gap-1 bg-[#1A56DB]/5 px-2 py-0.5 rounded border border-[#1A56DB]/10">
               <Layers className="w-3 h-3 text-secondary" /> SPL cNFT
             </span>
           </div>
@@ -282,7 +282,7 @@ export const WalletCard: FC = () => {
             <div className="pt-2 text-center select-none font-sans flex flex-col items-center justify-center">
               <span className="text-[10px] text-on-surface-variant/60 mb-2 font-medium">Link real connection (Optional):</span>
               <WalletMultiButton 
-                className="!bg-secondary hover:!bg-[#c7ffd3] !text-[#003732] !font-sans !font-black !text-[10px] !uppercase !tracking-wider !rounded-xl !py-2.5 !px-5 !transition-all !duration-300 hover:!scale-[1.02] active:!scale-[0.98] !shadow-[0_0_12px_rgba(67,229,212,0.15)] !h-auto !min-h-0"
+                className="!bg-secondary hover:!bg-[#c7ffd3] !text-[#003732] !font-sans !font-black !text-[10px] !uppercase !tracking-wider !rounded-xl !py-2.5 !px-5 !transition-all !duration-300 hover:!scale-[1.02] active:!scale-[0.98] !shadow-[0_0_12px_rgba(26, 86, 219,0.15)] !h-auto !min-h-0"
               />
             </div>
           )}

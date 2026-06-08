@@ -156,7 +156,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
               {/* Dynamic Multiplier / Lock Indicator */}
               <div className="absolute top-2 right-2">
                 {isUnlocked ? (
-                  <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                  <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
                     X{multiplier}
                   </span>
                 ) : (
@@ -202,7 +202,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                     alt={t(badge.titleKey)} 
                     referrerPolicy="no-referrer"
                     style={{ filter: isUnlocked ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.6)]" 
                   />
                 </motion.div>
               </div>
@@ -273,7 +273,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
           {/* Lock / Unlocked Indicator */}
           <div className="absolute top-2 right-2">
             {completedRoutesCount >= 2 ? (
-              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
                 Completo
               </span>
             ) : (
@@ -310,7 +310,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                 alt="completa 2 rutas" 
                 referrerPolicy="no-referrer"
                 style={{ filter: completedRoutesCount >= 2 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.6)]" 
               />
             </motion.div>
           </div>
@@ -347,7 +347,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
           {/* Lock / Unlocked Indicator */}
           <div className="absolute top-2 right-2">
             {completedRoutesCount >= 4 ? (
-              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
                 Completo
               </span>
             ) : (
@@ -384,7 +384,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                 alt="completas 4 rutas" 
                 referrerPolicy="no-referrer"
                 style={{ filter: completedRoutesCount >= 4 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.6)]" 
               />
             </motion.div>
           </div>
@@ -421,7 +421,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
           {/* Lock / Unlocked Indicator */}
           <div className="absolute top-2 right-2">
             {completedRoutesCount >= 6 ? (
-              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+              <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
                 Completo
               </span>
             ) : (
@@ -458,7 +458,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                 alt="completa 6 rutas" 
                 referrerPolicy="no-referrer"
                 style={{ filter: completedRoutesCount >= 6 ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.6)]" 
+                className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.6)]" 
               />
             </motion.div>
           </div>
@@ -590,7 +590,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
                     alt={t(selectedBadge.badge.titleKey)} 
                     referrerPolicy="no-referrer"
                     style={{ filter: selectedBadge.isUnlocked ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_15px_rgba(67,229,212,0.6)]" 
+                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_15px_rgba(26, 86, 219,0.6)]" 
                   />
                 </motion.div>
               </div>

@@ -174,7 +174,7 @@ export default function ExplorationView({
                   isLockedRouteState
                     ? 'opacity-40 cursor-not-allowed bg-black/25 border-[#005049]/10 text-on-surface-variant/40'
                     : isSelected 
-                      ? 'bg-surface-container border-secondary shadow-[0_0_15px_rgba(67,229,212,0.12)] scale-[1.03] z-10' 
+                      ? 'bg-surface-container border-secondary shadow-[0_0_15px_rgba(26, 86, 219,0.12)] scale-[1.03] z-10' 
                       : 'bg-surface-container-low border-outline-variant/20 hover:border-secondary/40 hover:bg-surface-container transition-all cursor-pointer'
                 }`}
               >
@@ -341,10 +341,10 @@ export default function ExplorationView({
                   </div>
 
                   {/* Servicio de Geolocalización Integrado */}
-                  <div className="bg-[#001c27] border border-[#43e5d4]/10 p-3 rounded-xl space-y-2">
+                  <div className="bg-[#001c27] border border-[#1A56DB]/10 p-3 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#43e5d4] animate-ping"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1A56DB] animate-ping"></span>
                         <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
                           {t('gps_activo')}
                         </span>
@@ -442,7 +442,7 @@ export default function ExplorationView({
                           isWithinCheckIn
                             ? isCheckingThisOne
                               ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_8px_rgba(67,229,212,0.2)] cursor-pointer'
+                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_8px_rgba(26, 86, 219,0.2)] cursor-pointer'
                             : 'bg-background/20 border border-on-surface-variant/15 text-on-surface-variant/40 cursor-not-allowed opacity-50'
                         }`}
                       >
@@ -478,7 +478,7 @@ export default function ExplorationView({
                   alt={justUnlockedPlace.parentLoc.badgeName} 
                   referrerPolicy="no-referrer"
                   style={{ filter: "url(#remove-white)" }}
-                  className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(67,229,212,0.6)]" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(26, 86, 219,0.6)]" 
                 />
               ) : (
                 <span className="text-5xl select-none">

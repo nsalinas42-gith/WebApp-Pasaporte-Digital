@@ -205,13 +205,13 @@ export default function UserWayAccessibility() {
         }
         .high-contrast-active button, 
         .high-contrast-active a {
-          border-color: #43e5d4 !important;
-          color: #43e5d4 !important;
+          border-color: #1A56DB !important;
+          color: #1A56DB !important;
         }
 
         .highlight-links-active a, 
         .highlight-links-active button[role="link"] {
-          outline: 2px dashed #43e5d4 !important;
+          outline: 2px dashed #1A56DB !important;
           outline-offset: 3px !important;
           text-decoration: underline !important;
           text-decoration-thickness: 2px !important;
@@ -257,7 +257,7 @@ export default function UserWayAccessibility() {
         title={currentLabels.btnTitle}
         aria-label={currentLabels.btnTitle}
         aria-expanded={isOpen}
-        className="flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.08)] select-none shrink-0 group"
+        className="flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] select-none shrink-0 group"
       >
         {/* Geometric Vitruvian/Universal Accessibility Man representation inspired by the exact structure of the attachment */}
         <div className="relative w-6 h-6 flex items-center justify-center shrink-0">

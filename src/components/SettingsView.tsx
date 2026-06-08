@@ -187,7 +187,7 @@ export default function SettingsView({
             {/* Circular Preview with Drag & Drop or Camera icon overlay */}
             <div className="relative group/avatar flex-shrink-0">
               <div 
-                className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(67,229,212,0.15)] bg-[#001019] flex items-center justify-center relative cursor-pointer group-hover/avatar:border-secondary transition-all"
+                className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(26, 86, 219,0.15)] bg-[#001019] flex items-center justify-center relative cursor-pointer group-hover/avatar:border-secondary transition-all"
                 onClick={() => document.getElementById('avatar-upload')?.click()}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -268,7 +268,7 @@ export default function SettingsView({
                   type="button"
                   onClick={() => document.getElementById('avatar-upload')?.click()}
                   aria-label="Haz click para buscar y subir tu foto de avatar"
-                  className="py-1.5 px-3 bg-[#0d2a29] border border-[#43e5d4]/30 hover:border-[#43e5d4] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#43e5d4] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
+                  className="py-1.5 px-3 bg-[#0d2a29] border border-[#1A56DB]/30 hover:border-[#1A56DB] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#1A56DB] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   {t('subir_foto_btn')}
@@ -573,7 +573,7 @@ export default function SettingsView({
                           setShowConfirmResetMock(true);
                           setShowConfirmResetZero(false);
                         }}
-                        className="w-full py-2 bg-[#43e5d4]/10 border border-secondary/20 hover:border-secondary text-secondary text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-[#43e5d4]/15 transition-all text-center cursor-pointer"
+                        className="w-full py-2 bg-[#1A56DB]/10 border border-secondary/20 hover:border-secondary text-secondary text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-[#1A56DB]/15 transition-all text-center cursor-pointer"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         {t('regresar_mockup_btn')}

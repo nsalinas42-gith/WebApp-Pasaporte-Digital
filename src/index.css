@@ -13,22 +13,22 @@
   --surface-container-high: #001721;
   --surface-container-highest: #001c27;
   --on-surface: #ffffff;
-  --on-surface-variant: #8ba7b3;
+  --on-surface-variant: #F8F9FA;
   
-  --primary: #43e5d4;
+  --primary: #1A56DB;
   --on-primary: #003732;
   --primary-container: #005049;
-  --on-primary-container: #43e5d4;
+  --on-primary-container: #1A56DB;
   
-  --secondary: #43e5d4;
+  --secondary: #1A56DB;
   --on-secondary: #003732;
   --secondary-container: #005049;
-  --on-secondary-container: #43e5d4;
+  --on-secondary-container: #1A56DB;
   
-  --tertiary: #43e5d4;
+  --tertiary: #1A56DB;
   --on-tertiary: #003732;
   --tertiary-container: #005049;
-  --on-tertiary-container: #43e5d4;
+  --on-tertiary-container: #1A56DB;
   
   --on-secondary-fixed-variant: #002332;
   --error: #E53E3E;
@@ -73,15 +73,15 @@
 }
 
 @utility glow-mint {
-  box-shadow: 0 0 20px rgba(67, 229, 212, 0.15);
+  box-shadow: 0 0 20px rgba(26, 86, 219, 0.15);
 }
 
 @utility glow-cyan {
-  box-shadow: 0 0 30px rgba(67, 229, 212, 0.3);
+  box-shadow: 0 0 30px rgba(26, 86, 219, 0.3);
 }
 
 @utility glow-tertiary {
-  box-shadow: 0 0 20px rgba(67, 229, 212, 0.2);
+  box-shadow: 0 0 20px rgba(26, 86, 219, 0.2);
 }
 
 @utility nft-gradient {

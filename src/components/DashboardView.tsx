@@ -162,16 +162,16 @@ export default function DashboardView({
         .glass-card {
           background: rgba(26, 56, 72, 0.4);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(67, 229, 212, 0.15);
+          border: 1px solid rgba(26, 86, 219, 0.15);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-card:hover {
-          border-color: rgba(67, 229, 212, 0.45);
-          box-shadow: 0 0 24px rgba(67, 229, 212, 0.08);
+          border-color: rgba(26, 86, 219, 0.45);
+          box-shadow: 0 0 24px rgba(26, 86, 219, 0.08);
           transform: translateY(-2px);
         }
         .glow-secondary {
-          box-shadow: 0 0 15px rgba(67, 229, 212, 0.25);
+          box-shadow: 0 0 15px rgba(26, 86, 219, 0.25);
         }
       `}</style>
 
@@ -251,7 +251,7 @@ export default function DashboardView({
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
                   
                   {isLockedRouteState && (
-                    <div className="absolute top-3 right-3 bg-black/75 border border-[#8ba7b3]/40 p-2 rounded-full text-secondary shadow-md animate-pulse">
+                    <div className="absolute top-3 right-3 bg-black/75 border border-[#F8F9FA]/40 p-2 rounded-full text-secondary shadow-md animate-pulse">
                       <Lock className="w-5 h-5" />
                     </div>
                   )}
@@ -333,10 +333,10 @@ export default function DashboardView({
                     alt={t(badge.titleKey)} 
                     referrerPolicy="no-referrer"
                     style={{ filter: isUnlocked ? "url(#remove-white)" : "url(#remove-white) grayscale(100%) opacity(0.35)" }}
-                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(67,229,212,0.5)]" 
+                    className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.5)]" 
                   />
                   {isUnlocked && (
-                    <div className="absolute top-0 right-0 bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(67,229,212,0.4)]">
+                    <div className="absolute top-0 right-0 bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
                       X{multiplier}
                     </div>
                   )}
@@ -412,8 +412,8 @@ export default function DashboardView({
                   completedRoutesCount > 0 
                     ? isLoadingPostal 
                       ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(67,229,212,0.25)]'
-                    : 'bg-[#43e5d4]/5 border border-[#43e5d4]/15 text-secondary/30 cursor-not-allowed opacity-50'
+                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
+                    : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
                 }`}
               >
                 {isLoadingPostal ? (
@@ -487,8 +487,8 @@ export default function DashboardView({
                   isEligibleForNFT 
                     ? isLoadingClaim 
                       ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(67,229,212,0.25)]'
-                    : 'bg-[#43e5d4]/5 border border-[#43e5d4]/15 text-secondary/30 cursor-not-allowed opacity-50'
+                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
+                    : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
                 }`}
               >
                 {isLoadingClaim ? (
@@ -568,7 +568,7 @@ export default function DashboardView({
 
           {/* 6 circulos pequeños (Rutas) */}
           <div className="py-4 border-b border-on-secondary-fixed-variant/40">
-            <h4 className="font-headline text-xs font-black uppercase tracking-wider text-[#8ba7b3] mb-6 text-center sm:text-left">
+            <h4 className="font-headline text-xs font-black uppercase tracking-wider text-[#F8F9FA] mb-6 text-center sm:text-left">
               Progreso de Insignias por Ruta
             </h4>
             
@@ -591,7 +591,7 @@ export default function DashboardView({
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center font-headline text-xs font-black transition-all ${
                         badgesUnlockedInRoute > 0 
                           ? 'bg-[#fe014f] text-white shadow-[0_0_10px_rgba(254,1,79,0.6)] scale-110 font-bold' 
-                          : 'bg-surface-container-highest text-[#8ba7b3] border border-secondary/10'
+                          : 'bg-surface-container-highest text-[#F8F9FA] border border-secondary/10'
                       }`} title={loc.name}>
                         V{idx + 1}
                       </div>
@@ -640,7 +640,7 @@ export default function DashboardView({
                       <span className="text-[10px] font-bold text-on-surface truncate line-clamp-1 max-w-[80px] block" title={loc.name}>
                         Vol. {idx + 1}
                       </span>
-                      <span className="text-[8px] font-mono text-[#8ba7b3]/60 block">
+                      <span className="text-[8px] font-mono text-[#F8F9FA]/60 block">
                         {completedCount}/8 Mon.
                       </span>
                     </div>
@@ -707,7 +707,7 @@ export default function DashboardView({
               <p className="font-headline font-black text-sm text-white">
                 Progreso General de Logros
               </p>
-              <p className="text-xs text-[#8ba7b3]">
+              <p className="text-xs text-[#F8F9FA]">
                 Has desbloqueado {unlockedCount} de 6 insignias del Catastro Histórico de Caracas.
               </p>
             </div>
@@ -734,7 +734,7 @@ export default function DashboardView({
                     <div key={milestone} className="relative h-full flex flex-col justify-center items-center">
                       <div className={`w-2 h-2 rounded-full border transition-all duration-500 z-10 ${
                         isReached 
-                          ? 'bg-secondary border-secondary shadow-[0_0_8px_rgba(67,229,212,0.6)]' 
+                          ? 'bg-secondary border-secondary shadow-[0_0_8px_rgba(26, 86, 219,0.6)]' 
                           : 'bg-surface-container-low border-on-surface-variant/20'
                       }`} />
                       <span className={`absolute -bottom-5 font-mono text-[8px] font-black tracking-tight ${
@@ -749,7 +749,7 @@ export default function DashboardView({
 
               {/* Glowing progress fill back-bar */}
               <div 
-                className="bg-gradient-to-r from-secondary/40 via-secondary/70 to-[#319795] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(67,229,212,0.15)]"
+                className="bg-gradient-to-r from-secondary/40 via-secondary/70 to-[#319795] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(26, 86, 219,0.15)]"
                 style={{ width: `${Math.min(100, (totalXP / 40000) * 100)}%` }}
               />
 
@@ -758,10 +758,10 @@ export default function DashboardView({
                 className="absolute -top-7 transform -translate-x-1/2 transition-all duration-500 z-20 pointer-events-none"
                 style={{ left: `${Math.min(100, (totalXP / 40000) * 100)}%` }}
               >
-                <div className="bg-[#43e5d4] text-[#003732] flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase shadow-[0_4px_12px_rgba(67,229,212,0.35)] animate-bounce" style={{ animationDuration: '2.5s' }}>
+                <div className="bg-[#1A56DB] text-[#003732] flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase shadow-[0_4px_12px_rgba(26, 86, 219,0.35)] animate-bounce" style={{ animationDuration: '2.5s' }}>
                   <span>Nivel {level}</span>
                 </div>
-                <div className="w-2 h-2 bg-[#43e5d4] rotate-45 mx-auto -mt-1 shadow-md" />
+                <div className="w-2 h-2 bg-[#1A56DB] rotate-45 mx-auto -mt-1 shadow-md" />
               </div>
             </div>
           </div>

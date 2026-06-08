@@ -192,8 +192,8 @@ export default function UserProfilesCarousel() {
       className="py-16 bg-[#000c14] border-b border-[#005049]/20 relative overflow-hidden"
     >
       {/* Background grid details */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#43e5d4]/20 to-transparent"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(67,229,212,0.04)_0%,transparent_50%)] pointer-events-none"></div>
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#1A56DB]/20 to-transparent"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(26, 86, 219,0.04)_0%,transparent_50%)] pointer-events-none"></div>
 
       <div className="max-w-6xl mx-auto px-6 md:px-16 space-y-10 relative z-10">
         
@@ -216,14 +216,14 @@ export default function UserProfilesCarousel() {
           <div className="flex items-center gap-2 self-start md:self-end">
             <button
               onClick={handlePrev}
-              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#43e5d4] hover:bg-[#43e5d4]/10 hover:border-[#43e5d4] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
+              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
               aria-label="Anterior explorador"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
-              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#43e5d4] hover:bg-[#43e5d4]/10 hover:border-[#43e5d4] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
+              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
               aria-label="Siguiente explorador"
             >
               <ChevronRight className="w-4 h-4" />
@@ -284,7 +284,7 @@ export default function UserProfilesCarousel() {
                   return (
                     <div
                       key={`${profile.uid}-${i}`}
-                      className={`min-h-[220px] bg-[#001721] border border-[#005049]/30 hover:border-[#43e5d4]/40 hover:shadow-[0_0_20px_rgba(67,229,212,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
+                      className={`min-h-[220px] bg-[#001721] border border-[#005049]/30 hover:border-[#1A56DB]/40 hover:shadow-[0_0_20px_rgba(26, 86, 219,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
                         isVisibleOnMobile 
                           ? 'flex' 
                           : isVisibleOnTablet 
@@ -296,7 +296,7 @@ export default function UserProfilesCarousel() {
                       <div className="space-y-4">
                         <div className="flex items-center gap-4">
                           <div className="relative">
-                            <div className="absolute inset-0 bg-[#43e5d4]/20 rounded-full blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="absolute inset-0 bg-[#1A56DB]/20 rounded-full blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <img
                               src={profile.avatarUrl}
                               alt={profile.name}
@@ -351,8 +351,8 @@ export default function UserProfilesCarousel() {
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-2.5 rounded-full transition-all duration-300 outline-none cursor-pointer ${
                     currentIndex === idx 
-                      ? 'w-6 bg-[#43e5d4]' 
-                      : 'w-2 bg-[#005049]/40 hover:bg-[#43e5d4]/40'
+                      ? 'w-6 bg-[#1A56DB]' 
+                      : 'w-2 bg-[#005049]/40 hover:bg-[#1A56DB]/40'
                   }`}
                   aria-label={`Ir al explorador ${idx + 1}`}
                 />

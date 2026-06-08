@@ -85,7 +85,7 @@ export default function Sidebar({
         {/* Progress Bar Container */}
         <div className="w-full bg-[#001019] h-1.5 rounded-full overflow-hidden border border-[#005049]/20">
           <div 
-            className="bg-secondary h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(67,229,212,0.4)]" 
+            className="bg-secondary h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(26, 86, 219,0.4)]" 
             style={{ width: `${percentageToNextLevel}%` }}
           />
         </div>
@@ -114,7 +114,7 @@ export default function Sidebar({
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all relative ${
                   isActive
-                    ? 'text-secondary font-bold bg-[#01262d] border-l-4 border-secondary shadow-[inset_0_0_12px_rgba(67,229,212,0.03)]'
+                    ? 'text-secondary font-bold bg-[#01262d] border-l-4 border-secondary shadow-[inset_0_0_12px_rgba(26, 86, 219,0.03)]'
                     : 'text-on-surface-variant hover:bg-surface-container-high hover:text-secondary'
                 }`}
               >
@@ -163,7 +163,7 @@ export default function Sidebar({
                           isLockedRouteState
                             ? 'opacity-40 cursor-not-allowed bg-black/10 text-on-surface-variant/50'
                             : isSubActive
-                              ? 'text-secondary bg-[#001e2c] border border-secondary/35 shadow-[0_0_8px_rgba(67,229,212,0.1)] font-bold'
+                              ? 'text-secondary bg-[#001e2c] border border-secondary/35 shadow-[0_0_8px_rgba(26, 86, 219,0.1)] font-bold'
                               : 'text-on-surface-variant hover:text-secondary hover:bg-surface-container-high/50'
                         }`}
                       >
@@ -189,7 +189,7 @@ export default function Sidebar({
         <button 
           id="btn-unlock-region"
           onClick={onUnlockNewRegion}
-          className="w-full bg-[#43e5d4] text-[#003732] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 glow-mint hover:opacity-90 transform active:scale-95 transition-all text-xs uppercase tracking-wide cursor-pointer"
+          className="w-full bg-[#1A56DB] text-[#003732] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 glow-mint hover:opacity-90 transform active:scale-95 transition-all text-xs uppercase tracking-wide cursor-pointer"
         >
           <Rocket className="w-4 h-4 fill-on-secondary/10" />
           {t('unlock_new_region')}

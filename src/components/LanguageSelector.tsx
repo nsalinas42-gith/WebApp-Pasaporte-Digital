@@ -39,7 +39,7 @@ export default function LanguageSelector() {
         type="button"
         id="language-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(67,229,212,0.08)] h-10 select-none"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] h-10 select-none"
       >
         <Globe className="w-4 h-4 text-secondary group-hover:rotate-12 transition-transform duration-300 shrink-0" />
         <span className="font-bold tracking-widest">{currentLabel}</span>
