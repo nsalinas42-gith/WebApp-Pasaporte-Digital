@@ -10,8 +10,8 @@ import stampSegovia from './assets/images/03C_explorador_avanzado.png';
 import stampSevilla from './assets/images/04D_Cazador_de_rutas.png';
 import stampSagrada from './assets/images/05E_Guia_Local.png';
 import stampOlite from './assets/images/06F_guia_local_experto.png';
-import mapaCaracasHero from './assets/images/Mapa Caracas.png';
-import mapaMuseos from './assets/images/Mapa Museos.png';
+import mapaCaracasHero from './assets/images/Mapa_Caracas.png';
+import mapaMuseos from './assets/images/Mapa_Museos.png';
 import prontoImg from './assets/images/pronto.png';
 import { 
   AVATAR_FELIX, 

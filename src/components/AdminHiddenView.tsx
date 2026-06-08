@@ -142,10 +142,117 @@ export default function AdminHiddenView({
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // If the authorized administrator is logged in, verify if the postcards collection in Firestore is empty.
+    // If empty, automatically seed the 6 default postcards to Firestore so they are real persisted documents.
+    const autoSeedPostcardsIfEmpty = async () => {
+      const isAdminEmail = isCurrentAdmin;
+      if (isAdminEmail) {
+        try {
+          const { db } = await import('../utils/firebase');
+          const { collection, getDocs } = await import('firebase/firestore');
+          const querySnapshot = await getDocs(collection(db, 'postcards'));
+          if (querySnapshot.empty) {
+            addLog("La colección de postales en Firestore está vacía. Iniciando auto-sembrado de las 6 postales de Caracas en la base de datos...");
+            await resetCloudPostcardsToDefault();
+            addLog("Auto-sembrado de postales completado con éxito en Firestore.");
+          }
+        } catch (error: any) {
+          console.warn("No se pudo auto-sembrar las postales (puede ser offline o falta de permisos):", error);
+        }
+      }
+    };
+
+    autoSeedPostcardsIfEmpty();
+  }, [user]);
+
   const [dbUsers, setDbUsers] = useState<any[]>([]);
   const [isLoadingDbUsers, setIsLoadingDbUsers] = useState<boolean>(true);
   const [dbUserSearch, setDbUserSearch] = useState<string>('');
   const [actionStatusMsg, setActionStatusMsg] = useState<string | null>(null);
+
+  // Dynamic Administrators state
+  const [adminsList, setAdminsList] = useState<any[]>([]);
+  const [isLoadingAdmins, setIsLoadingAdmins] = useState<boolean>(true);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [newAdminPassword, setNewAdminPassword] = useState('');
+
+  const loadAdminsCollection = async () => {
+    setIsLoadingAdmins(true);
+    try {
+      const { getCloudAdmins } = await import('../utils/firebase');
+      const list = await getCloudAdmins();
+      setAdminsList(list);
+    } catch (err) {
+      console.warn("Could not load admins list:", err);
+    } finally {
+      setIsLoadingAdmins(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAdminsCollection();
+  }, [user]);
+
+  const isCurrentAdmin = user && (
+    user.email === 'nsalinas42@gmail.com' || 
+    user.email === 'felix.voyager@gmail.com' ||
+    adminsList.some(a => a.email?.toLowerCase() === user.email?.toLowerCase())
+  );
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAdminEmail || !newAdminPassword) {
+      alert("Por favor ingresa el correo y la clave del nuevo administrador.");
+      return;
+    }
+
+    try {
+      const { saveCloudAdmin, signUpWithEmail } = await import('../utils/firebase');
+      const emailLower = newAdminEmail.trim().toLowerCase();
+      
+      // Save admin in firestore
+      await saveCloudAdmin(emailLower, newAdminPassword);
+      
+      // Target register in firebase auth list as well
+      try {
+        await signUpWithEmail(emailLower, newAdminPassword, 'Administrador', '');
+      } catch (authErr) {
+        console.log("Firebase Auth entry already exists or skipped:", authErr);
+      }
+
+      setNewAdminEmail('');
+      setNewAdminPassword('');
+      addLog(`Administrador '${emailLower}' registrado en Firestore.`);
+      await loadAdminsCollection();
+      setActionStatusMsg(`Administrador "${emailLower}" agregado con éxito.`);
+      setTimeout(() => setActionStatusMsg(null), 3500);
+    } catch (err: any) {
+      alert(`Error al registrar administrador: ${err.message || err}`);
+    }
+  };
+
+  const handleDeleteAdmin = async (emailToDelete: string) => {
+    if (emailToDelete.toLowerCase() === 'nsalinas42@gmail.com') {
+      alert("No se puede eliminar el administrador principal (nsalinas42@gmail.com).");
+      return;
+    }
+
+    if (!window.confirm(`¿Seguro que deseas revocar los privilegios de administrador para ${emailToDelete}?`)) {
+      return;
+    }
+
+    try {
+      const { deleteCloudAdmin } = await import('../utils/firebase');
+      await deleteCloudAdmin(emailToDelete);
+      addLog(`Administrador '${emailToDelete}' revocado de Firestore.`);
+      await loadAdminsCollection();
+      setActionStatusMsg(`Administrador "${emailToDelete}" eliminado.`);
+      setTimeout(() => setActionStatusMsg(null), 3000);
+    } catch (err: any) {
+      alert(`Error al eliminar administrador: ${err.message || err}`);
+    }
+  };
 
   // Dynamic Postcards Configuration states
   const [postcards, setPostcards] = useState<any[]>([]);
@@ -180,6 +287,13 @@ export default function AdminHiddenView({
 
   const handleAddPostcard = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const isAdminEmail = isCurrentAdmin;
+    if (!isAdminEmail) {
+      alert(`Operación denegada. Solo los administradores autorizados pueden cargar y guardar nuevas postales en Firestore.`);
+      return;
+    }
+
     if (!newPostcardId || !newPostcardName) {
       alert("Por favor introduce el ID único y el Título de la Postal.");
       return;
@@ -215,6 +329,12 @@ export default function AdminHiddenView({
   };
 
   const handleDeletePostcard = async (postcardId: string, name: string) => {
+    const isAdminEmail = isCurrentAdmin;
+    if (!isAdminEmail) {
+      alert(`Operación denegada. Solo los administradores autorizados pueden eliminar postales de Firestore.`);
+      return;
+    }
+
     try {
       await deleteCloudPostcard(postcardId);
       addLog(`Postal '${name}' eliminada del gestor por el Administrador.`);
@@ -226,6 +346,12 @@ export default function AdminHiddenView({
   };
 
   const handleResetPostcardsToDefault = async () => {
+    const isAdminEmail = isCurrentAdmin;
+    if (!isAdminEmail) {
+      alert(`Operación denegada. Solo los administradores autorizados pueden restablecer la colección.`);
+      return;
+    }
+
     if (window.confirm("¿Seguro que deseas restablecer las 6 postales originales de Caracas? Esto eliminará cualquier postal cargada manualmente en Firestore.")) {
       try {
         await resetCloudPostcardsToDefault();
@@ -541,6 +667,98 @@ export default function AdminHiddenView({
                 )}
               </div>
             </div>
+          </div>
+
+          {/* DYNAMIC SYSTEM ADMINISTRATORS MANAGEMENT CARD */}
+          <div className="bg-[#001721] border border-[#005049]/25 p-6 rounded-3xl space-y-6 shadow-lg text-left">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#005049]/15 pb-4">
+              <div>
+                <h3 className="font-headline text-base font-extrabold text-on-surface flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-secondary animate-pulse" />
+                  Gestión de Administradores Autorizados
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Agrega o elimina administradores del sistema con privilegios de escritura en Firestore.
+                </p>
+              </div>
+            </div>
+
+            {/* List of current administrators */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-black text-secondary uppercase tracking-wider">Administradores Registrados ({adminsList.length})</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                {isLoadingAdmins ? (
+                  <div className="col-span-2 py-8 flex flex-col items-center justify-center gap-1.5 text-on-surface-variant/50">
+                    <RefreshCw className="w-5 h-5 animate-spin text-secondary" />
+                    <span className="text-[10px] font-mono uppercase tracking-wider">Cargando administradores...</span>
+                  </div>
+                ) : adminsList.length === 0 ? (
+                  <div className="col-span-2 py-8 text-center text-on-surface-variant/40 text-xs">
+                    No hay administradores guardados en la base de datos.
+                  </div>
+                ) : (
+                  adminsList.map((admin) => (
+                    <div key={admin.email} className="bg-[#000d14] border border-[#005049]/15 p-3 rounded-2xl flex gap-3 items-center justify-between group hover:border-[#1A56DB]/30 transition-all">
+                      <div className="truncate">
+                        <p className="text-xs font-bold text-on-surface truncate">{admin.email}</p>
+                        <p className="text-[10px] text-[#8c9f9e] font-mono">Clave: {admin.password}</p>
+                      </div>
+
+                      {admin.email?.toLowerCase() !== 'nsalinas42@gmail.com' ? (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAdmin(admin.email)}
+                          className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg cursor-pointer transition-all"
+                          title="Revocar permisos"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <span className="text-[9px] uppercase bg-secondary/15 text-secondary font-mono px-2 py-0.5 rounded font-bold">
+                          Principal
+                        </span>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Add administrator form fields */}
+            <form onSubmit={handleAddAdmin} className="space-y-4 pt-4 border-t border-[#005049]/15">
+              <h4 className="text-xs font-black text-secondary uppercase tracking-wider">Añadir Nuevo Administrador</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-[#8c9f9e] uppercase font-bold tracking-wider">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="ejemplo@correo.com"
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/25 rounded-xl py-2 px-3 text-xs text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:border-secondary transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-[#8c9f9e] uppercase font-bold tracking-wider">Contraseña / Clave</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Clave de acceso"
+                    value={newAdminPassword}
+                    onChange={(e) => setNewAdminPassword(e.target.value)}
+                    className="w-full bg-[#000d14] border border-[#005049]/25 rounded-xl py-2 px-3 text-xs text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:border-secondary transition-all"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-2.5 bg-secondary hover:brightness-110 active:scale-[0.98] text-on-secondary text-xs uppercase font-black tracking-wider rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
+              >
+                <Shield className="w-4 h-4" />
+                Registrar Administrador
+              </button>
+            </form>
           </div>
 
           {/* POSTCARD REGISTRATION & MANAGEMENT CARD */}

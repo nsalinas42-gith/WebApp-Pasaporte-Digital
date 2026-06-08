@@ -464,46 +464,13 @@ export default function DashboardView({
         {/* Claim actions controls centered below */}
         <div className="w-full flex justify-center mt-2">
           <div className="shrink-0 w-full sm:w-auto text-center space-y-2">
-            {isNFTClaimed ? (
-              <div className="space-y-1.5 text-center">
-                <a
-                  href={`https://solscan.io/tx/${txHash || '3G14p87Qv...'}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex w-full sm:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>{t('verificar_receipt')}</span>
-                </a>
-                <p className="text-[10px] text-center text-on-surface-variant/60 italic font-mono select-all">
-                  TX: {txHash?.slice(0, 8)}...{txHash?.slice(-8)}
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={onClaimNFT}
-                disabled={!isEligibleForNFT || isLoadingClaim}
-                className={`w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer outline-none ${
-                  isEligibleForNFT 
-                    ? isLoadingClaim 
-                      ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:bg-[#c7ffd3] hover:text-[#003732] active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
-                    : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
-                }`}
-              >
-                {isLoadingClaim ? (
-                  <>
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
-                    <span>{t('acuñando_cnft')}</span>
-                  </>
-                ) : (
-                  <>
-                    {isEligibleForNFT ? <Sparkles className="w-3.5 h-3.5 animate-bounce" /> : <Lock className="w-3.5 h-3.5" />}
-                    <span>{t('reclamar_cnft_btn').replace('{unlocked}', String(unlockedCount))}</span>
-                  </>
-                )}
-              </button>
-            )}
+            <button
+              disabled
+              className="w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-not-allowed opacity-60 bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/60"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Pronto</span>
+            </button>
           </div>
         </div>
       </section>

@@ -284,7 +284,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
             margin: 1,
             width: 100,
             color: {
-              dark: '#1A56DB', // Solana theme cyan
+              dark: '#FFFFFF', // High-contrast white QR code
               light: '#001019' // custom dark background
             }
           });
@@ -302,7 +302,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
           });
         } catch (qrErr) {
           console.error("QR Code generation failed, fallback to aesthetic matrix", qrErr);
-          ctx.fillStyle = "#1A56DB";
+          ctx.fillStyle = "#FFFFFF";
           for (let x = 0; x < 6; x++) {
             for (let y = 0; y < 6; y++) {
               if (x === 0 || x === 5 || y === 0 || y === 5 || (x === 2 && y === 2)) {
@@ -426,7 +426,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         margin: 1,
         width: 120,
         color: {
-          dark: '#1A56DB',
+          dark: '#FFFFFF', // High-contrast white QR code
           light: '#001019'
         }
       });
@@ -444,7 +444,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
       });
     } catch (qrErr) {
       console.error("Fallback QR Code generation failed", qrErr);
-      ctx.fillStyle = "#1A56DB";
+      ctx.fillStyle = "#FFFFFF";
       for (let x = 0; x < 6; x++) {
         for (let y = 0; y < 6; y++) {
           const draw = (x === 0 || x === 5 || y === 0 || y === 5 || (x + y) % 3 === 0);

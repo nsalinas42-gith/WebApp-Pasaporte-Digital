@@ -767,3 +767,72 @@ export async function resetCloudPostcardsToDefault() {
     handleFirestoreError(error, ReturnOperationType.WRITE, 'postcards');
   }
 }
+
+/**
+ * NEW: Fetches all registered administrators from Firestore 'admins' collection
+ */
+export async function getCloudAdmins(): Promise<{ email: string; password: string; createdAt?: any }[]> {
+  try {
+    const Ref = collection(db, 'admins');
+    let snap;
+    try {
+      snap = await getDocs(Ref);
+    } catch {
+      snap = await getDocsFromCache(Ref);
+    }
+    
+    let list: any[] = [];
+    snap.forEach((doc) => {
+      list.push(doc.data());
+    });
+
+    if (list.length === 0) {
+      // Auto-seed the first admin: nsalinas42@gmail.com / 009286
+      const defaultAdmin = {
+        email: 'nsalinas42@gmail.com',
+        password: '009286',
+        createdAt: new Date().toISOString()
+      };
+      await saveCloudAdmin(defaultAdmin.email, defaultAdmin.password);
+      list.push(defaultAdmin);
+    }
+    return list;
+  } catch (err) {
+    console.warn("Could not get cloud admins:", err);
+    // Return default local admin if failed/offline
+    return [{ email: 'nsalinas42@gmail.com', password: '009286' }];
+  }
+}
+
+/**
+ * NEW: Saves a new administrator to Firestore 'admins' collection
+ */
+export async function saveCloudAdmin(email: string, password: string) {
+  const docId = email.trim().toLowerCase();
+  const docRef = doc(db, 'admins', docId);
+  try {
+    await setDoc(docRef, {
+      email: email.trim().toLowerCase(),
+      password: password,
+      createdAt: serverTimestamp()
+    });
+    console.log(`Cloud admin successfully saved: ${email}`);
+  } catch (error) {
+    handleFirestoreError(error, ReturnOperationType.WRITE, `admins/${docId}`);
+  }
+}
+
+/**
+ * NEW: Deletes an administrator from Firestore 'admins' collection
+ */
+export async function deleteCloudAdmin(email: string) {
+  const docId = email.trim().toLowerCase();
+  const docRef = doc(db, 'admins', docId);
+  try {
+    await deleteDoc(docRef);
+    console.log(`Cloud admin deleted: ${email}`);
+  } catch (error) {
+    handleFirestoreError(error, ReturnOperationType.DELETE, `admins/${docId}`);
+  }
+}
+

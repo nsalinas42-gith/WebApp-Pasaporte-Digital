@@ -109,12 +109,49 @@ export default function LandingView({
   }, [isMobileMenuOpen]);
 
   // Administrator multi-route lock override state for the landing footer
+  const [adminEmail, setAdminEmail] = React.useState('');
   const [adminPassword, setAdminPassword] = React.useState('');
   const [adminPasswordError, setAdminPasswordError] = React.useState<string | null>(null);
   const [adminSuccessMsg, setAdminSuccessMsg] = React.useState<string | null>(null);
   const [isAdminUnlocked, setIsAdminUnlocked] = React.useState(false);
   const [showConfirmResetMock, setShowConfirmResetMock] = React.useState(false);
   const [showConfirmResetZero, setShowConfirmResetZero] = React.useState(false);
+
+  // Admin privilege check for the current logged in user
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = React.useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const checkAdminStatus = async () => {
+      if (!user) {
+        if (active) setIsCurrentUserAdmin(false);
+        return;
+      }
+      
+      const emailLower = user.email.toLowerCase().trim();
+      if (emailLower === 'nsalinas42@gmail.com' || emailLower === 'felix.voyager@gmail.com') {
+        if (active) setIsCurrentUserAdmin(true);
+        return;
+      }
+
+      try {
+        const { db } = await import('../utils/firebase');
+        const { doc, getDoc } = await import('firebase/firestore');
+        const adminDocRef = doc(db, 'admins', emailLower);
+        const adminDocSnap = await getDoc(adminDocRef);
+        if (active) {
+          setIsCurrentUserAdmin(adminDocSnap.exists());
+        }
+      } catch (err) {
+        console.warn("Could not check admin status on UI:", err);
+        if (active) setIsCurrentUserAdmin(false);
+      }
+    };
+    checkAdminStatus();
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   // --- CUSTOM EMAIL AUTHENTICATION STATES ---
   const [authMode, setAuthMode] = React.useState<'login' | 'register'>('login');
@@ -300,15 +337,133 @@ export default function LandingView({
     }
   };
 
-  const handleVerifyAdminPassword = () => {
-    if (adminPassword !== '009286') {
-      setAdminPasswordError('Contraseña incorrecta. Se requiere credencial de administrador.');
+  const handleVerifyAdminPassword = async () => {
+    if (!adminEmail || !adminPassword) {
+      setAdminPasswordError('Por favor ingresa tu correo y contraseña.');
       return;
     }
+    
     setAdminPasswordError(null);
-    setAdminPassword('');
-    if (onEnterHiddenAdminPage) {
-      onEnterHiddenAdminPage();
+    setAdminSuccessMsg(null);
+    setIsLoadingAuth(true);
+
+    const emailKey = adminEmail.trim().toLowerCase();
+
+    // 1. Dynamic admin collection lookup
+    try {
+      const { db } = await import('../utils/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
+      const adminDocRef = doc(db, 'admins', emailKey);
+      const adminDocSnap = await getDoc(adminDocRef);
+
+      if (adminDocSnap.exists()) {
+        const adminData = adminDocSnap.data();
+        if (adminData.password === adminPassword) {
+          // Password from database matches! Let's log them into Firebase Auth if they exist, or create them.
+          let fbUser;
+          try {
+            fbUser = await signInWithEmail(emailKey, adminPassword);
+          } catch (fbErr) {
+            try {
+              // Try auto signup if not registered in Firebase Auth yet
+              fbUser = await signUpWithEmail(emailKey, adminPassword, 'Administrador', '');
+            } catch (signupErr) {
+              // Local fallback if firebase signup fails/is blocked
+              fbUser = { email: emailKey };
+            }
+          }
+
+          if (onAuthSuccess) {
+            onAuthSuccess(emailKey, 'Administrador');
+          }
+          setAdminSuccessMsg('Sesión de administrador iniciada con éxito en Firestore.');
+          setTimeout(() => {
+            setAdminPassword('');
+            setIsLoadingAuth(false);
+            if (onEnterHiddenAdminPage) {
+              onEnterHiddenAdminPage();
+            }
+          }, 1200);
+          return;
+        } else {
+          setAdminPasswordError('Contraseña incorrecta. Se requiere credencial de administrador.');
+          setIsLoadingAuth(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Dynamic admin check failed, using fallback:", err);
+    }
+    
+    // 2. Hardcoded fallback checking for main administrator (or offline fallback)
+    if (emailKey === 'nsalinas42@gmail.com') {
+      try {
+        let fbUser;
+        try {
+          fbUser = await signInWithEmail('nsalinas42@gmail.com', adminPassword);
+        } catch (err: any) {
+          // If the admin user has chosen 009286 or standard bypass password, and isn't registered, run auto-registration
+          const isUserNotFound = err?.code === 'auth/user-not-found' || err?.message?.includes('user-not-found') || err?.message?.includes('invalid-credential');
+          const isBypassPassword = adminPassword === '009286';
+          
+          if (isUserNotFound && isBypassPassword) {
+            fbUser = await signUpWithEmail('nsalinas42@gmail.com', '009286', 'Nelson Salinas', '');
+          } else {
+            throw err;
+          }
+        }
+        
+        if (onAuthSuccess) {
+          onAuthSuccess('nsalinas42@gmail.com', 'Nelson Salinas');
+        }
+        setAdminSuccessMsg('Sesión de administrador iniciada con éxito en Firestore.');
+        setTimeout(() => {
+          setAdminPassword('');
+          setIsLoadingAuth(false);
+          if (onEnterHiddenAdminPage) {
+            onEnterHiddenAdminPage();
+          }
+        }, 1200);
+        return;
+      } catch (err: any) {
+        console.error("Admin authentication error:", err);
+        // Fallback: If password matches default, still allow opening admin view locally
+        if (adminPassword === '009286') {
+          setAdminSuccessMsg('Acceso local concedido (sin conexión a Firebase).');
+          setTimeout(() => {
+            setAdminPassword('');
+            setIsLoadingAuth(false);
+            if (onEnterHiddenAdminPage) {
+              onEnterHiddenAdminPage();
+            }
+          }, 1200);
+          return;
+        }
+        setAdminPasswordError('Contraseña incorrecta. Se requiere credencial de administrador.');
+        setIsLoadingAuth(false);
+        return;
+      }
+    }
+
+    // 3. Fallback standard email sign-in for any other custom admins registered in Firebase Auth directly
+    try {
+      const fbUser = await signInWithEmail(adminEmail, adminPassword);
+      if (onAuthSuccess) {
+        onAuthSuccess(fbUser.email || adminEmail, fbUser.displayName || 'Administrador');
+      }
+      setAdminSuccessMsg('Sesión iniciada correctamente.');
+      setTimeout(() => {
+        setAdminPassword('');
+        setIsLoadingAuth(false);
+        if (onEnterHiddenAdminPage) {
+          onEnterHiddenAdminPage();
+        }
+      }, 1200);
+    } catch (err: any) {
+      console.error(err);
+      setAdminPasswordError('Error de autenticación. Verifica tus credenciales de administrador.');
+      setIsLoadingAuth(false);
     }
   };
 
@@ -1145,41 +1300,84 @@ export default function LandingView({
                 </span>
               </div>
 
-              <div className="space-y-2 text-center flex flex-col items-center">
-                <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                  Ingresa la clave autorizada para abrir directamente el panel de control supremo del administrador.
-                </p>
-                <div className="flex gap-2 w-full justify-center">
-                  <input
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => {
-                      setAdminPassword(e.target.value);
-                      setAdminPasswordError(null);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleVerifyAdminPassword();
-                      }
-                    }}
-                    placeholder="Contraseña (009286)..."
-                    className="flex-1 bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
-                  />
+              {user && isCurrentUserAdmin ? (
+                <div className="space-y-3.5 text-center flex flex-col items-center">
+                  <div className="text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
+                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse border border-emerald-300"></span>
+                    <span>Sesión de Administrador Activa</span>
+                  </div>
+                  <p className="text-[11px] text-[#8c9f9e] font-mono bg-[#00080d] px-3 py-1 rounded-lg border border-[#005049]/15">
+                    {user.name} ({user.email})
+                  </p>
                   <button
                     type="button"
-                    onClick={handleVerifyAdminPassword}
-                    className="px-3.5 py-1.5 bg-[#1A56DB]/10 border border-[#1A56DB]/40 text-[#1A56DB] text-[11px] font-black rounded-xl hover:brightness-110 hover:border-[#1A56DB] hover:bg-[#1A56DB]/20 active:scale-95 transition-all outline-none uppercase cursor-pointer"
+                    onClick={() => {
+                      if (onEnterHiddenAdminPage) onEnterHiddenAdminPage();
+                    }}
+                    className="w-full py-2.5 bg-secondary text-on-secondary text-xs font-black rounded-xl hover:brightness-110 active:scale-95 transition-all outline-none uppercase cursor-pointer"
                   >
-                    Entrar
+                    Abrir Panel Supremo
                   </button>
                 </div>
-                {adminPasswordError && (
-                  <p className="text-[10px] text-rose-400 font-semibold animate-pulse mt-1">
-                    ⚠️ {adminPasswordError}
+              ) : (
+                <div className="space-y-3 text-center flex flex-col items-center">
+                  <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                    Sincroniza y autoriza cambios en Firestore iniciando sesión como administrador.
                   </p>
-                )}
-              </div>
+                  
+                  <div className="space-y-2 w-full">
+                    <input
+                      type="email"
+                      value={adminEmail}
+                      onChange={(e) => setAdminEmail(e.target.value)}
+                      placeholder="ingresa correo"
+                      className="w-full bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
+                    />
+
+                    <div className="flex gap-2 w-full justify-center">
+                      <input
+                        type="password"
+                        value={adminPassword}
+                        onChange={(e) => {
+                          setAdminPassword(e.target.value);
+                          setAdminPasswordError(null);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleVerifyAdminPassword();
+                          }
+                        }}
+                        placeholder="ingresa contraseña"
+                        className="flex-1 bg-[#00080d] border border-[#1A56DB]/25 rounded-xl text-on-surface px-3 py-1.5 text-xs font-mono placeholder:text-on-surface-variant/40 outline-none focus:border-[#1A56DB] transition-all text-center"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyAdminPassword}
+                        className="px-3.5 py-1.5 bg-[#1A56DB]/10 border border-[#1A56DB]/40 text-[#1A56DB] text-[11px] font-black rounded-xl hover:brightness-110 hover:border-[#1A56DB] hover:bg-[#1A56DB]/20 active:scale-95 transition-all outline-none uppercase cursor-pointer min-w-[72px] flex items-center justify-center"
+                        disabled={isLoadingAuth}
+                      >
+                        {isLoadingAuth ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          'Entrar'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {adminSuccessMsg && (
+                    <p className="text-[10px] text-[#22c55e] font-semibold animate-pulse mt-1">
+                      ✅ {adminSuccessMsg}
+                    </p>
+                  )}
+                  {adminPasswordError && (
+                    <p className="text-[10px] text-rose-400 font-semibold animate-pulse mt-1">
+                      ⚠️ {adminPasswordError}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
