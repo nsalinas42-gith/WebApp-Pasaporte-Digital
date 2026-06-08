@@ -1279,15 +1279,6 @@ export default function LandingView({
 
           {/* Comunidad Column (Center) */}
           <div className="col-span-1 space-y-3.5 flex flex-col items-start text-left">
-            <h4 className="text-[10px] font-black text-on-surface tracking-widest uppercase pb-1.5 border-b border-[#005049]/10 w-full text-left">
-              {t('comunidad')}
-            </h4>
-            <div className="flex flex-col gap-2.5 text-xs text-on-surface-variant/80 items-start">
-              <a href="#instagram" className="hover:text-[#1A56DB] hover:underline transition-all">Instagram</a>
-              <a href="#twitter" className="hover:text-[#1A56DB] hover:underline transition-all">Twitter / X</a>
-              <a href="#discord" className="hover:text-[#1A56DB] hover:underline transition-all">Discord</a>
-            </div>
-
             {/* Relocated Admin Panel Card */}
             <div className="bg-[#001019] border border-[#1A56DB]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
               <div className="flex items-center justify-center gap-2 border-b border-[#1A56DB]/15 pb-2">
@@ -1421,6 +1412,44 @@ export default function LandingView({
                 {t('privacidad')}
               </a>
               <a href="#cookies" className="hover:text-[#1A56DB] hover:underline transition-all">{t('cookies_policy')}</a>
+              
+              {/* Línea divisoria y redes sociales (X, Telegram, TikTok) */}
+              <div className="h-px bg-[#005049]/20 my-2 w-full" />
+              <div className="flex items-center gap-3 pt-1">
+                <a 
+                  href="https://x.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="p-1.5 rounded-lg bg-[#001019] border border-[#005049]/20 hover:border-[#1A56DB] hover:bg-[#1A56DB]/10 text-on-surface-variant hover:text-[#1A56DB] transition-all flex items-center justify-center cursor-pointer"
+                  title="X"
+                >
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+                <a 
+                  href="https://t.me" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="p-1.5 rounded-lg bg-[#001019] border border-[#005049]/20 hover:border-[#1A56DB] hover:bg-[#1A56DB]/10 text-on-surface-variant hover:text-[#1A56DB] transition-all flex items-center justify-center cursor-pointer"
+                  title="Telegram"
+                >
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701-.333 4.981c.488 0 .704-.224.978-.488l2.35-2.285 4.887 3.61c.901.497 1.549.241 1.774-.836l3.208-15.118c.328-1.317-.505-1.916-1.674-1.396z" />
+                  </svg>
+                </a>
+                <a 
+                  href="https://tiktok.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="p-1.5 rounded-lg bg-[#001019] border border-[#005049]/20 hover:border-[#1A56DB] hover:bg-[#1A56DB]/10 text-on-surface-variant hover:text-[#1A56DB] transition-all flex items-center justify-center cursor-pointer"
+                  title="TikTok"
+                >
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .8.11V9.4a6.27 6.27 0 0 0-1-.08A6.33 6.33 0 0 0 3 15.66a6.33 6.33 0 0 0 10.14 5.06 6.29 6.29 0 0 0 2.4-5V9a8.32 8.32 0 0 0 4.05 1.11V6.69a4.78 4.78 0 0 1-1.18-.08z" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
