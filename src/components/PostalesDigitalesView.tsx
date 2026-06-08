@@ -618,7 +618,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
               <div className="p-5 flex-1 flex flex-col text-left gap-4">
                 <div className="space-y-1 my-auto">
                   <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-mono font-bold text-secondary/60 bg-[#001d2a] border border-secondary/15 px-2 py-0.5 rounded uppercase">
+                    <span className="text-[9px] font-mono font-bold text-[#FFFFFF] bg-[#001d2a] border border-[#FFFFFF]/25 px-2 py-0.5 rounded uppercase">
                       Ruta {index + 1}
                     </span>
                   </div>

@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { FileText, ArrowLeft, Calendar, Globe } from 'lucide-react';
-import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import logoPintaMapas from '../assets/images/Logo Pinta Mapas2.png';
 
 interface TermsOfServiceViewProps {
   onClose: () => void;

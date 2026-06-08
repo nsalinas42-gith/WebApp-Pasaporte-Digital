@@ -53,7 +53,7 @@ import specialBronce from '../assets/images/lider_de_expedicion_1.png';
 import specialPlata from '../assets/images/guia_legendario_2.png';
 import specialOro from '../assets/images/explorador_supremo.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
-import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import logoPintaMapas from '../assets/images/Logo Pinta Mapas2.png';
 import logoAvatar from '../assets/images/logo.avatar.png';
 import caracasAvilaImg from '../assets/images/caracas_sky_avila_1780684422323.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
@@ -708,7 +708,7 @@ export default function LandingView({
             {/* Bottom centered Saber Mas button */}
             <button
               onClick={onShowProyecto}
-              className="w-auto px-8 py-2 bg-transparent hover:bg-white/5 border border-[#1A56DB]/40 text-[#1A56DB] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
+              className="w-auto px-8 py-2 bg-transparent hover:bg-[#c7ffd3] hover:text-[#003732] hover:border-[#c7ffd3] border border-[#1A56DB]/40 text-[#1A56DB] font-bold rounded-full text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all outline-none cursor-pointer h-[40px] flex items-center justify-center"
             >
               {t('saber_mas')}
             </button>

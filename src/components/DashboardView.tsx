@@ -412,7 +412,7 @@ export default function DashboardView({
                   completedRoutesCount > 0 
                     ? isLoadingPostal 
                       ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
+                      : 'bg-secondary text-on-secondary hover:bg-[#c7ffd3] hover:text-[#003732] active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
                     : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
                 }`}
               >
@@ -487,7 +487,7 @@ export default function DashboardView({
                   isEligibleForNFT 
                     ? isLoadingClaim 
                       ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
+                      : 'bg-secondary text-on-secondary hover:bg-[#c7ffd3] hover:text-[#003732] active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
                     : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
                 }`}
               >

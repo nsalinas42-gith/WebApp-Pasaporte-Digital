@@ -38,7 +38,7 @@ import PrivacyPolicyView from './components/PrivacyPolicyView';
 import ProyectoView from './components/ProyectoView';
 import { useLanguage } from './translations';
 import LanguageSelector from './components/LanguageSelector';
-import logoPintaMapas from './assets/images/Logo Pinta Mapas1.png';
+import logoPintaMapas from './assets/images/Logo Pinta Mapas2.png';
 import { calculateUserProgress } from './components/GamificationEngine';
 import { onAuthStateChanged } from 'firebase/auth';
 import { 

@@ -511,7 +511,7 @@ export default function SettingsView({
                           }`}
                         >
                           <div className="flex flex-col text-left min-w-0 flex-1">
-                            <span className="text-[9px] font-bold text-secondary uppercase tracking-wider">
+                            <span className="text-[9px] font-bold text-[#FFFFFF] uppercase tracking-wider">
                               Ruta {idx + 1}
                             </span>
                             <span className="text-xs font-bold truncate" title={loc.name}>

@@ -20,7 +20,7 @@ import {
   ChevronRight,
   Clock
 } from 'lucide-react';
-import logoPintaMapas from '../assets/images/Logo Pinta Mapas1.png';
+import logoPintaMapas from '../assets/images/Logo Pinta Mapas2.png';
 
 interface ProyectoViewProps {
   onClose: () => void;

@@ -180,8 +180,8 @@ export default function ExplorationView({
               >
                 <div>
                   <div className="flex justify-between items-start gap-1">
-                    <span className="text-[10px] uppercase font-black text-secondary tracking-wider flex items-center gap-1">
-                      {isLockedRouteState && <Lock className="w-3 h-3 text-secondary" />}
+                    <span className="text-[10px] uppercase font-black text-[#FFFFFF] tracking-wider flex items-center gap-1">
+                      {isLockedRouteState && <Lock className="w-3 h-3 text-[#FFFFFF]" />}
                       {t('ruta_label').replace('{num}', String(idx + 1))}
                     </span>
                     {percentage === 100 && !isLockedRouteState && (
@@ -250,7 +250,7 @@ export default function ExplorationView({
               )}
             </div>
 
-            <h2 className="font-headline text-xl md:text-2xl font-black text-[#c8e7fb] mt-1.5">
+            <h2 className="font-headline text-xl md:text-2xl font-black text-[#ffffff] mt-1.5">
               {selectedLoc.name}
             </h2>
             
@@ -323,7 +323,7 @@ export default function ExplorationView({
                   </div>
 
                   <div className="text-left space-y-1 pr-14">
-                    <h4 className="font-headline text-base font-black text-[#c8e7fb] leading-snug">
+                    <h4 className="font-headline text-base font-black text-[#ffffff] leading-snug">
                       {place.name}
                     </h4>
                   </div>
