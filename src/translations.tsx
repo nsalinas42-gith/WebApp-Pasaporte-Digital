@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Location, SubLocation, UserProfile } from './types';
+import { INITIAL_LOCATIONS } from './data';
 
 export type Language = 'es' | 'en';
 
@@ -945,7 +946,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Helper to translate route info dynamically on the fly based on current language
   const translateLocation = (loc: Location): Location => {
-    if (language === 'es') return loc; // Already Spanish in database
+    const matchingInitial = INITIAL_LOCATIONS.find(initial => initial.id === loc.id);
+    const resolvedLoc: Location = {
+      ...loc,
+      imageUrl: matchingInitial ? matchingInitial.imageUrl : loc.imageUrl,
+      badgeImageUrl: matchingInitial ? matchingInitial.badgeImageUrl : loc.badgeImageUrl
+    };
+
+    if (language === 'es') return resolvedLoc; // Already Spanish in database
 
     const lKey = `lh_${loc.id}_name`;
     const name = t(lKey) !== lKey ? t(lKey) : loc.name;
@@ -1011,7 +1019,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
 
     return {
-      ...loc,
+      ...resolvedLoc,
       name,
       category,
       badgeName,
