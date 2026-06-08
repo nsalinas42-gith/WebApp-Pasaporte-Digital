@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { Trophy, Medal, Search, Star, Award, Compass } from 'lucide-react';
 import { LeaderboardEntry, UserProfile } from '../types';
 import { useLanguage } from '../translations';
+import { resolveAvatar } from '../utils/avatars';
+
 
 interface LeaderboardViewProps {
   entries: LeaderboardEntry[];
@@ -89,7 +91,7 @@ export default function LeaderboardView({
             </div>
             <div className="w-16 h-16 rounded-full border-2 border-slate-400 overflow-hidden mx-auto mt-3 flex items-center justify-center">
               {rankedEntries[1].avatarUrl ? (
-                <img src={rankedEntries[1].avatarUrl} alt={rankedEntries[1].name} className="w-full h-full object-cover" />
+                <img src={resolveAvatar(rankedEntries[1].avatarUrl)} alt={rankedEntries[1].name} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-secondary text-base font-black font-mono">
                   {rankedEntries[1].name ? rankedEntries[1].name.charAt(0).toUpperCase() : '2'}
@@ -114,7 +116,7 @@ export default function LeaderboardView({
             </div>
             <div className="w-20 h-20 rounded-full border-4 border-secondary overflow-hidden mx-auto mt-4 flex items-center justify-center">
               {rankedEntries[0].avatarUrl ? (
-                <img src={rankedEntries[0].avatarUrl} alt={rankedEntries[0].name} className="w-full h-full object-cover animate-pulse" style={{ animationDuration: '3s' }} />
+                <img src={resolveAvatar(rankedEntries[0].avatarUrl)} alt={rankedEntries[0].name} className="w-full h-full object-cover animate-pulse" style={{ animationDuration: '3s' }} />
               ) : (
                 <span className="text-secondary text-2xl font-black font-mono">
                   {rankedEntries[0].name ? rankedEntries[0].name.charAt(0).toUpperCase() : '1'}
@@ -140,7 +142,7 @@ export default function LeaderboardView({
             </div>
             <div className="w-16 h-16 rounded-full border-2 border-amber-600/50 overflow-hidden mx-auto mt-3 flex items-center justify-center">
               {rankedEntries[2].avatarUrl ? (
-                <img src={rankedEntries[2].avatarUrl} alt={rankedEntries[2].name} className="w-full h-full object-cover" />
+                <img src={resolveAvatar(rankedEntries[2].avatarUrl)} alt={rankedEntries[2].name} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-secondary text-base font-black font-mono">
                   {rankedEntries[2].name ? rankedEntries[2].name.charAt(0).toUpperCase() : '3'}
@@ -208,7 +210,7 @@ export default function LeaderboardView({
                     {/* Small avatar */}
                     <div className="w-9 h-9 rounded-full border border-secondary/20 overflow-hidden shrink-0 flex items-center justify-center">
                       {player.avatarUrl ? (
-                        <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                        <img src={resolveAvatar(player.avatarUrl)} alt={player.name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-secondary text-[10px] font-black font-mono">
                           {player.name ? player.name.charAt(0).toUpperCase() : '?'}

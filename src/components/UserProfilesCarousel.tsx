@@ -17,6 +17,8 @@ import avatarJoven1 from '../assets/images/avatar_joven_1.png';
 import avatarJoven2 from '../assets/images/avatar_joven_2.png';
 import avatarMujer1 from '../assets/images/avatar_mujer_1.png';
 import avatarMujer2 from '../assets/images/avatar_mujer_2.png';
+import { resolveAvatar } from '../utils/avatars';
+
 
 interface ProfileCarouselItem {
   uid: string;
@@ -298,7 +300,7 @@ export default function UserProfilesCarousel() {
                           <div className="relative">
                             <div className="absolute inset-0 bg-[#1A56DB]/20 rounded-full blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <img
-                              src={profile.avatarUrl}
+                              src={resolveAvatar(profile.avatarUrl)}
                               alt={profile.name}
                               className="w-14 h-14 rounded-full object-cover border-2 border-secondary/40 select-none pointer-events-none relative z-10"
                               onError={(e) => {

@@ -47,6 +47,8 @@ import {
   saveUserProfileAndProgress, 
   getUserProfileAndProgress 
 } from './utils/firebase';
+import { resolveAvatar } from './utils/avatars';
+
 
 export default function App() {
   const { t, translateLocation, translateUser, language } = useLanguage();
@@ -868,7 +870,7 @@ export default function App() {
                   {user.avatarUrl ? (
                     <img 
                       alt="Profile" 
-                      src={user.avatarUrl} 
+                      src={resolveAvatar(user.avatarUrl)} 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />

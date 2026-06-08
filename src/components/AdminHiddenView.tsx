@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { Location, UserProfile } from '../types';
 import { INITIAL_LOCATIONS } from '../data';
+import { resolveAvatar } from '../utils/avatars';
+
 import { 
   getAllRegisteredUsers, 
   resetUserProgress, 
@@ -622,7 +624,7 @@ export default function AdminHiddenView({
                       <div className="flex items-center gap-3">
                         {u.avatarUrl ? (
                           <img 
-                            src={u.avatarUrl} 
+                            src={resolveAvatar(u.avatarUrl)} 
                             alt={u.name} 
                             referrerPolicy="no-referrer"
                             className="w-10 h-10 rounded-xl object-cover border border-[#1A56DB]/20 bg-[#000d14]"
