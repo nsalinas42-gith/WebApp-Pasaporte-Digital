@@ -151,7 +151,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     const unsubscribe = subscribeCloudPostcards((cardList) => {
       const mapped = cardList.map((card) => ({
         ...card,
-        image: POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
+        image: card.imageBase64 || POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
       }));
       setPostcardCards(mapped);
     });
@@ -227,72 +227,108 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     img.onload = async () => {
       try {
         const canvas = document.createElement('canvas');
-        canvas.width = 800;
-        canvas.height = 800;
+        canvas.width = 1700;
+        canvas.height = 1080;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
         // Clean slate
         ctx.fillStyle = "#00080d";
-        ctx.fillRect(0, 0, 800, 800);
+        ctx.fillRect(0, 0, 1700, 1080);
 
-        // Draw image keeping ratio
-        ctx.drawImage(img, 50, 50, 700, 700);
+        // Draw image keeping ratio on the left
+        ctx.drawImage(img, 60, 60, 960, 960);
 
-        // Technical borders & Gold frames
-        ctx.strokeStyle = "#1A56DB";
-        ctx.lineWidth = 12;
-        ctx.strokeRect(6, 6, 788, 788);
+        // Technical borders & Royal frames
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 14;
+        ctx.strokeRect(7, 7, 1686, 1066);
 
-        ctx.strokeStyle = "rgba(26, 86, 219, 0.35)";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(20, 20, 760, 760);
+        ctx.strokeStyle = "rgba(0, 230, 118, 0.35)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(22, 22, 1656, 1036);
 
-        // Overlay lower certification metadata banner
-        ctx.fillStyle = "rgba(0, 16, 25, 0.92)";
-        ctx.fillRect(35, 660, 730, 100);
+        // Decorative vertical Separator Line in bright white (#ffffff)
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(1060, 60);
+        ctx.lineTo(1060, 1020);
+        ctx.stroke();
 
-        // Tech cyan separator bar
-        ctx.fillStyle = "#1A56DB";
-        ctx.fillRect(35, 658, 730, 3);
+        // White horizontal separator line inside metadata for accentuation (#ffffff)
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(1090, 230);
+        ctx.lineTo(1640, 230);
+        ctx.stroke();
 
         // Top Header Watermark text
-        ctx.fillStyle = "rgba(26, 86, 219, 0.3)";
-        ctx.font = "bold 11px monospace";
-        ctx.fillText("BITACORA DIGITAL PINTA MAPAS - SOLANA SECURED CERTIFICATE", 50, 42);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.font = "bold 13px monospace";
+        ctx.fillText("BITACORA DIGITAL PINTA MAPAS - SOLANA SECURED CERTIFICATE", 1090, 100);
 
         // Metadata titles
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 16px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText("POSTAL DIGITAL OFICIAL & CERTIFICADA", 60, 695);
+        ctx.font = "bold 32px 'Space Grotesk', system-ui, sans-serif";
+        ctx.fillText("POSTAL DIGITAL OFICIAL", 1090, 160);
 
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-        ctx.font = "500 12px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText(routeName.toUpperCase(), 60, 715);
+        ctx.fillStyle = "#00E676";
+        ctx.font = "bold 24px 'Space Grotesk', system-ui, sans-serif";
+        ctx.fillText(routeName.toUpperCase(), 1090, 205);
 
-        ctx.fillStyle = "#1A56DB";
-        ctx.font = "bold 12px monospace";
-        ctx.fillText(`TRANSACCIÓN BLOCKCHAIN TX: ${txHash.slice(0, 12)}...${txHash.slice(-12)}`, 60, 742);
+        // Detailed Metadata Block
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        ctx.font = "bold 16px monospace";
+        ctx.fillText("DETALLES DE CERTIFICACIÓN:", 1090, 280);
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+        ctx.font = "14px monospace";
+        ctx.fillText("Plataforma: Bitácora Digital de Pinta Mapas", 1090, 315);
+        ctx.fillText(`ID de Postal: ${postcardId.toUpperCase()}`, 1090, 345);
+        ctx.fillText("Red: Solana Mainnet-Beta (Sandbox Class)", 1090, 375);
+        ctx.fillText("Formato: Compressed NFT (cNFT) de alta fidelidad", 1090, 405);
+        ctx.fillText("Estado: CONFIRMADO & REGISTRADO", 1090, 435);
+
+        // Blockchain Transaction segment
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 16px monospace";
+        ctx.fillText("REGISTRO DE TRANSACCIÓN CRIPTOGRÁFICA:", 1090, 500);
+
+        ctx.fillStyle = "#00E676";
+        ctx.font = "bold 14px monospace";
+        // split signature to prevent overflow
+        const txPart1 = txHash.slice(0, 25);
+        const txPart2 = txHash.slice(25);
+        ctx.fillText(`TX L1: ${txPart1}`, 1090, 535);
+        ctx.fillText(`TX L2: ${txPart2}`, 1090, 560);
+
+        // Bottom descriptive copyright note
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.font = "italic 12px monospace";
+        ctx.fillText("Copyright © 2026 Pinta Mapas. Todos los derechos reservados.", 1090, 1000);
 
         // Render QR certification block dynamically pointing to Solscan!
-        const qrX = 680;
-        const qrY = 672;
+        const qrX = 1260;
+        const qrY = 640;
+        const qrSize = 240;
         
         try {
           const txUrl = `https://solscan.io/tx/${txHash}`;
           const qrDataUrl = await QRCode.toDataURL(txUrl, {
-            margin: 1,
-            width: 100,
+            margin: 2,
+            width: qrSize,
             color: {
               dark: '#FFFFFF', // High-contrast white QR code
-              light: '#001019' // custom dark background
+              light: '#00080d' // custom dark background
             }
           });
 
           await new Promise<void>((resolve) => {
             const qrImg = new Image();
             qrImg.onload = () => {
-              ctx.drawImage(qrImg, qrX, qrY, 78, 78);
+              ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
               resolve();
             };
             qrImg.onerror = () => {
@@ -303,10 +339,11 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         } catch (qrErr) {
           console.error("QR Code generation failed, fallback to aesthetic matrix", qrErr);
           ctx.fillStyle = "#FFFFFF";
+          const squareSize = Math.floor(qrSize / 6);
           for (let x = 0; x < 6; x++) {
             for (let y = 0; y < 6; y++) {
               if (x === 0 || x === 5 || y === 0 || y === 5 || (x === 2 && y === 2)) {
-                ctx.fillRect(qrX + x * 11, qrY + y * 11, 8, 8);
+                ctx.fillRect(qrX + x * squareSize, qrY + y * squareSize, squareSize - 4, squareSize - 4);
               }
             }
           }
@@ -329,40 +366,44 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
 
   const fallbackCanvasRender = async (postcardId: string, routeName: string, txHash: string) => {
     const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 800;
+    canvas.width = 1700;
+    canvas.height = 1080;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Background gradient
-    const grad = ctx.createLinearGradient(0, 0, 800, 800);
+    const grad = ctx.createLinearGradient(0, 0, 1700, 1080);
     grad.addColorStop(0, '#001a24');
-    grad.addColorStop(1, '#00332d');
+    grad.addColorStop(1, '#00080d');
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 800, 800);
+    ctx.fillRect(0, 0, 1700, 1080);
 
     // Grid details for tech vibe
     ctx.strokeStyle = "rgba(26, 86, 219, 0.08)";
     ctx.lineWidth = 1;
-    for (let x = 50; x < 800; x += 50) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 800); ctx.stroke();
+    for (let x = 100; x < 1700; x += 100) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1080); ctx.stroke();
     }
-    for (let y = 50; y < 800; y += 50) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(800, y); ctx.stroke();
+    for (let y = 100; y < 1080; y += 100) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1700, y); ctx.stroke();
     }
 
-    // Outer gold cyan borders
-    ctx.strokeStyle = "#1A56DB";
-    ctx.lineWidth = 12;
-    ctx.strokeRect(6, 6, 788, 788);
+    // Outer borders
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 14;
+    ctx.strokeRect(7, 7, 1686, 1066);
 
-    // Decorative inner target elements
+    ctx.strokeStyle = "rgba(0, 230, 118, 0.35)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(22, 22, 1656, 1036);
+
+    // Decorative inner target elements inside the left frame
     ctx.strokeStyle = "rgba(26, 86, 219, 0.25)";
-    ctx.strokeRect(25, 25, 750, 750);
+    ctx.strokeRect(60, 60, 960, 960);
 
-    // Center reward badge circle
+    // Center reward badge circle in left frame
     ctx.beginPath();
-    ctx.arc(400, 320, 180, 0, Math.PI * 2);
+    ctx.arc(540, 540, 260, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(26, 86, 219, 0.05)";
     ctx.fill();
     ctx.strokeStyle = "#1A56DB";
@@ -371,7 +412,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
 
     // Secondary decorative gear ring
     ctx.beginPath();
-    ctx.arc(400, 320, 200, 0, Math.PI * 2);
+    ctx.arc(540, 540, 290, 0, Math.PI * 2);
     ctx.strokeStyle = "rgba(26, 86, 219, 0.15)";
     ctx.lineWidth = 1;
     ctx.setLineDash([8, 12]);
@@ -380,61 +421,103 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
 
     // Big central stamp representation text
     ctx.fillStyle = "#1A56DB";
-    ctx.font = "bold 32px monospace";
+    ctx.font = "bold 44px monospace";
     ctx.textAlign = "center";
-    ctx.fillText("CERTIFICATE cNFT", 400, 305);
-    ctx.font = "medium 18px monospace";
-    ctx.fillText("BITACORA DIGITAL PINTA MAPAS", 400, 340);
+    ctx.fillText("CERTIFICATE cNFT", 540, 520);
+    ctx.fillStyle = "#00E676";
+    ctx.font = "bold 24px monospace";
+    ctx.fillText("BITACORA DIGITAL PINTA MAPAS", 540, 570);
 
-    // Badge specific emblem
+    // Stamp center ring
     ctx.beginPath();
-    ctx.arc(400, 310, 8, 0, Math.PI * 2);
+    ctx.arc(540, 540, 10, 0, Math.PI * 2);
     ctx.fillStyle = "#ffffff";
     ctx.fill();
 
-    // Banner
+    // Reset text alignment for right metadata panel
     ctx.textAlign = "left";
-    ctx.fillStyle = "rgba(0, 16, 25, 0.95)";
-    ctx.fillRect(35, 620, 730, 140);
-    ctx.fillStyle = "#1A56DB";
-    ctx.fillRect(35, 617, 730, 4);
 
-    // Titles
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 20px 'Space Grotesk', system-ui, sans-serif";
-    ctx.fillText("POSTAL DIGITAL GENERADA EXPOSITIVA", 60, 660);
+    // Decorative vertical Separator Line in bright white (#ffffff)
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(1060, 60);
+    ctx.lineTo(1060, 1020);
+    ctx.stroke();
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.font = "500 13px 'Space Grotesk', system-ui, sans-serif";
-    ctx.fillText(routeName.toUpperCase(), 60, 685);
+    // White horizontal separator line inside metadata for accentuation (#ffffff)
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(1090, 230);
+    ctx.lineTo(1640, 230);
+    ctx.stroke();
 
-    ctx.fillStyle = "#1A56DB";
+    // Top Header Watermark text
+    ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
     ctx.font = "bold 13px monospace";
-    ctx.fillText(`SOLANA TRANSACTION TX: ${txHash}`, 60, 715);
+    ctx.fillText("BITACORA DIGITAL PINTA MAPAS - SOLANA SECURED CERTIFICATE", 1090, 100);
 
+    // Metadata titles
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 32px 'Space Grotesk', system-ui, sans-serif";
+    ctx.fillText("POSTAL DIGITAL EXPOSITIVA", 1090, 160);
+
+    ctx.fillStyle = "#00E676";
+    ctx.font = "bold 24px 'Space Grotesk', system-ui, sans-serif";
+    ctx.fillText(routeName.toUpperCase(), 1090, 205);
+
+    // Detailed Metadata Block
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.font = "bold 16px monospace";
+    ctx.fillText("DETALLES DE CERTIFICACIÓN:", 1090, 280);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+    ctx.font = "14px monospace";
+    ctx.fillText("Plataforma: Bitácora Digital de Pinta Mapas", 1090, 315);
+    ctx.fillText(`ID de Postal: ${postcardId.toUpperCase()}`, 1090, 345);
+    ctx.fillText("Red: Solana Mainnet-Beta (Sandbox Class)", 1090, 375);
+    ctx.fillText("Formato: Compressed NFT (cNFT) de alta fidelidad", 1090, 405);
+    ctx.fillText("Estado: CONFIRMADO & REGISTRADO", 1090, 435);
+
+    // Blockchain Transaction segment
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 16px monospace";
+    ctx.fillText("REGISTRO DE TRANSACCIÓN CRIPTOGRÁFICA:", 1090, 500);
+
+    ctx.fillStyle = "#00E676";
+    ctx.font = "bold 14px monospace";
+    // split signature to prevent overflow
+    const txPart1 = txHash.slice(0, 25);
+    const txPart2 = txHash.slice(25);
+    ctx.fillText(`TX L1: ${txPart1}`, 1090, 535);
+    ctx.fillText(`TX L2: ${txPart2}`, 1090, 560);
+
+    // Bottom descriptive copyright note
     ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-    ctx.font = "bold 11px monospace";
-    ctx.fillText("MINTED STATUS: FINALIZED & CONFIRMED BY SOLANA HIGHLY SECURE BLOCKCHAIN PROTOCOL v1.0", 60, 740);
+    ctx.font = "italic 12px monospace";
+    ctx.fillText("Copyright © 2026 Pinta Mapas. Todos los derechos reservados.", 1090, 1000);
 
-    // QR Representation
-    const qrX = 660;
-    const qrY = 635;
+    // Render QR certification block dynamically pointing to Solscan!
+    const qrX = 1260;
+    const qrY = 640;
+    const qrSize = 240;
     
     try {
       const txUrl = `https://solscan.io/tx/${txHash}`;
       const qrDataUrl = await QRCode.toDataURL(txUrl, {
-        margin: 1,
-        width: 120,
+        margin: 2,
+        width: qrSize,
         color: {
           dark: '#FFFFFF', // High-contrast white QR code
-          light: '#001019'
+          light: '#00080d'
         }
       });
 
       await new Promise<void>((resolve) => {
         const qrImg = new Image();
         qrImg.onload = () => {
-          ctx.drawImage(qrImg, qrX, qrY, 110, 110);
+          ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
           resolve();
         };
         qrImg.onerror = () => {
@@ -445,11 +528,12 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     } catch (qrErr) {
       console.error("Fallback QR Code generation failed", qrErr);
       ctx.fillStyle = "#FFFFFF";
+      const squareSize = Math.floor(qrSize / 6);
       for (let x = 0; x < 6; x++) {
         for (let y = 0; y < 6; y++) {
           const draw = (x === 0 || x === 5 || y === 0 || y === 5 || (x + y) % 3 === 0);
           if (draw) {
-            ctx.fillRect(qrX + x * 11, qrY + y * 11, 8, 8);
+            ctx.fillRect(qrX + x * squareSize, qrY + y * squareSize, squareSize - 4, squareSize - 4);
           }
         }
       }

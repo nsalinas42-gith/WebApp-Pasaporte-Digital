@@ -712,7 +712,7 @@ export function subscribeCloudPostcards(
 /**
  * Saves a new postcard to Cloud Firestore
  */
-export async function saveCloudPostcard(postcard: { id: string; name: string; routeKey: string; imageKey: string }) {
+export async function saveCloudPostcard(postcard: { id: string; name: string; routeKey: string; imageKey: string; imageBase64?: string }) {
   const docRef = doc(db, 'postcards', postcard.id);
   try {
     await setDoc(docRef, {
@@ -720,6 +720,7 @@ export async function saveCloudPostcard(postcard: { id: string; name: string; ro
       name: postcard.name,
       routeKey: postcard.routeKey,
       imageKey: postcard.imageKey,
+      ...(postcard.imageBase64 ? { imageBase64: postcard.imageBase64 } : {}),
       createdAt: serverTimestamp(),
     });
     console.log(`Cloud postcard successfully saved: ${postcard.name}`);

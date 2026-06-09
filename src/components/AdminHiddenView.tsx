@@ -265,7 +265,7 @@ export default function AdminHiddenView({
       // Map stored cards back to image assets for display
       const mapped = cardList.map((card) => ({
         ...card,
-        image: POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
+        image: card.imageBase64 || POSTCARD_IMAGE_MAP[card.imageKey] || POSTALES_IMAGES[card.imageKey] || postal1
       }));
       setPostcards(mapped);
     });
@@ -277,6 +277,31 @@ export default function AdminHiddenView({
   const [newPostcardName, setNewPostcardName] = useState('');
   const [newPostcardRouteKey, setNewPostcardRouteKey] = useState(locations[0]?.id || 'alhambra');
   const [newPostcardImage, setNewPostcardImage] = useState('postal_1.png');
+  const [customImageBase64, setCustomImageBase64] = useState<string | null>(null);
+  const [customImageFileName, setCustomImageFileName] = useState<string>('');
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== 'image/png') {
+        alert('Por favor selecciona únicamente archivos de formato .png');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        setCustomImageBase64(base64);
+        setCustomImageFileName(file.name);
+        
+        // Auto-populate helper ID and Name for easier authoring
+        const namePart = file.name.replace(/\.[^/.]+$/, "");
+        const cleanId = namePart.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_');
+        setNewPostcardId(cleanId);
+        setNewPostcardName('Postales - ' + namePart.replace(/[-_]/g, ' '));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Helper utility for generating localized security logs
   const addLog = (message: string) => {
@@ -314,13 +339,16 @@ export default function AdminHiddenView({
         id: preparedId,
         name: newPostcardName.trim(),
         routeKey: newPostcardRouteKey,
-        imageKey: newPostcardImage
+        imageKey: customImageBase64 ? 'custom_uploaded' : newPostcardImage,
+        ...(customImageBase64 ? { imageBase64: customImageBase64 } : {})
       });
 
       // Reset inputs
       setNewPostcardId('');
       setNewPostcardName('');
       setNewPostcardImage('postal_1.png');
+      setCustomImageBase64(null);
+      setCustomImageFileName('');
       
       addLog(`Nueva Postal '${newPostcardName}' cargada en la cola de acuñación en Firestore.`);
       setActionStatusMsg(`Postal "${newPostcardName}" agregada con éxito.`);
@@ -875,11 +903,54 @@ export default function AdminHiddenView({
                   <select
                     value={newPostcardImage}
                     onChange={(e) => setNewPostcardImage(e.target.value)}
-                    className="w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none focus:border-secondary cursor-pointer font-mono text-secondary"
+                    disabled={!!customImageBase64}
+                    className={`w-full bg-[#000d14] border border-[#005049]/30 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none focus:border-secondary cursor-pointer font-mono text-secondary ${customImageBase64 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <option value="postal_1.png">postal_1.png</option>
                     <option value="postal_2.png">postal_2.png</option>
                   </select>
+                </div>
+
+                <div className="space-y-1 md:col-span-2 border-t border-[#005049]/15 pt-3 mt-1">
+                  <label className="text-[10px] font-bold text-secondary uppercase tracking-wider flex items-center gap-1">
+                    <span>O Cargar una Imagen .PNG propia</span>
+                    <span className="text-xs text-[#8c9f9e]/60">(Recomendado 7:5 / 1700x1080px)</span>
+                  </label>
+                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#000d14] border border-dashed border-[#005049]/30 rounded-2xl p-4">
+                    <label id="upload-postcard-btn" className="w-full sm:w-auto px-4 py-2.5 bg-[#001721] hover:bg-[#002b3d] text-on-surface border border-[#005049]/45 rounded-xl cursor-pointer flex items-center justify-center gap-2 text-xs font-bold transition-colors select-none">
+                      <Cpu className="w-4 h-4 text-secondary" />
+                      <span>Elegir Archivo .png</span>
+                      <input 
+                        type="file" 
+                        accept="image/png" 
+                        className="hidden" 
+                        onChange={handleImageUpload} 
+                      />
+                    </label>
+                    <div className="flex-1 text-center sm:text-left">
+                      {customImageBase64 ? (
+                        <div className="flex items-center gap-3 justify-center sm:justify-start">
+                          <div className="w-10 h-10 border border-[#00554d] rounded-lg overflow-hidden bg-[#00080d] flex-shrink-0">
+                            <img src={customImageBase64} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-xs font-bold text-secondary truncate max-w-[200px]" title={customImageFileName}>
+                              {customImageFileName}
+                            </p>
+                            <button 
+                              type="button" 
+                              onClick={() => { setCustomImageBase64(null); setCustomImageFileName(''); }}
+                              className="text-[10px] text-red-400 hover:underline font-semibold block outline-none"
+                            >
+                              Eliminar y usar core
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[#8c9f9e]/50 font-medium">Ningún archivo seleccionado. Se usará el Diseño Core seleccionado.</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 

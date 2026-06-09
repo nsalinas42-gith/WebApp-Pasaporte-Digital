@@ -80,7 +80,8 @@ service cloud.firestore {
       return data.id is string && data.id.size() <= 200
         && data.name is string && data.name.size() <= 200
         && data.routeKey is string && data.routeKey.size() <= 100
-        && data.imageKey is string && data.imageKey.size() <= 100;
+        && data.imageKey is string && data.imageKey.size() <= 100
+        && (!('imageBase64' in data) || (data.imageBase64 is string && data.imageBase64.size() <= 1500000));
     }
 
     // Rules for /test/{docId}

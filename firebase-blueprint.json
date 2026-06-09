@@ -126,6 +126,10 @@
           "type": "string",
           "description": "Clave que mapea la imagen importada"
         },
+        "imageBase64": {
+          "type": "string",
+          "description": "Contenido opcional de la imagen cargada por el Administrador en formato Base64"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
