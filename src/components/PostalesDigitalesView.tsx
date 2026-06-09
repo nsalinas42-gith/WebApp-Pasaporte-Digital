@@ -521,7 +521,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
       </div>
 
       {/* 2. WARNING / INFORMATION ROADMAP BLOCK */}
-      <div className="bg-[#001721] border border-secondary/20 p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center gap-4 justify-between text-left">
+      <div className="bg-[#161F30] border border-secondary/20 p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center gap-4 justify-between text-left">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0 border border-secondary/15 mt-0.5">
             <Compass className="w-5 h-5 text-secondary animate-pulse-slow" />
@@ -563,7 +563,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
           return (
             <div 
               key={p.id}
-              className={`group flex flex-col bg-surface-container-low border rounded-2xl overflow-hidden transition-all duration-300 relative ${
+              className={`group flex flex-col bg-[#161F30] border rounded-2xl overflow-hidden transition-all duration-300 relative ${
                 status.isMinted 
                   ? 'border-[#1A56DB]/40 shadow-[0_0_15px_rgba(26, 86, 219,0.06)]' 
                   : isCompleted 
@@ -615,7 +615,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
               </div>
 
               {/* Text & descriptions */}
-              <div className="p-5 flex-1 flex flex-col text-left gap-4">
+              <div className="p-5 flex-1 flex flex-col text-left gap-4 bg-[#161F30]">
                 <div className="space-y-1 my-auto">
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-mono font-bold text-[#FFFFFF] bg-[#001d2a] border border-[#FFFFFF]/25 px-2 py-0.5 rounded uppercase">
@@ -636,7 +636,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
                     <div className="flex flex-col gap-2">
                       <button
                         onClick={() => triggerCanvasStampingAndDownload(p.id, p.image, p.name, status.txHash || '')}
-                        className="w-full py-2.5 bg-[#002e3b] text-secondary border border-secondary/35 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer hover:bg-secondary/10 transition-colors"
+                        className="w-full py-2.5 bg-[#00E676] text-[#FFFFFF] border border-[#00E676]/25 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer hover:bg-[#00E676]/90 transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         <span>Descargar Postal</span>
@@ -663,8 +663,8 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
                           ? !walletConnected
                             ? 'bg-[#181109] border border-amber-500/20 text-amber-400/60 cursor-not-allowed'
                             : status.isMinting
-                              ? 'bg-secondary/10 text-secondary border border-secondary border-dashed cursor-wait'
-                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_4px_12px_rgba(26, 86, 219,0.15)]'
+                              ? 'bg-[#00E676]/10 text-[#00E676] border border-[#00E676] border-dashed cursor-wait'
+                              : 'bg-[#00E676] text-[#FFFFFF] hover:bg-[#00E676]/90 active:scale-95 shadow-[0_4px_12px_rgba(0,230,118,0.15)]'
                           : 'bg-surface-container-high text-on-surface-variant/30 cursor-not-allowed border border-[#005049]/10'
                       }`}
                     >

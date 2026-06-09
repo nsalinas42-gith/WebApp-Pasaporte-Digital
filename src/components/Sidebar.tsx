@@ -85,7 +85,7 @@ export default function Sidebar({
         {/* Progress Bar Container */}
         <div className="w-full bg-[#001019] h-1.5 rounded-full overflow-hidden border border-[#005049]/20">
           <div 
-            className="bg-secondary h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(26, 86, 219,0.4)]" 
+            className="bg-gradient-to-r from-[#1A56DB] to-[#00E676] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(26, 86, 219,0.4)]" 
             style={{ width: `${percentageToNextLevel}%` }}
           />
         </div>

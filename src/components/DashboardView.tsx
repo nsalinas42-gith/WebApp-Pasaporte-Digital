@@ -359,7 +359,7 @@ export default function DashboardView({
       </section>
 
       {/* 4.5. INTERACTIVE POSTAL DIGITAL PORTAL */}
-      <section id="campaign-postal-claim-row" className="bg-gradient-to-tr from-[#001d2a] to-[#003237] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden mb-6">
+      <section id="campaign-postal-claim-row" className="bg-[#161F30] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden mb-6">
         {/* Subtle pulsating backdrop beam */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
 
@@ -395,7 +395,7 @@ export default function DashboardView({
                   href={`https://solscan.io/tx/${postalTxHash || '3G14p87Qv...'}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex w-full sm:w-auto px-6 py-3 bg-secondary/10 border border-secondary/30 text-secondary font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
+                  className="inline-flex w-full sm:w-auto px-6 py-3 bg-[#00E676]/10 border border-[#00E676]/30 text-[#00E676] font-bold rounded-xl items-center justify-center gap-2 text-xs uppercase cursor-pointer"
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>{t('verificar_receipt')}</span>
@@ -411,9 +411,9 @@ export default function DashboardView({
                 className={`w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer outline-none ${
                   completedRoutesCount > 0 
                     ? isLoadingPostal 
-                      ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                      : 'bg-secondary text-on-secondary hover:bg-[#c7ffd3] hover:text-[#003732] active:scale-95 shadow-[0_0_12px_rgba(26, 86, 219,0.25)]'
-                    : 'bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/30 cursor-not-allowed opacity-50'
+                      ? 'bg-[#00E676]/10 border border-[#00E676] text-[#00E676] cursor-wait'
+                      : 'bg-[#00E676] text-[#FFFFFF] hover:bg-[#00E676]/90 active:scale-95 shadow-[0_0_12px_rgba(0,230,118,0.25)]'
+                    : 'bg-[#00E676]/10 border border-[#00E676]/20 text-[#FFFFFF]/30 cursor-not-allowed opacity-50'
                 }`}
               >
                 {isLoadingPostal ? (
@@ -434,7 +434,7 @@ export default function DashboardView({
       </section>
 
       {/* 5. INTERACTIVE SOLANA WEB3 PORTAL */}
-      <section id="campaign-nft-claim-row" className="bg-gradient-to-tr from-[#001d2a] to-[#003732] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden">
+      <section id="campaign-nft-claim-row" className="bg-[#161F30] border border-secondary/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-6 relative overflow-hidden">
         {/* Subtle pulsating backdrop beam */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
 
@@ -466,7 +466,7 @@ export default function DashboardView({
           <div className="shrink-0 w-full sm:w-auto text-center space-y-2">
             <button
               disabled
-              className="w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-not-allowed opacity-60 bg-[#1A56DB]/5 border border-[#1A56DB]/15 text-secondary/60"
+              className="w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-not-allowed opacity-60 bg-[#00E676] border border-[#00E676]/25 text-[#FFFFFF]"
             >
               <Lock className="w-3.5 h-3.5" />
               <span>Pronto</span>
@@ -557,7 +557,7 @@ export default function DashboardView({
                     <div className="relative">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center font-headline text-xs font-black transition-all ${
                         badgesUnlockedInRoute > 0 
-                          ? 'bg-[#fe014f] text-white shadow-[0_0_10px_rgba(254,1,79,0.6)] scale-110 font-bold' 
+                          ? 'bg-[#00E676] text-white shadow-[0_0_10px_rgba(0,230,118,0.6)] scale-110 font-bold' 
                           : 'bg-surface-container-highest text-[#F8F9FA] border border-secondary/10'
                       }`} title={loc.name}>
                         V{idx + 1}
@@ -569,8 +569,8 @@ export default function DashboardView({
                       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 44 44">
                         <defs>
                           <linearGradient id={`roseGradient-${loc.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#fe014f" />
-                            <stop offset="100%" stopColor="#ff5e62" />
+                            <stop offset="0%" stopColor="#1A56DB" />
+                            <stop offset="100%" stopColor="#00E676" />
                           </linearGradient>
                         </defs>
                         {/* Background ring */}
@@ -579,7 +579,7 @@ export default function DashboardView({
                           cy="22" 
                           r={smallRadius} 
                           fill="transparent" 
-                          stroke="rgba(254, 1, 79, 0.12)" 
+                          stroke="rgba(0, 230, 118, 0.12)" 
                           strokeWidth="4"
                         />
                         {/* Progress ring */}
@@ -623,12 +623,12 @@ export default function DashboardView({
               <svg className="w-[90%] h-[90%] transform -rotate-90" viewBox="0 0 100 100">
                 <defs>
                   <linearGradient id="mainRoseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#fe014f" />
-                    <stop offset="100%" stopColor="#ff5e62" />
+                    <stop offset="0%" stopColor="#1A56DB" />
+                    <stop offset="100%" stopColor="#00E676" />
                   </linearGradient>
                   {/* Drop shadow filter to give that rich overlay effect */}
                   <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#fe014f" floodOpacity="0.4" />
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#00E676" floodOpacity="0.4" />
                   </filter>
                 </defs>
                 {/* Background ring */}
@@ -638,7 +638,7 @@ export default function DashboardView({
                   cy="50" 
                   fill="transparent" 
                   r="40" 
-                  stroke="rgba(254, 1, 79, 0.15)" 
+                  stroke="rgba(0, 230, 118, 0.15)" 
                   strokeWidth="8.5"
                 />
                 {/* Progress ring */}
@@ -659,12 +659,12 @@ export default function DashboardView({
               {/* Inside the circle: counter 0/6 insignias and label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                 {/* Visual arrow indicator matching the Apple Fitness vibe */}
-                <span className="text-[#fe014f] text-2xl font-black mb-1 animate-pulse">➔</span>
+                <span className="text-[#00E676] text-2xl font-black mb-1 animate-pulse">➔</span>
                 
                 <span className="font-headline font-black text-2xl sm:text-3xl text-white leading-none tracking-tight">
                   {unlockedCount}/{totalCount}
                 </span>
-                <span className="text-[8px] sm:text-[9px] font-black text-[#fe014f] tracking-widest mt-1 uppercase">
+                <span className="text-[8px] sm:text-[9px] font-black text-[#00E676] tracking-widest mt-1 uppercase">
                   Insignias
                 </span>
               </div>
@@ -687,7 +687,7 @@ export default function DashboardView({
                 <Sparkles className="w-3.5 h-3.5 text-secondary animate-pulse" />
                 <span className="font-headline text-[10px] sm:text-xs font-black uppercase tracking-wider text-secondary">Ruta de Nivel & Experiencia (XP)</span>
               </span>
-              <span className="font-mono text-[10px] sm:text-[11px] text-tertiary">
+              <span className="font-mono text-[10px] sm:text-[11px] text-[#00E676]">
                 {totalXP.toLocaleString()} / 40,000 XP total
               </span>
             </div>
@@ -716,7 +716,7 @@ export default function DashboardView({
 
               {/* Glowing progress fill back-bar */}
               <div 
-                className="bg-gradient-to-r from-secondary/40 via-secondary/70 to-[#319795] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(26, 86, 219,0.15)]"
+                className="bg-gradient-to-r from-[#1A56DB] to-[#00E676] h-full rounded-lg transition-all duration-500 shadow-[0_0_12px_rgba(26, 86, 219,0.15)]"
                 style={{ width: `${Math.min(100, (totalXP / 40000) * 100)}%` }}
               />
 

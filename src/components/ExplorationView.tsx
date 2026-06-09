@@ -221,7 +221,7 @@ export default function ExplorationView({
       </div>
 
       {/* Selected Route Information Card Block */}
-      <div className="bg-surface-container rounded-2xl border border-[#005049]/20 overflow-hidden shadow-lg flex flex-col md:flex-row">
+      <div className="bg-[#161F30] rounded-2xl border border-[#005049]/20 overflow-hidden shadow-lg flex flex-col md:flex-row">
          {/* Cover image of monument */}
         <div className="w-full md:w-72 aspect-[16/10] relative overflow-hidden shrink-0">
           <img 
@@ -232,7 +232,7 @@ export default function ExplorationView({
         </div>
 
         {/* Ficha details */}
-        <div className="p-5 md:p-6 flex-1 flex flex-col justify-between gap-4">
+        <div className="p-5 md:p-6 flex-1 flex flex-col justify-between gap-4 bg-[#161F30]">
           <div>
             <div className="flex justify-between items-start gap-2">
               <span className="text-xs text-secondary font-bold uppercase tracking-wider block">
@@ -240,11 +240,11 @@ export default function ExplorationView({
               </span>
               
               {getCompletedPlacesCount(selectedLoc) === 8 ? (
-                <span className="bg-tertiary/10 border border-tertiary/25 text-tertiary px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
+                <span className="bg-[#00E676]/10 border border-[#00E676]/25 text-[#00E676] px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" /> {t('ruta_certificada')}
                 </span>
               ) : (
-                <span className="bg-secondary/10 border border-secondary/25 text-secondary px-3 py-1 rounded-full text-[11px] font-bold">
+                <span className="bg-[#00E676]/10 border border-[#00E676]/25 text-[#00E676] px-3 py-1 rounded-full text-[11px] font-bold">
                   {t('completados_label').replace('{num}', String(getCompletedPlacesCount(selectedLoc)))}
                 </span>
               )}
@@ -279,7 +279,7 @@ export default function ExplorationView({
               {t('fichas_historicas_desc')}
             </p>
           </div>
-          <span className="bg-[#002732] border border-secondary/25 text-secondary font-mono text-xs py-1 px-3 rounded-full font-bold">
+          <span className="bg-[#161F30] border border-[#00E676]/25 text-[#00E676] font-mono text-xs py-1 px-3 rounded-full font-bold">
             {t('completados_listas_label').replace('{num}', String(getCompletedPlacesCount(selectedLoc)))}
           </span>
         </div>
@@ -296,16 +296,16 @@ export default function ExplorationView({
               <div 
                 key={place.id}
                 id={`ficha-historica-${place.id}`}
-                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between min-h-[300px] relative ${
+                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between min-h-[300px] relative bg-[#161F30] ${
                   isCompleted
-                    ? 'bg-gradient-to-br from-[#012623]/25 to-[#001019] border-tertiary/40 shadow-[0_0_12px_rgba(0,180,140,0.05)]'
-                    : 'bg-surface-container border-outline-variant/15 hover:border-[#005049]/50'
+                    ? 'border-tertiary/40 shadow-[0_0_12px_rgba(0,180,140,0.05)]'
+                    : 'border-outline-variant/15 hover:border-[#005049]/50'
                 }`}
               >
                 {/* Visual verified watermark */}
                 {isCompleted && (
                   <div className="absolute top-0 right-0 overflow-hidden rounded-tr-2xl w-20 h-20 pointer-events-none select-none">
-                    <div className="bg-tertiary text-on-tertiary text-[9px] font-black uppercase tracking-wider text-center py-1 absolute top-4 -right-6 w-24 rotate-45 border-y border-[#c8e7fb]/20 shadow-md">
+                    <div className="bg-[#00E676] text-[#FFFFFF] text-[9px] font-black uppercase tracking-wider text-center py-1 absolute top-4 -right-6 w-24 rotate-45 border-y border-[#c8e7fb]/20 shadow-md">
                       OK
                     </div>
                   </div>
@@ -314,10 +314,10 @@ export default function ExplorationView({
                 {/* Header Segment */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="font-mono text-xs font-black text-secondary bg-secondary/10 w-6 h-6 rounded-full flex items-center justify-center border border-secondary/15 shrink-0">
+                    <span className="font-mono text-xs font-black text-[#00E676] bg-[#00E676]/10 w-6 h-6 rounded-full flex items-center justify-center border border-[#00E676]/20 shrink-0">
                       {idx + 1}
                     </span>
-                    <span className="text-[10px] font-bold bg-[#001e2c] border border-secondary/15 text-secondary px-2.5 py-0.5 rounded font-mono">
+                    <span className="text-[10px] font-bold bg-[#161F30] border border-[#00E676]/25 text-[#00E676] px-2.5 py-0.5 rounded font-mono">
                       +{place.points} XP
                     </span>
                   </div>
@@ -344,8 +344,8 @@ export default function ExplorationView({
                   <div className="bg-[#001c27] border border-[#1A56DB]/10 p-3 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#1A56DB] animate-ping"></span>
-                        <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00E676] animate-ping"></span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#00E676]">
                           {t('gps_activo')}
                         </span>
                       </div>
@@ -363,7 +363,7 @@ export default function ExplorationView({
                       <button
                         onClick={useRealBrowserGps}
                         disabled={browserGpsInUse}
-                        className="flex-1 py-1 px-2 rounded bg-secondary/10 hover:bg-secondary/15 border border-secondary/15 transition-all text-[9.5px] font-bold text-secondary flex items-center justify-center gap-1 cursor-pointer"
+                        className="flex-1 py-1 px-2 rounded transition-all text-[9.5px] font-bold flex items-center justify-center gap-1 cursor-pointer bg-[#00E676] hover:bg-[#00E676]/90 border border-[#00E676]/25 text-[#FFFFFF]"
                       >
                         {browserGpsInUse ? (
                           <div className="w-2.5 h-2.5 border border-secondary border-t-transparent animate-spin rounded-full"></div>
@@ -391,12 +391,12 @@ export default function ExplorationView({
                   {/* Geolocation visual telemetry */}
                   {isCompleted ? (
                     <div className="p-3 bg-tertiary/10 border border-tertiary/25 text-tertiary text-xs rounded-xl flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 fill-background" />
-                      <div className="leading-tight">
-                        <p className="font-bold">{t('lugar_validado_title')}</p>
-                        <p className="text-[10px] opacity-80 mt-0.5">{t('lugar_validado_desc')}</p>
-                      </div>
-                    </div>
+                       <CheckCircle2 className="w-4 h-4 shrink-0 fill-background" />
+                       <div className="leading-tight">
+                         <p className="font-bold text-[#FFFFFF]">{t('lugar_validado_title')}</p>
+                         <p className="text-[10px] text-[#FFFFFF]/80 mt-0.5">{t('lugar_validado_desc')}</p>
+                       </div>
+                     </div>
                   ) : (
                     <div className={`p-3 rounded-xl border text-xs flex flex-col gap-1.5 font-sans ${
                       isWithinCheckIn
@@ -429,7 +429,7 @@ export default function ExplorationView({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                       <button
                         onClick={() => teleportToPlace(place)}
-                        className="py-2 px-3 bg-secondary/10 border border-secondary/35 text-secondary font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-secondary/20 transition-all cursor-pointer active:scale-95"
+                        className="py-2 px-3 bg-[#00E676] border border-[#00E676]/30 text-[#FFFFFF] font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-[#00E676]/90 transition-all cursor-pointer active:scale-95"
                       >
                         <Zap className="w-3.5 h-3.5" />
                         {t('simular_visita_btn')}
@@ -441,8 +441,8 @@ export default function ExplorationView({
                         className={`py-2 px-3 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center ${
                           isWithinCheckIn
                             ? isCheckingThisOne
-                              ? 'bg-secondary/10 border border-secondary text-secondary cursor-wait'
-                              : 'bg-secondary text-on-secondary hover:brightness-105 active:scale-95 shadow-[0_0_8px_rgba(26, 86, 219,0.2)] cursor-pointer'
+                              ? 'bg-[#00E676]/10 border border-[#00E676] text-[#00E676] cursor-wait'
+                              : 'bg-[#00E676] text-[#FFFFFF] hover:bg-[#00E676]/90 active:scale-95 shadow-[0_0_8px_rgba(0,230,118,0.2)] cursor-pointer'
                             : 'bg-background/20 border border-on-surface-variant/15 text-on-surface-variant/40 cursor-not-allowed opacity-50'
                         }`}
                       >

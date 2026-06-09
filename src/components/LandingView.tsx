@@ -624,7 +624,7 @@ export default function LandingView({
           <div className="space-y-6 pt-4 max-w-2xl mx-auto flex flex-col items-center w-full">
             
             {/* Email/Password Auth Module (Required specs) */}
-            <div className="w-full max-w-md mx-auto bg-[#00171f]/80 backdrop-blur-md rounded-2xl p-6 border border-[#1A56DB]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
+            <div className="w-full max-w-md mx-auto bg-[#161F30]/50 backdrop-blur-md rounded-2xl p-6 border border-[#1A56DB]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
               
               {/* Tab selection toggles */}
               <div className="flex border-b border-[#1A56DB]/10 pb-2">
@@ -637,7 +637,7 @@ export default function LandingView({
                   }}
                   className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
                     authMode === 'login'
-                      ? 'text-[#1A56DB] border-b-2 border-[#1A56DB]'
+                      ? 'text-[#FFFFFF] border-b-2 border-[#FFFFFF]'
                       : 'text-on-surface-variant/40 hover:text-on-surface'
                   }`}
                 >
@@ -652,7 +652,7 @@ export default function LandingView({
                   }}
                   className={`flex-1 text-center py-2 text-xs sm:text-sm uppercase tracking-wider font-extrabold transition-all cursor-pointer ${
                     authMode === 'register'
-                      ? 'text-[#1A56DB] border-b-2 border-[#1A56DB]'
+                      ? 'text-[#FFFFFF] border-b-2 border-[#FFFFFF]'
                       : 'text-on-surface-variant/40 hover:text-on-surface'
                   }`}
                 >
@@ -669,7 +669,7 @@ export default function LandingView({
                 
                 {authMode === 'register' && (
                   <div className="space-y-1">
-                    <label htmlFor="auth-name-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
+                    <label htmlFor="auth-name-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#FFFFFF]">
                       Nombre Completo
                     </label>
                     <div className="relative">
@@ -690,7 +690,7 @@ export default function LandingView({
                 )}
 
                 <div className="space-y-1">
-                  <label htmlFor="auth-email-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
+                  <label htmlFor="auth-email-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#FFFFFF]">
                     {authMode === 'register' ? 'Correo Electrónico Principal' : 'Correo Electrónico'}
                   </label>
                   <div className="relative">
@@ -710,7 +710,7 @@ export default function LandingView({
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="auth-password-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#1A56DB]/80">
+                  <label htmlFor="auth-password-input" className="block text-[10px] font-bold uppercase tracking-wider text-[#FFFFFF]">
                     Contraseña
                   </label>
                   <div className="relative">
@@ -854,7 +854,7 @@ export default function LandingView({
             <div className="flex flex-col items-center justify-center gap-4 w-full pt-1">
               <button
                 onClick={onEnter}
-                className="w-full max-w-md px-8 py-3 bg-[#1A56DB] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center shadow-[0_0_15px_rgba(26, 86, 219,0.12)]"
+                className="w-full max-w-md px-8 py-3 bg-[#1A56DB] hover:bg-gradient-to-r hover:from-[#1A56DB] hover:to-[#00E676] text-[#003732] hover:text-[#FFFFFF] font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all outline-none cursor-pointer h-[44px] flex items-center justify-center shadow-[0_0_15px_rgba(26, 86, 219,0.12)]"
               >
                 {t('iniciar_como_invitado') || 'Explorar como Invitado'}
               </button>
@@ -886,7 +886,7 @@ export default function LandingView({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           
           {/* CARD 1: Adquiere tu Mapa Físico (col-span-12 md:col-span-7) */}
-          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
+          <div className="col-span-1 md:col-span-7 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
             <div className="space-y-4 max-w-sm text-left">
               <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
                 <Map className="w-5 h-5 text-[#1A56DB]" />
@@ -910,7 +910,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 2: Visita los Sitios (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
                 <Compass className="w-5 h-5 text-[#1A56DB]" />
@@ -928,7 +928,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 3: GPS Check-in (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
                 <MapPin className="w-5 h-5 text-[#1A56DB]" />
@@ -951,7 +951,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 4: Gana cNFTs Exclusivos (col-span-12 md:col-span-7) */}
-          <div className="col-span-1 md:col-span-7 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
+          <div className="col-span-1 md:col-span-7 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between overflow-hidden relative group hover:border-[#1A56DB]/40 transition-colors min-h-[240px]">
             
             <div className="space-y-4 max-w-sm text-left flex-1 flex flex-col justify-between relative z-10">
               <div>
@@ -993,7 +993,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 5: Insignias Digitales (Badges) (col-span-12) */}
-          <div className="col-span-1 md:col-span-12 bg-[#001721] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl hover:border-[#1A56DB]/40 transition-colors text-left space-y-6">
+          <div className="col-span-1 md:col-span-12 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl hover:border-[#1A56DB]/40 transition-colors text-left space-y-6">
             <div className="space-y-2">
               <h3 className="font-headline text-lg sm:text-xl font-extrabold text-on-surface">
                 Insignias Digitales (Badges)
@@ -1239,7 +1239,7 @@ export default function LandingView({
         </h2>
         <button
           onClick={onShowProyecto}
-          className="px-10 py-5 bg-[#1A56DB] hover:bg-[#c7ffd3] text-[#003732] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(26, 86, 219,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
+          className="px-10 py-5 bg-[#1A56DB] hover:bg-gradient-to-r hover:from-[#1A56DB] hover:to-[#00E676] text-[#003732] hover:text-[#FFFFFF] font-black rounded-xl text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(26, 86, 219,0.25)] hover:scale-[1.03] active:scale-[0.98] transition-all outline-none cursor-pointer"
         >
           {t('saber_mas')}
         </button>
@@ -1280,7 +1280,7 @@ export default function LandingView({
           {/* Comunidad Column (Center) */}
           <div className="col-span-1 space-y-3.5 flex flex-col items-start text-left">
             {/* Relocated Admin Panel Card */}
-            <div className="bg-[#001019] border border-[#1A56DB]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
+            <div className="bg-[#161F30] border border-[#1A56DB]/20 rounded-2xl p-4 space-y-4 w-full max-w-sm mt-4 text-center mx-auto md:mx-0">
               <div className="flex items-center justify-center gap-2 border-b border-[#1A56DB]/15 pb-2">
                 <Lock className="w-4 h-4 text-[#1A56DB]" />
                 <span className="font-headline text-[11px] font-bold text-[#1A56DB] uppercase tracking-widest block">

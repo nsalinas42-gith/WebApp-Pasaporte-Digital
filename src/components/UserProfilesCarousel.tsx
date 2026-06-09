@@ -218,14 +218,14 @@ export default function UserProfilesCarousel() {
           <div className="flex items-center gap-2 self-start md:self-end">
             <button
               onClick={handlePrev}
-              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
+              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#161F30] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
               aria-label="Anterior explorador"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
-              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#001721] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
+              className="p-2.5 rounded-xl border border-[#005049]/50 bg-[#161F30] text-[#1A56DB] hover:bg-[#1A56DB]/10 hover:border-[#1A56DB] transition-all duration-300 pointer-events-auto cursor-pointer outline-none"
               aria-label="Siguiente explorador"
             >
               <ChevronRight className="w-4 h-4" />
@@ -286,7 +286,7 @@ export default function UserProfilesCarousel() {
                   return (
                     <div
                       key={`${profile.uid}-${i}`}
-                      className={`min-h-[220px] bg-[#001721] border border-[#005049]/30 hover:border-[#1A56DB]/40 hover:shadow-[0_0_20px_rgba(26, 86, 219,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
+                      className={`min-h-[220px] bg-[#161F30] border border-[#005049]/30 hover:border-[#1A56DB]/40 hover:shadow-[0_0_20px_rgba(26, 86, 219,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
                         isVisibleOnMobile 
                           ? 'flex' 
                           : isVisibleOnTablet 

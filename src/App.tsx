@@ -911,8 +911,6 @@ export default function App() {
                <Trophy className="w-3 h-3 text-secondary fill-secondary/10" />
                <span>{user.xpToNextLevel - user.xp} XP</span>
             </div>
-
-            <LanguageSelector />
             
             {/* Minimal Avatar widget reflecting Level subscript badge with absolute Submenu Dropdown */}
             <div className="relative shrink-0 select-none">
@@ -937,7 +935,7 @@ export default function App() {
                     </span>
                   )}
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-tertiary text-on-tertiary text-[8px] sm:text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
+                <div className="absolute -bottom-1 -right-1 bg-[#FFFFFF] text-[#161F30] text-[8px] sm:text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border border-background shadow-md font-mono">
                   {user.level}
                 </div>
               </div>
