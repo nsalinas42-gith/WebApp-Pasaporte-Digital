@@ -257,7 +257,7 @@ export default function UserWayAccessibility() {
         title={currentLabels.btnTitle}
         aria-label={currentLabels.btnTitle}
         aria-expanded={isOpen}
-        className="flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] select-none shrink-0 group"
+        className="flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-white hover:text-[#1A56DB] transition-all outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] select-none shrink-0 group"
       >
         {/* Geometric Vitruvian/Universal Accessibility Man representation inspired by the exact structure of the attachment */}
         <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
@@ -272,7 +272,7 @@ export default function UserWayAccessibility() {
               cx="50" 
               cy="50" 
               r="46" 
-              className="stroke-secondary group-hover:stroke-white transition-colors duration-300" 
+              className="stroke-white group-hover:stroke-[#1A56DB] transition-colors duration-300" 
               strokeWidth="6" 
             />
             {/* Inner Solid Circular Backdrop */}
@@ -280,7 +280,7 @@ export default function UserWayAccessibility() {
               cx="50" 
               cy="50" 
               r="34" 
-              className="fill-secondary group-hover:fill-white transition-colors duration-300" 
+              className="fill-white group-hover:fill-[#1A56DB] transition-colors duration-300" 
             />
             {/* Universal Accessibility Figure Head */}
             <circle 

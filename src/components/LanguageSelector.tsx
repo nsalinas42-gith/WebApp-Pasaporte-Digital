@@ -39,11 +39,11 @@ export default function LanguageSelector() {
         type="button"
         id="language-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-secondary hover:text-white transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] h-10 select-none"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#001c2c]/85 hover:bg-[#002e48] border border-secondary/35 text-white hover:text-[#1A56DB] transition-all text-xs font-black uppercase tracking-wider outline-none cursor-pointer shadow-[0_0_15px_rgba(26, 86, 219,0.08)] h-10 select-none group"
       >
-        <Globe className="w-4 h-4 text-secondary group-hover:rotate-12 transition-transform duration-300 shrink-0" />
+        <Globe className="w-4 h-4 text-white group-hover:text-[#1A56DB] group-hover:rotate-12 transition-transform duration-300 shrink-0" />
         <span className="font-bold tracking-widest">{currentLabel}</span>
-        <ChevronDown className={`w-3 h-3 text-secondary transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3 h-3 text-white group-hover:text-[#1A56DB] transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Options Dropdown Menu */}

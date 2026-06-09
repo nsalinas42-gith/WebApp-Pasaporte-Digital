@@ -505,7 +505,7 @@ export default function LandingView({
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={onShowProyecto}
-            className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#001c2c]/80 hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 text-secondary hover:text-white rounded-full transition-all outline-none cursor-pointer"
+            className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#001c2c]/80 hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 text-white hover:text-[#1A56DB] rounded-full transition-all outline-none cursor-pointer"
           >
             Sobre el Proyecto
           </button>
@@ -541,7 +541,7 @@ export default function LandingView({
                   setIsMobileMenuOpen(false);
                   if (onShowProyecto) onShowProyecto();
                 }}
-                className="w-full text-center py-2 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/30 text-secondary hover:text-white transition-all rounded-xl text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
+                className="w-full text-center py-2 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/30 text-white hover:text-[#1A56DB] transition-all rounded-xl text-xs font-bold uppercase tracking-wider outline-none cursor-pointer"
               >
                 Sobre el Proyecto
               </button>
