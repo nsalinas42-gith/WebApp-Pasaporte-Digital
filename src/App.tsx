@@ -1071,95 +1071,79 @@ export default function App() {
       </main>
 
       {/* Mobile-Only Bottom App Navigation Dock */}
-      <nav id="mobile-navigation-dock" className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg bg-background/90 backdrop-blur-xl md:hidden flex justify-around items-center h-16 z-50 rounded-2xl border border-[#005049]/35 shadow-[0_12px_40px_rgba(0,16,25,0.85)] px-3">
+      <nav id="mobile-navigation-dock" className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] max-w-lg bg-background/95 backdrop-blur-xl md:hidden flex justify-around items-center h-[72px] pb-1.5 pt-1 z-50 rounded-2xl border border-[#005049]/35 shadow-[0_12px_40px_rgba(0,16,25,0.85)] px-1">
         
         {/* Mobile Tab link Dashboard */}
         <button 
           onClick={() => setActiveTab('dashboard')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'dashboard' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'dashboard' ? 'text-secondary bg-secondary/10 font-bold' : 'text-on-surface-variant hover:text-secondary'
           }`}
         >
-          <LayoutDashboard className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            {t('dashboard')}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
-          </div>
+          <LayoutDashboard className="w-5 h-5 shrink-0" />
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Inicio</span>
         </button>
 
         {/* Mobile Tab link Exploration */}
         <button 
           onClick={() => setActiveTab('exploration')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'exploration' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`relative flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'exploration' ? 'text-secondary bg-secondary/10 font-bold' : 'text-on-surface-variant hover:text-secondary'
           }`}
         >
-          <Compass className="w-5.5 h-5.5 animate-spin" style={{ animationDuration: activeTab === 'exploration' ? '12s' : '0s' }} />
-          {unlockedCount < totalCount && (
-            <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-background">
-              {totalCount - unlockedCount}
-            </span>
-          )}
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            {t('exploration')}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
+          <div className="relative">
+            <Compass className="w-5 h-5 shrink-0 animate-spin" style={{ animationDuration: activeTab === 'exploration' ? '12s' : '0s' }} />
+            {unlockedCount < totalCount && (
+              <span className="absolute -top-1.5 -right-1.5 bg-secondary text-on-secondary text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-background">
+                {totalCount - unlockedCount}
+              </span>
+            )}
           </div>
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Rutas</span>
         </button>
 
         {/* Mobile Tab link Stamps */}
         <button 
           onClick={() => setActiveTab('stamps')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'stamps' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'stamps' ? 'text-secondary bg-secondary/10 font-bold' : 'text-on-surface-variant hover:text-secondary'
           }`}
         >
-          <Layers className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            {t('my_stamps')}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
-          </div>
+          <Layers className="w-5 h-5 shrink-0" />
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Logros</span>
         </button>
 
         {/* Mobile Tab link Postales Digitales */}
         <button 
           onClick={() => setActiveTab('postales_digitales')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'postales_digitales' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'postales_digitales' ? 'text-secondary bg-[#00E676]/10 font-bold' : 'text-on-surface-variant hover:text-[#00E676]'
           }`}
         >
-          <Image className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            Postales
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
-          </div>
+          <Image className="w-5 h-5 shrink-0" />
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Postales</span>
         </button>
 
         {/* Mobile Tab link Rank */}
         <button 
           onClick={() => setActiveTab('leaderboard')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'leaderboard' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'leaderboard' ? 'text-secondary bg-secondary/10 font-bold' : 'text-on-surface-variant hover:text-secondary'
           }`}
         >
-          <Trophy className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            {t('leaderboard')}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
-          </div>
+          <Trophy className="w-5 h-5 shrink-0" />
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Ranking</span>
         </button>
 
         {/* Mobile Tab link Profile (Settings) */}
         <button 
           onClick={() => setActiveTab('settings')}
-          className={`relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all outline-none ${
-            activeTab === 'settings' ? 'text-secondary bg-secondary/15 font-bold' : 'text-on-surface-variant hover:text-secondary hover:bg-secondary/5'
+          className={`flex flex-col items-center justify-center w-[15%] h-12 rounded-xl transition-all outline-none ${
+            activeTab === 'settings' ? 'text-secondary bg-secondary/10 font-bold' : 'text-on-surface-variant hover:text-secondary'
           }`}
         >
-          <Settings className="w-5.5 h-5.5" />
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 group-focus:scale-100 transition-all bg-[#002e3b] text-[#1A56DB] text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5 rounded-lg border border-secondary/30 shadow-[0_4px_16px_rgba(26, 86, 219,0.15)] pointer-events-none whitespace-nowrap z-[60] duration-200">
-            {t('settings')}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#002e3b]"></div>
-          </div>
+          <Settings className="w-5 h-5 shrink-0" />
+          <span className="text-[9px] font-bold mt-1 tracking-tight leading-none">Ajustes</span>
         </button>
       </nav>
 
