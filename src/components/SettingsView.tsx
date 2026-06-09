@@ -18,14 +18,20 @@ import {
   Upload,
   Lock,
   Unlock,
-  Key
+  Key,
+  Copy,
+  Compass,
+  ExternalLink,
+  AlertCircle,
+  Layers,
+  Activity
 } from 'lucide-react';
 import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletCard } from './WalletCard';
-import { ConnectWalletButton } from './ConnectWalletButton';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { LIST_AVATARS } from '../utils/avatars';
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 const PRESET_AVATARS = LIST_AVATARS;
 
@@ -51,7 +57,8 @@ export default function SettingsView({
   locations
 }: SettingsViewProps) {
   const { t, translateUser } = useLanguage();
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, disconnect } = useWallet();
+  const { connection } = useConnection();
 
   // Local form states
   const [name, setName] = useState(user.name);
@@ -60,6 +67,87 @@ export default function SettingsView({
   const [wallet, setWallet] = useState(user.linkedWallet);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
   const [bio, setBio] = useState(user.bio || '');
+
+  // Web3 Solana integration states
+  const [isIframe, setIsIframe] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [realBalance, setRealBalance] = useState<number | null>(null);
+  const [fetchingBalance, setFetchingBalance] = useState(false);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [copiedWalletFull, setCopiedWalletFull] = useState(false);
+
+  useEffect(() => {
+    setIsIframe(window.self !== window.top);
+    setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  }, []);
+
+  const fetchRealBalance = async () => {
+    if (!publicKey || !connection) {
+      setRealBalance(null);
+      return;
+    }
+    setFetchingBalance(true);
+    setBalanceError(null);
+    try {
+      const lamports = await connection.getBalance(publicKey, 'confirmed');
+      setRealBalance(lamports / 1000000000); // 10^9 lamports per SOL
+    } catch (err: any) {
+      console.warn("Error fetching wallet balance via main RPC. Trying fallback...", err);
+      try {
+        const { Connection } = await import('@solana/web3.js');
+        const fallbackConn = new Connection('https://api.devnet.solana.com', 'confirmed');
+        const lamports = await fallbackConn.getBalance(publicKey);
+        setRealBalance(lamports / 1000000000);
+      } catch (fallbackErr) {
+        console.error("All Solana balance fetch attempts failed", fallbackErr);
+        setBalanceError("No se pudo obtener el balance");
+        setRealBalance(0);
+      }
+    } finally {
+      setFetchingBalance(false);
+    }
+  };
+
+  useEffect(() => {
+    if (connected && publicKey) {
+      fetchRealBalance();
+    } else {
+      setRealBalance(null);
+    }
+  }, [connected, publicKey, connection]);
+
+  useEffect(() => {
+    if (connected && publicKey && onUpdateUser && user) {
+      const currentAddress = publicKey.toBase58();
+      if (user.linkedWallet !== currentAddress) {
+        console.log("Auto-synchronizing connected wallet inside SettingsView:", currentAddress);
+        onUpdateUser({
+          ...user,
+          linkedWallet: currentAddress
+        });
+      }
+    }
+  }, [connected, publicKey]);
+
+  const handleCopyWalletFull = async () => {
+    if (!publicKey) return;
+    try {
+      await navigator.clipboard.writeText(publicKey.toBase58());
+      setCopiedWalletFull(true);
+      setTimeout(() => setCopiedWalletFull(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy wallet address:", err);
+    }
+  };
+
+  const handleCopyDappLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.origin);
+      alert("¡Enlace de la dApp copiado al portapapeles! Puedes pegarlo en el explorador de tu billetera (Phantom/Solflare).");
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+    }
+  };
 
   // Synchronically auto-update the destination wallet input field if a wallet gets connected
   useEffect(() => {
@@ -416,8 +504,185 @@ export default function SettingsView({
         {/* Right Panel: Wallet Card & Admin Actions (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* SECURE BLOCKCHAIN WALLET CARD */}
-          <WalletCard user={user} onUpdateUser={onUpdateUser} />
+          {/* NATIVE SOLANA BLOCKCHAIN CONNECTION CARD */}
+          <div className="bg-gradient-to-tr from-[#001c2a] to-[#002f2d] rounded-2xl border border-secondary/35 p-6 space-y-5 shadow-lg text-left relative overflow-hidden group">
+            {/* Background radial glow */}
+            <div className="absolute -top-10 -right-10 w-28 h-28 bg-[#1A56DB]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#1A56DB]/10 transition-colors duration-500"></div>
+
+            <div className="flex flex-col gap-1.5 border-b border-[#005049]/25 pb-3">
+              <div className="flex items-center justify-between gap-2.5">
+                <h3 className="font-headline text-xs font-black text-secondary uppercase tracking-widest flex items-center gap-2">
+                  <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
+                    <div className="absolute inset-0 rounded-full border border-secondary/30"></div>
+                    <Activity className="w-3 h-3 text-secondary" />
+                  </div>
+                  Integración Solana
+                </h3>
+                
+                <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-mono font-black uppercase tracking-widest transition-all ${
+                  connected 
+                    ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' 
+                    : 'bg-rose-500/10 border-rose-500/40 text-rose-400'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}></span>
+                  {connected ? 'Conectado' : 'Desconectado'}
+                </span>
+              </div>
+            </div>
+
+            {connected && publicKey ? (
+              <div className="space-y-4 animate-in fade-in duration-300">
+                {/* Real Connection Wallet Information */}
+                <div className="bg-[#000f16]/60 border border-secondary/15 rounded-xl p-3 flex items-center justify-between gap-3 font-mono border-t">
+                  <div className="min-w-0 flex-1 text-left">
+                    <span className="text-[8px] text-on-surface-variant/40 uppercase font-black tracking-wider block mb-0.5">
+                      DIRECCIÓN PÚBLICA
+                    </span>
+                    <span className="text-xs text-[#c8e7fb] font-bold truncate block select-all font-mono" title={publicKey.toBase58()}>
+                      {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-6)}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyWalletFull}
+                    className="p-1.5 text-secondary hover:text-white rounded-lg hover:bg-secondary/10 transition-colors shrink-0 outline-none cursor-pointer border-0"
+                    title="Copiar llave pública"
+                  >
+                    {copiedWalletFull ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                {/* Real Balance Presentation */}
+                <div className="bg-[#000f16]/35 border border-[#005049]/10 rounded-xl p-3.5 flex items-center justify-between">
+                  <div className="text-left">
+                    <span className="text-[8px] text-on-surface-variant/40 uppercase font-black tracking-wider block mb-0.5">
+                      BALANCE DE LA CUENTA
+                    </span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base font-black font-mono text-secondary">
+                        {fetchingBalance ? (
+                          <span className="text-slate-400 text-xs">Cargando...</span>
+                        ) : realBalance !== null ? (
+                          realBalance.toFixed(5)
+                        ) : (
+                          '0.00000'
+                        )}
+                      </span>
+                      <span className="text-[10px] font-bold text-on-surface-variant/70">SOL</span>
+                    </div>
+                    {balanceError && (
+                      <span className="text-[9px] text-rose-400 mt-1 block font-mono">{balanceError}</span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={fetchRealBalance}
+                    disabled={fetchingBalance}
+                    className="p-1.5 text-secondary hover:text-white rounded-lg hover:bg-secondary/10 transition-all shrink-0 outline-none disabled:opacity-50 cursor-pointer border-0"
+                    title="Actualizar balance"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${fetchingBalance ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
+
+                <div className="bg-[#000f16]/25 border border-[#005049]/10 rounded-xl p-2.5 flex items-center justify-between text-[11px]">
+                  <span className="text-on-surface-variant/60 font-medium text-left">Estándar compatible:</span>
+                  <span className="font-extrabold font-mono text-[#c8e7fb] flex items-center gap-1 bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10">
+                    <Layers className="w-3 h-3 text-secondary" /> SPL cNFT
+                  </span>
+                </div>
+
+                {/* Manual override button to link current wallet to the profile */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWallet(publicKey.toBase58());
+                    alert("Se ha copiado tu dirección de billetera conectada en el formulario. Recuerda hacer clic en 'Guardar Cambios' para actualizar tu perfil permanentemente.");
+                  }}
+                  className="w-full py-2.5 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-secondary/30 text-secondary hover:text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer text-center"
+                >
+                  Vincular dirección a Cuenta
+                </button>
+
+                {/* Disconnect Button */}
+                <button
+                  type="button"
+                  onClick={() => disconnect()}
+                  className="w-full py-2.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 font-bold text-xs uppercase tracking-wider rounded-xl transition-all font-mono cursor-pointer text-center"
+                >
+                  Desconectar Cuenta
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-in fade-in duration-300">
+                <p className="text-xs text-on-surface-variant/80 leading-relaxed font-sans text-left">
+                  Conecta tu billetera descentralizada oficial de Solana (como Phantom o Solflare) para autenticar tus visitas, sincronizar tu progreso y acuñar tus postales cNFT directamente en la blockchain.
+                </p>
+
+                {/* Official Solana Connection Trigger */}
+                <div className="flex justify-center py-2 select-none font-sans">
+                  <WalletMultiButton 
+                    className="!bg-secondary hover:!bg-[#c7ffd3] !text-[#003732] !font-sans !font-black !text-[10px] !uppercase !tracking-wider !rounded-xl !py-2.5 !px-5 !transition-all !duration-300 hover:!scale-[1.02] active:!scale-[0.98] !shadow-[0_0_12px_rgba(26, 86, 219,0.15)] !h-auto !min-h-0"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* IFRAME VISOR ADVICE */}
+            {isIframe && (
+              <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3.5 text-[11px] leading-relaxed space-y-2 text-left my-2 animate-in fade-in">
+                <span className="font-black uppercase tracking-wider text-amber-400 block">⚠️ Restricción de Visor</span>
+                <p className="opacity-90">
+                  Las billeteras Web3 bloquean las firmas e inicios de sesión si la dApp corre dentro de pantallas integradas (Marcos/iFrames) para tu seguridad. Abre esta dApp en una pestaña nueva para poder interactuar libremente.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.open(window.location.origin + window.location.pathname, '_blank')}
+                  className="w-full bg-amber-500 text-black py-2 px-3 rounded-xl font-black text-[10.5px] uppercase tracking-wide hover:bg-amber-400 transition cursor-pointer text-center block shadow"
+                >
+                  Abrir en Pestaña Nueva
+                </button>
+              </div>
+            )}
+
+            {/* MOBILE COMPATIBILITY SECTION */}
+            {isMobile && (
+              <div className="bg-[#000d14]/85 border border-cyan-500/25 rounded-xl p-3.5 space-y-3 text-left my-2">
+                <span className="text-[9px] font-black tracking-widest uppercase font-mono text-cyan-400 block flex items-center gap-1.5">
+                  📲 Guía de Navegador Móvil
+                </span>
+                <p className="text-[11px] text-cyan-300/80 leading-relaxed font-sans">
+                  Los navegadores móviles comunes (Safari/Chrome) no admiten la conexión persistente por razones de seguridad de tu billetera. <strong>Debes navegar dentro de la sección "Browser" nativa de Phantom o Solflare</strong>:
+                </p>
+                
+                <div className="grid grid-cols-1 gap-2 pt-1 font-mono">
+                  <a
+                    href={`phantom://v1/browse/${encodeURIComponent(window.location.origin + window.location.pathname)}`}
+                    className="bg-[#2a0e5c] border border-[#5d1df3]/40 text-[#cbbfff] py-2 px-3 rounded-lg font-bold text-[9px] text-center uppercase tracking-wider block hover:bg-[#3e0d8a] active:scale-95 transition"
+                  >
+                    Usar de Phantom App
+                  </a>
+                  <a
+                    href={`solflare://ul/v1/browse/${encodeURIComponent(window.location.origin + window.location.pathname)}`}
+                    className="bg-[#381a0c] border border-[#f05c10]/40 text-[#ffd5c4] py-2 px-3 rounded-lg font-bold text-[9px] text-center uppercase tracking-wider block hover:bg-[#48200d] active:scale-95 transition"
+                  >
+                    Usar de Solflare App
+                  </a>
+                </div>
+
+                <div className="text-center pt-1 border-t border-cyan-500/10">
+                  <button
+                    type="button"
+                    onClick={handleCopyDappLink}
+                    className="w-full py-2 bg-cyan-950/30 border border-cyan-500/20 hover:bg-cyan-950/50 text-cyan-400 text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition uppercase tracking-wide cursor-pointer border-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copiar Enlace dApp
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* PANEL DE ADMINISTRADOR CON CONTRASEÑA */}
           <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 space-y-4 shadow-lg text-left">
