@@ -328,6 +328,63 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Sync session automatically inside in-wallet dApp browsers on mobile via secure link sync parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const syncUid = urlParams.get('sync_uid');
+    if (syncUid) {
+      // Remove sync_uid from the URL without triggering a reload so it remains clean
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState(null, '', cleanUrl);
+
+      console.log("[MÓVIL] Intentando restaurar sesión sincronizada para:", syncUid);
+      
+      const performMobileSessionSync = async () => {
+        try {
+          if (syncUid.includes('@')) {
+            const { collection, query, where, getDocs } = await import('firebase/firestore');
+            const { db } = await import('./utils/firebase');
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('email', '==', syncUid.trim()));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+              const userDoc = snap.docs[0];
+              const uid = userDoc.id;
+              const cloudData = await getUserProfileAndProgress(uid);
+              if (cloudData) {
+                setUser(cloudData.profile);
+                setStats(cloudData.stats);
+                setLocations(cloudData.locations);
+                setFirebaseUid(uid);
+                localStorage.setItem('passport_firebase_uid', uid);
+                localStorage.setItem('passport_user', JSON.stringify(cloudData.profile));
+                setShowLanding(false);
+                localStorage.setItem('passport_landing_entered', 'true');
+                console.log("[MÓVIL] Sincronización exitosa por Correo:");
+              }
+            }
+          } else {
+            const cloudData = await getUserProfileAndProgress(syncUid);
+            if (cloudData) {
+              setUser(cloudData.profile);
+              setStats(cloudData.stats);
+              setLocations(cloudData.locations);
+              setFirebaseUid(syncUid);
+              localStorage.setItem('passport_firebase_uid', syncUid);
+              localStorage.setItem('passport_user', JSON.stringify(cloudData.profile));
+              setShowLanding(false);
+              localStorage.setItem('passport_landing_entered', 'true');
+              console.log("[MÓVIL] Sincronización exitosa por UID:");
+            }
+          }
+        } catch (err) {
+          console.error("[MÓVIL] Error en la sincronización de sesión móvil:", err);
+        }
+      };
+      performMobileSessionSync();
+    }
+  }, []);
+
   // Sync state changes to cloud for verified users (Debounced)
   const userEmail = user.email;
   const userName = user.name;

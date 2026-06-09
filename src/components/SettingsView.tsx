@@ -417,7 +417,7 @@ export default function SettingsView({
         <div className="lg:col-span-4 space-y-6">
           
           {/* SECURE BLOCKCHAIN WALLET CARD */}
-          <WalletCard />
+          <WalletCard user={user} onUpdateUser={onUpdateUser} />
 
           {/* PANEL DE ADMINISTRADOR CON CONTRASEÑA */}
           <div className="bg-surface-container rounded-2xl border border-secondary/20 p-6 space-y-4 shadow-lg text-left">

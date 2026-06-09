@@ -4,15 +4,30 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Copy, Check, RefreshCw, Layers, Activity, HelpCircle } from 'lucide-react';
 import { subscribeSolanaGlobalSettings } from '../utils/firebase';
+import { UserProfile } from '../types';
 
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-export const WalletCard: FC = () => {
+interface WalletCardProps {
+  user?: UserProfile;
+  onUpdateUser?: (updatedUser: UserProfile) => void;
+}
+
+export const WalletCard: FC<WalletCardProps> = ({ user, onUpdateUser }) => {
   const { connection } = useConnection();
   const { publicKey, disconnect, connected } = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+
+  // Detect sandboxed iframe and mobile browser environments
+  const [isIframe, setIsIframe] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsIframe(window.self !== window.top);
+    setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  }, []);
 
   // Use local persistence for user setup switches to keep consistency
   const [isActive, setIsActive] = useState<boolean>(() => {
@@ -31,9 +46,9 @@ export const WalletCard: FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Simulated fallback configurations when real Solflare is not in current context
-  const simulatedAddress = 'SolP1NTAxMaPAs3G14p87Qv8bFMyWkFqJn5UAs67Xm9';
-  const shortenedSimulated = `${simulatedAddress.slice(0, 6)}...${simulatedAddress.slice(-4)}`;
+  // Use user's profile linked wallet address as fallback if present, otherwise standard simulated
+  const savedAddress = user?.linkedWallet || 'SolP1NTAxMaPAs3G14p87Qv8bFMyWkFqJn5UAs67Xm9';
+  const shortenedSimulated = `${savedAddress.slice(0, 6)}...${savedAddress.slice(-4)}`;
 
   // Automatically sync with real adapter if connected
   useEffect(() => {
@@ -41,6 +56,20 @@ export const WalletCard: FC = () => {
       setIsActive(true);
     }
   }, [connected]);
+
+  // Synchronize connected wallet seamlessly into the user profile in Firestore/local state automatically
+  useEffect(() => {
+    if (connected && publicKey && onUpdateUser && user) {
+      const currentAddress = publicKey.toBase58();
+      if (user.linkedWallet !== currentAddress) {
+        console.log("Auto-synchronizing connected wallet to user profile:", currentAddress);
+        onUpdateUser({
+          ...user,
+          linkedWallet: currentAddress
+        });
+      }
+    }
+  }, [connected, publicKey, onUpdateUser, user]);
 
   // Fetch / simulate balance with automatic RPC fallback to guard against rate-limiting (429/403)
   const fetchBalance = async () => {
@@ -119,7 +148,7 @@ export const WalletCard: FC = () => {
   };
 
   const handleCopy = async () => {
-    const addressToCopy = connected && publicKey ? publicKey.toBase58() : simulatedAddress;
+    const addressToCopy = connected && publicKey ? publicKey.toBase58() : savedAddress;
     try {
       await navigator.clipboard.writeText(addressToCopy);
       setIsCopied(true);
@@ -129,7 +158,7 @@ export const WalletCard: FC = () => {
     }
   };
 
-  const activeAddress = connected && publicKey ? publicKey.toBase58() : simulatedAddress;
+  const activeAddress = connected && publicKey ? publicKey.toBase58() : savedAddress;
   const shortenedActive = connected && publicKey 
     ? `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}` 
     : shortenedSimulated;
@@ -276,6 +305,49 @@ export const WalletCard: FC = () => {
               <Layers className="w-3 h-3 text-secondary" /> SPL cNFT
             </span>
           </div>
+
+          {/* Iframe sandbox notice */}
+          {isIframe && (
+            <div className="bg-amber-500/10 border border-amber-500/25 text-amber-300 rounded-xl p-2.5 text-[10px] leading-relaxed space-y-1.5 text-left my-2 animate-pulse">
+              <span className="font-black uppercase tracking-wider text-amber-400 block">⚠️ Restricción de Visor</span>
+              <p className="opacity-90">
+                Las billeteras descentralizadas no permiten conexiones dentro de marcos integrados por tu seguridad. Para conectar tu billetera, abre la dApp en pestaña nueva.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.open(window.location.origin + window.location.pathname + window.location.search, '_blank')}
+                className="w-full bg-amber-500 text-black py-1 px-2 rounded-lg font-black text-[9px] uppercase tracking-wide hover:bg-amber-400 transition cursor-pointer text-center block"
+              >
+                Abrir en Pestaña Nueva
+              </button>
+            </div>
+          )}
+
+          {/* Mobile connection helpers (Deep links to open Phantom / Solflare in-app dApp browser with logged-in user context) */}
+          {isMobile && !navigator.userAgent.includes('Phantom') && !navigator.userAgent.includes('Solflare') && (
+            <div className="bg-[#000d14]/60 border border-cyan-500/25 rounded-xl p-3 space-y-2 text-left my-2">
+              <span className="text-[9px] font-black tracking-widest uppercase font-mono text-cyan-400 block">
+                📲 ACCESO DIRECTO EN CELULAR
+              </span>
+              <p className="text-[10px] text-cyan-300/80 leading-relaxed font-sans">
+                Para evitar salirte de la dApp, ábrela e inicia sesión directamente en el navegador seguro de tu billetera móvil:
+              </p>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <a
+                  href={`phantom://v1/browse/${encodeURIComponent(window.location.origin + window.location.pathname + '?sync_uid=' + (user?.email ? encodeURIComponent(user.email) : ''))}`}
+                  className="bg-[#2a0e5c] border border-[#5d1df3]/40 text-[#cbbfff] py-2 px-1 rounded-lg font-bold font-mono text-[9px] text-center uppercase tracking-wider block hover:bg-[#3e0d8a] active:scale-95 transition"
+                >
+                  Usar Phantom
+                </a>
+                <a
+                  href={`solflare://ul/v1/browse/${encodeURIComponent(window.location.origin + window.location.pathname + '?sync_uid=' + (user?.email ? encodeURIComponent(user.email) : ''))}`}
+                  className="bg-[#381a0c] border border-[#f05c10]/40 text-[#ffd5c4] py-2 px-1 rounded-lg font-bold font-mono text-[9px] text-center uppercase tracking-wider block hover:bg-[#48200d] active:scale-95 transition"
+                >
+                  Usar Solflare
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Connect real adapter buttons if active but not real connected */}
           {!connected && (
