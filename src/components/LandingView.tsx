@@ -62,7 +62,7 @@ import UserWayAccessibility from './UserWayAccessibility';
 
 interface LandingViewProps {
   onEnter: () => void;
-  onAuthSuccess?: (email: string, name: string) => void;
+  onAuthSuccess?: (email: string, name: string) => Promise<void> | void;
   user?: UserProfile;
   locations?: Location[];
   lockedRouteIds?: string[];
@@ -196,7 +196,7 @@ export default function LandingView({
       setAuthSuccessMsg("¡Sesión iniciada correctamente! Entrando...");
       
       if (onAuthSuccess) {
-        onAuthSuccess(fbUser.email || emailForm, fbUser.displayName || emailForm.split('@')[0]);
+        await onAuthSuccess(fbUser.email || emailForm, fbUser.displayName || emailForm.split('@')[0]);
       } else {
         onEnter();
       }
@@ -260,7 +260,7 @@ export default function LandingView({
       setAuthSuccessMsg("¡Cuenta creada y sincronizada exitosamente con Firebase!");
       
       if (onAuthSuccess) {
-        onAuthSuccess(emailForm, nameForm);
+        await onAuthSuccess(emailForm, nameForm);
       } else {
         onEnter();
       }
@@ -376,7 +376,7 @@ export default function LandingView({
           }
 
           if (onAuthSuccess) {
-            onAuthSuccess(emailKey, 'Administrador');
+            await onAuthSuccess(emailKey, 'Administrador');
           }
           setAdminSuccessMsg('Sesión de administrador iniciada con éxito en Firestore.');
           setTimeout(() => {
@@ -416,7 +416,7 @@ export default function LandingView({
         }
         
         if (onAuthSuccess) {
-          onAuthSuccess('nsalinas42@gmail.com', 'Nelson Salinas');
+          await onAuthSuccess('nsalinas42@gmail.com', 'Nelson Salinas');
         }
         setAdminSuccessMsg('Sesión de administrador iniciada con éxito en Firestore.');
         setTimeout(() => {
@@ -451,7 +451,7 @@ export default function LandingView({
     try {
       const fbUser = await signInWithEmail(adminEmail, adminPassword);
       if (onAuthSuccess) {
-        onAuthSuccess(fbUser.email || adminEmail, fbUser.displayName || 'Administrador');
+        await onAuthSuccess(fbUser.email || adminEmail, fbUser.displayName || 'Administrador');
       }
       setAdminSuccessMsg('Sesión iniciada correctamente.');
       setTimeout(() => {

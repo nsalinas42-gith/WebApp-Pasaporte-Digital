@@ -41,8 +41,10 @@ import LanguageSelector from './components/LanguageSelector';
 import logoPintaMapas from './assets/images/Logo Pinta Mapas2.png';
 import { calculateUserProgress } from './components/GamificationEngine';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { 
   auth, 
+  db,
   logoutFirebase, 
   saveUserProfileAndProgress, 
   getUserProfileAndProgress 
@@ -302,30 +304,130 @@ export default function App() {
     return localStorage.getItem('passport_firebase_uid');
   });
 
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+
   // Synchronize Firebase Auth state on boot and perform automatic restoration
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribeProgress: (() => void) | null = null;
+    let unsubscribeUser: (() => void) | null = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      // 1. Clean up old subscriptions
+      if (unsubscribeProgress) {
+        unsubscribeProgress();
+        unsubscribeProgress = null;
+      }
+      if (unsubscribeUser) {
+        unsubscribeUser();
+        unsubscribeUser = null;
+      }
+
       if (firebaseUser) {
         setFirebaseUid(firebaseUser.uid);
         localStorage.setItem('passport_firebase_uid', firebaseUser.uid);
-        
-        // Auto-restore progress from Firestore if available
-        try {
-          const cloudData = await getUserProfileAndProgress(firebaseUser.uid);
-          if (cloudData) {
-            setUser(cloudData.profile);
-            setStats(cloudData.stats);
-            setLocations(cloudData.locations);
+
+        const progressDocRef = doc(db, 'user_progress', firebaseUser.uid);
+        unsubscribeProgress = onSnapshot(progressDocRef, (progressSnap) => {
+          if (progressSnap.exists()) {
+            const progressData = progressSnap.data();
+
+            // Fetch users/{userId} details or read from current snapshot
+            const userDocRef = doc(db, 'users', firebaseUser.uid);
+            getDoc(userDocRef).then((userSnap) => {
+              const userData = userSnap.exists() ? userSnap.data() : null;
+
+              const profile: UserProfile = {
+                name: userData?.name || progressData.name || '',
+                email: userData?.email || progressData.email || firebaseUser.email || '',
+                avatarUrl: userData?.avatarUrl || progressData.avatarUrl || '',
+                title: progressData.title || userData?.title || 'Explorador',
+                level: Number(progressData.level) || 1,
+                xp: Number(progressData.xp) || 0,
+                xpToNextLevel: Number(progressData.xpToNextLevel) || 2000,
+                joinedDate: progressData.joinedDate || userData?.createdAt || 'Miembro reciente',
+                linkedWallet: progressData.linkedWallet || '',
+                bio: userData?.bio || progressData.bio || '',
+              };
+
+              const stats: UserStats = {
+                regionsVisited: progressData.stats?.regionsVisited ?? 3,
+                momentsCaptured: progressData.stats?.momentsCaptured ?? 12,
+                sharedAchievements: progressData.stats?.sharedAchievements ?? 8,
+              };
+
+              let fileLocations: Location[] = [];
+              if (progressData.locations) {
+                try {
+                  fileLocations = JSON.parse(progressData.locations);
+                } catch (e) {
+                  console.error("Error decoding locations JSON snapshot from user_progress:", e);
+                }
+              }
+
+              // Update React States
+              setUser(profile);
+              setStats(stats);
+              if (fileLocations.length > 0) {
+                setLocations(fileLocations);
+              }
+
+              // Persist caches
+              localStorage.setItem('passport_user', JSON.stringify(profile));
+              localStorage.setItem('passport_stats', JSON.stringify(stats));
+              if (fileLocations.length > 0) {
+                localStorage.setItem('passport_locations', JSON.stringify(fileLocations));
+              }
+
+              // Hide landing screen and loading state once first real sync occurs
+              setShowLanding(false);
+              localStorage.setItem('passport_landing_entered', 'true');
+              setAuthLoading(false);
+            });
+          } else {
+            // New user registration flow - allow handleAuthSuccess to perform first write
+            setTimeout(() => {
+              setAuthLoading(false);
+            }, 1000);
           }
-        } catch (err) {
-          console.error("Failed to restore progress from cloud:", err);
-        }
+        }, (err) => {
+          console.error("Real-time progress syncing error:", err);
+          setAuthLoading(false);
+        });
+
+        // Also add real-time snapshot on public user metadata users/{userId} for multi-device/tab updates
+        unsubscribeUser = onSnapshot(doc(db, 'users', firebaseUser.uid), (userSnap) => {
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            setUser((prev) => {
+              const updated = {
+                ...prev,
+                name: userData.name || prev.name,
+                email: userData.email || prev.email,
+                avatarUrl: userData.avatarUrl || prev.avatarUrl,
+                bio: userData.bio || prev.bio,
+                title: userData.title || prev.title,
+              };
+              localStorage.setItem('passport_user', JSON.stringify(updated));
+              return updated;
+            });
+          }
+        }, (err) => {
+          console.error("User metadata real-time subscription error:", err);
+        });
+
       } else {
+        // AUTH IS NULL - USER IS GUEST / LOGGING OUT
         setFirebaseUid(null);
         localStorage.removeItem('passport_firebase_uid');
+        setAuthLoading(false);
       }
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeProgress) unsubscribeProgress();
+      if (unsubscribeUser) unsubscribeUser();
+    };
   }, []);
 
   // Sync session automatically inside in-wallet dApp browsers on mobile via secure link sync parameter
@@ -717,16 +819,26 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    // Firebase Auth session signout
+    // 1. Firebase Auth session signout
     logoutFirebase().catch(e => console.error("Firebase logout error:", e));
     setFirebaseUid(null);
-    localStorage.removeItem('passport_firebase_uid');
+    
+    // 2. Clear ALL passport related localStorage keys
+    const keysToRemove = [
+      'passport_firebase_uid',
+      'passport_landing_entered',
+      'passport_user',
+      'passport_stats',
+      'passport_locations',
+      'passport_nft_claimed',
+      'passport_tx_hash',
+      'passport_selected_route_id',
+      'passport_locked_route_ids',
+      'passport_routes_locked'
+    ];
+    keysToRemove.forEach(key => localStorage.removeItem(key));
 
-    // Clear authentication and user data from storage
-    localStorage.removeItem('passport_landing_entered');
-    localStorage.removeItem('passport_user');
-
-    // 3. Reset state back to a clean guest profile structure 
+    // 3. Reset React states to clean initial state structures
     setUser({
       name: '',
       title: 'Invitado',
@@ -739,6 +851,24 @@ export default function App() {
       linkedWallet: ''
     });
 
+    setStats({
+      regionsVisited: 0,
+      momentsCaptured: 0,
+      sharedAchievements: 0
+    });
+
+    // Reset locations to completely blank unchecked status
+    const clearedLocations = INITIAL_LOCATIONS.map(loc => ({
+      ...loc,
+      isCheckedIn: false,
+      places: (loc.places || []).map(p => ({ ...p, isCheckedIn: false }))
+    }));
+    setLocations(clearedLocations);
+
+    setIsNFTClaimed(false);
+    setTxHash(null);
+
+    // 4. Force return to landing page
     setShowLanding(true);
   };
 
@@ -808,6 +938,26 @@ export default function App() {
   // Calculate generic unlocked count
   const unlockedCount = locations.filter(loc => loc.isCheckedIn).length;
   const totalCount = locations.length;
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#001314] flex flex-col items-center justify-center text-[#E0F2F1] p-4 text-center font-sans">
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="absolute w-24 h-24 border-4 border-[#005049]/40 border-t-[#00B4D8] rounded-full animate-spin"></div>
+          <svg className="w-12 h-12 text-[#00B4D8] animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-headline font-bold mb-2 text-[#E0F2F1] tracking-wide animate-pulse">
+          Cargando Bitácora Pinta Mapas...
+        </h2>
+        <p className="text-sm text-[#00B4D8]/80 font-mono tracking-widest uppercase">
+          Sincronizando satélites / GPS
+        </p>
+      </div>
+    );
+  }
 
   if (activeTab === 'admin_hidden') {
     return (

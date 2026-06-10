@@ -45,6 +45,7 @@ export default function LeaderboardView({
         ...entry,
         name: translatedUser.name,
         title: translatedUser.title,
+        avatarUrl: translatedUser.avatarUrl || entry.avatarUrl,
         points: userPoints,
         badgesUnlocked: unlockedCount
       };
