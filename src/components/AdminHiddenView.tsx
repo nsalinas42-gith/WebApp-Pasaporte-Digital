@@ -1217,7 +1217,7 @@ export default function AdminHiddenView({
               <button
                 onClick={() => {
                   onResetToMockupState();
-                  addLog("Se ha restablecido los datos al estado de Demo Mágnum (4/6 sellos).");
+                  addLog("Se ha restablecido los datos al estado de Demo Mágnum (4/6 Badges).");
                 }}
                 className="py-2 px-2.5 bg-[#1A56DB]/10 hover:bg-[#1A56DB]/20 border border-[#1A56DB]/25 text-[#1A56DB] font-bold text-[9px] uppercase tracking-wide rounded-xl cursor-pointer transition-all"
               >
@@ -1226,7 +1226,7 @@ export default function AdminHiddenView({
               <button
                 onClick={() => {
                   onResetToZeroState();
-                  addLog("Base de datos purgada completamente a ceros (0/6 sellos).");
+                  addLog("Base de datos purgada completamente a ceros (0/6 Badges).");
                 }}
                 className="py-2 px-2.5 bg-red-950/20 hover:bg-rose-950/50 border border-rose-500/30 text-rose-400 font-bold text-[9px] uppercase tracking-wide rounded-xl cursor-pointer transition-all"
               >

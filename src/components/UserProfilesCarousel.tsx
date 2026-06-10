@@ -282,7 +282,7 @@ export default function UserProfilesCarousel() {
                   return (
                     <div
                       key={`${profile.uid}-${i}`}
-                      className={`min-h-[220px] bg-[#161F30] border border-[#005049]/30 hover:border-[#1A56DB]/40 hover:shadow-[0_0_20px_rgba(26, 86, 219,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
+                      className={`min-h-[220px] bg-gradient-to-t from-[#00E676]/20 via-[#161F30] to-[#161F30] border border-[#005049]/30 hover:border-[#00E676]/50 hover:shadow-[0_0_20px_rgba(0,230,118,0.15)] rounded-3xl p-6 text-left flex flex-col justify-between transition-all duration-300 grow shrink-0 basis-full sm:basis-[calc(50%-12px)] md:basis-[calc(33.3333%-16px)] text-left select-none group hover:scale-[1.01] ${
                         isVisibleOnMobile 
                           ? 'flex' 
                           : isVisibleOnTablet 
@@ -294,16 +294,20 @@ export default function UserProfilesCarousel() {
                       <div className="space-y-4">
                         <div className="flex items-center gap-4">
                           <div className="relative">
-                            <div className="absolute inset-0 bg-[#1A56DB]/20 rounded-full blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <img
-                              src={resolveAvatar(profile.avatarUrl)}
-                              alt={profile.name}
-                              className="w-14 h-14 rounded-full object-cover border-2 border-secondary/40 select-none pointer-events-none relative z-10"
-                              onError={(e) => {
-                                // Double safeguard fallback
-                                (e.target as HTMLImageElement).src = avatarJoven1;
-                              }}
-                            />
+                            <div className="absolute inset-0 bg-[#00E676]/20 rounded-full blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative w-14 h-14 rounded-full flex items-center justify-center overflow-hidden p-[2px] z-10">
+                              {/* Rotating border background with #1A56DB and #00E676 */}
+                              <div className="absolute inset-[-50%] bg-gradient-to-r from-[#1A56DB] to-[#00E676] rounded-full animate-[spin_4s_linear_infinite]" />
+                              <img
+                                src={resolveAvatar(profile.avatarUrl)}
+                                alt={profile.name}
+                                className="w-full h-full rounded-full object-cover select-none pointer-events-none relative z-10 bg-[#161F30] p-[1.5px]"
+                                onError={(e) => {
+                                  // Double safeguard fallback
+                                  (e.target as HTMLImageElement).src = avatarJoven1;
+                                }}
+                              />
+                            </div>
                           </div>
                           <div className="text-left">
                             <h4 className="font-headline font-black text-on-surface text-base group-hover:text-secondary transition-colors duration-300 leading-tight">

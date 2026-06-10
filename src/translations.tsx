@@ -66,7 +66,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'my_stamps': 'Mis Logros',
     'leaderboard': 'Ranking',
     'settings': 'Configuración',
-    'postales_digitales': 'Postales Digitales',
+    'postales_digitales': 'Postales',
     'status': 'STATUS',
     'explorer_level': 'Nivel del Explorador {level}',
     'xp_to_level_up': '{xp} XP to Level Up',
@@ -213,7 +213,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // DashboardView:
     'explorador_digital': 'Explorador Digital',
     'tu_pasaporte_al_mundo': 'Tu Pasaporte a tu Ciudad',
-    'tu_pasaporte_desc': 'Descubre el patrimonio histórico como nunca antes. Colecciona sellos digitales, desbloquea insignias exclusivas y forja tu propio camino a través de la historia.',
+    'tu_pasaporte_desc': 'Descubre el patrimonio histórico como nunca antes. Colecciona Badges digitales, desbloquea insignias exclusivas y forja tu propio camino a través de la historia.',
     'empezar_aventura': 'Empezar Aventura',
     'hola_explorador': 'Hola, Explorador',
     'tu_viaje_continua': 'Tu viaje digital continúa. Revisa tus estadísticas y próximos objetivos.',
@@ -295,15 +295,15 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'listo_caps': 'Listo',
 
     // LeaderboardView:
-    'ranking_global_title': 'Ranking Global de Exploradores',
+    'ranking_global_title': 'Ranking de Exploradores',
     'ranking_global_desc': 'Aquí convergen los mejores exploradores locales de la región. Haz check-in geográfico en más monumentos, sube de nivel y escala posiciones para presumir tus medallas Web3.',
     'puesto_index': 'Puesto {num}',
-    'rey_del_mapapodium': 'Rey del Mapa',
-    'pts_suffix': '{points} Pts • {badges} Sellos',
+    'rey_del_mapapodium': 'Líder del Mapa',
+    'pts_suffix': '{points} Pts • {badges} Badges',
     'exploradores_comunidad_title': 'Exploradores de la Comunidad ({num})',
     'buscar_explorador': 'Buscar explorador...',
     'tu_label': 'Tú',
-    'sellos_label': '{num} Sellos',
+    'sellos_label': '{num} Badges',
     'pts_label': '{num} Pts',
 
     // SettingsView:
@@ -332,11 +332,11 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'pruebas_reseteo_desc': 'Utiliza estas opciones para restablecer los estados de check-in del mapa de datos virtuales para testing. Esto permite simular los recorridos múltiples veces.',
     'cerrar_sesion_btn': '🚪 Cerrar Sesión e Ir a Inicio',
     'regresar_mockup_btn': 'Regresar a Modo Mockup (4 / 6 Completado)',
-    'regresar_mockup_confirm': '¿Deseas restablecer al estado original de la foto (4 sellos desbloqueados y 2 por canjear)?',
+    'regresar_mockup_confirm': '¿Deseas restablecer al estado original de la foto (4 Badges desbloqueados y 2 por canjear)?',
     'si_restablecer_btn': 'Sí, Restablecer',
     'cancelar_btn': 'Cancelar',
     'reiniciar_cero_btn': 'Reiniciar desde Cero (0 / 6 Completados)',
-    'reiniciar_cero_confirm': '¿Confirmas borrar todos tus check-ins de GPS y comenzar tu viaje de 0/6 sellos?',
+    'reiniciar_cero_confirm': '¿Confirmas borrar todos tus check-ins de GPS y comenzar tu viaje de 0/6 Badges?',
     'si_borrar_todo_btn': 'Sí, Borrar Todo',
   },
   en: {
@@ -387,7 +387,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'my_stamps': 'My Stamps',
     'leaderboard': 'Leaderboard',
     'settings': 'Settings',
-    'postales_digitales': 'Digital Postcards',
+    'postales_digitales': 'Postcards',
     'status': 'STATUS',
     'explorer_level': 'Explorer Level {level}',
     'xp_to_level_up': '{xp} XP to Level Up',
@@ -616,15 +616,15 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'listo_caps': 'Ready',
 
     // LeaderboardView:
-    'ranking_global_title': 'Global Explorer Ranking',
+    'ranking_global_title': 'Explorer Ranking',
     'ranking_global_desc': 'Here the region\'s top local explorers benchmark. Geolocate more monuments, level up, and step up the rank to display your Web3 credentials.',
     'puesto_index': 'Rank {num}',
-    'rey_del_mapapodium': 'King of the Map',
-    'pts_suffix': '{points} Pts • {badges} Stamps',
+    'rey_del_mapapodium': 'Leader of the Map',
+    'pts_suffix': '{points} Pts • {badges} Badges',
     'exploradores_comunidad_title': 'Community Explorers ({num})',
     'buscar_explorador': 'Search explorer...',
     'tu_label': 'You',
-    'sellos_label': '{num} Stamps',
+    'sellos_label': '{num} Badges',
     'pts_label': '{num} Pts',
 
     // SettingsView:
