@@ -395,6 +395,7 @@ export default function App() {
   const userXpToNextLevel = user.xpToNextLevel;
   const userLinkedWallet = user.linkedWallet;
   const userJoinedDate = user.joinedDate;
+  const userBio = user.bio || '';
   const statsSerialized = JSON.stringify(stats);
   const locationsSerialized = JSON.stringify(locations);
 
@@ -413,6 +414,7 @@ export default function App() {
             xpToNextLevel: userXpToNextLevel,
             joinedDate: userJoinedDate,
             linkedWallet: userLinkedWallet,
+            bio: userBio,
           },
           JSON.parse(statsSerialized),
           JSON.parse(locationsSerialized)
@@ -431,6 +433,7 @@ export default function App() {
     userXpToNextLevel,
     userLinkedWallet,
     userJoinedDate,
+    userBio,
     statsSerialized,
     locationsSerialized
   ]);
@@ -643,6 +646,16 @@ export default function App() {
   // Update Settings from view
   const handleUpdateUserProfile = (updatedUser: UserProfile) => {
     setUser(updatedUser);
+    
+    // Immediate save to Firestore if user is authenticated and not a mock/guest
+    if (firebaseUid && updatedUser.email && updatedUser.email !== 'felix.voyager@gmail.com') {
+      saveUserProfileAndProgress(
+        firebaseUid,
+        updatedUser,
+        stats,
+        locations
+      ).catch(err => console.error("Immediate database update failed:", err));
+    }
   };
 
   // State Resets
@@ -750,24 +763,28 @@ export default function App() {
       
       // 2. See if there is existing progress in the cloud
       const cloudData = await getUserProfileAndProgress(fbUser.uid);
+      let finalActiveUser = updatedUser;
       if (cloudData) {
-        // Merge name/avatar if updated, or restore completely
-        setUser({
+        // Merge: prefer stored cloud profile values, fallback to auth login payload if fields are missing
+        finalActiveUser = {
           ...cloudData.profile,
-          name: updatedUser.name,
-          avatarUrl: updatedUser.avatarUrl || cloudData.profile.avatarUrl,
-        });
+          name: cloudData.profile.name || updatedUser.name || '',
+          avatarUrl: cloudData.profile.avatarUrl || updatedUser.avatarUrl || '',
+          bio: cloudData.profile.bio || updatedUser.bio || '',
+        };
+        setUser(finalActiveUser);
         setStats(cloudData.stats);
         setLocations(cloudData.locations);
       } else {
         // First-time user profile registration: establish initial database entries
         setUser(updatedUser);
         await saveUserProfileAndProgress(fbUser.uid, updatedUser, stats, locations);
+        finalActiveUser = updatedUser;
       }
 
       setFirebaseUid(fbUser.uid);
       localStorage.setItem('passport_firebase_uid', fbUser.uid);
-      localStorage.setItem('passport_user', JSON.stringify(updatedUser));
+      localStorage.setItem('passport_user', JSON.stringify(finalActiveUser));
       
       // Smoothly transition off landing page and enter dashboard
       setShowLanding(false);

@@ -213,19 +213,54 @@ export default function SettingsView({
     setBio(translatedUser.bio || '');
   }, [user, translateUser]);
 
+  // Helper to compress and resize custom uploaded photos to save weight and prevent Firestore size limits
+  const compressPhotoAndSet = (base64Str: string) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 200;
+      const maxH = 200;
+      let w = img.width;
+      let h = img.height;
+
+      if (w > h) {
+        if (w > maxW) {
+          h = Math.round((h * maxW) / w);
+          w = maxW;
+        }
+      } else {
+        if (h > maxH) {
+          w = Math.round((w * maxH) / h);
+          h = maxH;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, w, h);
+        // Use JPEG format at 0.75 compression quality (significantly reduces footprint to ~10KB-15KB!)
+        const compressed = canvas.toDataURL('image/jpeg', 0.75);
+        setAvatarUrl(compressed);
+      } else {
+        setAvatarUrl(base64Str);
+      }
+    };
+    img.onerror = () => {
+      setAvatarUrl(base64Str);
+    };
+    img.src = base64Str;
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1.5 * 1024 * 1024) {
-        setErrorMsg(t('avatar_limit_msg'));
-        setTimeout(() => setErrorMsg(null), 5000);
-        return;
-      }
       setErrorMsg(null);
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          setAvatarUrl(reader.result);
+          compressPhotoAndSet(reader.result);
         }
       };
       reader.readAsDataURL(file);
@@ -287,7 +322,7 @@ export default function SettingsView({
                     const reader = new FileReader();
                     reader.onloadend = () => {
                       if (typeof reader.result === 'string') {
-                        setAvatarUrl(reader.result);
+                        compressPhotoAndSet(reader.result);
                       }
                     };
                     reader.readAsDataURL(file);
