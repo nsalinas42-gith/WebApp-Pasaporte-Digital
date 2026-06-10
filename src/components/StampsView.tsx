@@ -24,9 +24,9 @@ import { motion } from 'motion/react';
 import { Location } from '../types';
 import { useLanguage } from '../translations';
 import { calculateUserProgress, UnlockedBadgeState } from './GamificationEngine';
-import specialBronce from '../assets/images/lider_de_expedicion_1.png';
-import specialPlata from '../assets/images/guia_legendario_2.png';
-import specialOro from '../assets/images/explorador_supremo.png';
+import specialBronce from '../assets/images/lider_de_expedicion.png';
+import specialPlata from '../assets/images/guia_legendario.png';
+import specialOro from '../assets/images/explorador_supremo-1.png';
 
 interface StampsViewProps {
   locations: Location[];
@@ -156,7 +156,7 @@ export default function StampsView({ locations, onExploreLocation }: StampsViewP
               {/* Dynamic Multiplier / Lock Indicator */}
               <div className="absolute top-2 right-2">
                 {isUnlocked ? (
-                  <span className="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
+                  <span className="bg-[#FFFFFF] text-[#161F30] px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
                     X{multiplier}
                   </span>
                 ) : (

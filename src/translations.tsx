@@ -45,8 +45,8 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'gps_checkin_title': 'GPS Check-in',
     'gps_checkin_desc': 'Nuestra tecnología de geolocalización valida tu presencia. Solo los verdaderos viajeros obtienen su insignia.',
     'realtime_validation': 'VALIDACIÓN EN TIEMPO REAL',
-    'earn_cnft_title': 'Gana cNFTs Exclusivos',
-    'earn_cnft_desc': 'Cada visita desbloquea un Compressed NFT único que vive en la blockchain. Son coleccionables, transferibles y demuestran tu historial viajero.',
+    'earn_cnft_title': 'Gana Postales Digitales y cNFTs Exclusivos',
+    'earn_cnft_desc': 'Por cada ruta desbloqueada podrás obtener una POSTAL DIGITAL reclamada con tu Wallet en la blockchain como firma criptográfica descentralizada. (Solana Proof-Stamping). Cada ruta desbloqueada obtendrás un (Compressed NFT), único que vive en la blockchain. Son coleccionables, transferibles y demuestran tu historial viajero.',
 
     // Landing Footer
     'footer_manifesto': 'Digitalizando el patrimonio cultural a través de experiencias gamificadas y tecnología blockchain.',
@@ -366,8 +366,8 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     'gps_checkin_title': 'GPS Check-In',
     'gps_checkin_desc': 'Our geolocalization technology validates your presence. Only real travelers get their badge.',
     'realtime_validation': 'REAL-TIME VALIDATION',
-    'earn_cnft_title': 'Earn Exclusive cNFTs',
-    'earn_cnft_desc': 'Each visit unlocks a unique Compressed NFT that lives on the blockchain. They are collectible, transferable, and prove your travel history.',
+    'earn_cnft_title': 'Earn Digital Postcards and Exclusive cNFTs',
+    'earn_cnft_desc': 'For each unlocked route you can get a DIGITAL POSTCARD claimed with your Wallet on the blockchain as a decentralized cryptographic signature. (Solana Proof-Stamping). For each unlocked route you will obtain a unique (Compressed NFT) that lives on the blockchain. They are collectible, transferable, and prove your travel history.',
 
     // Landing Footer
     'footer_manifesto': 'Digitalizing cultural heritage through gamified experiences and blockchain technology.',

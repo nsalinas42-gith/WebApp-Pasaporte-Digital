@@ -5,12 +5,12 @@
 
 import { Location } from '../types';
 
-import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
-import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
-import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
-import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
-import stampSagrada from '../assets/images/05E_Guia_Local.png';
-import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import stampAlhambra from '../assets/images/explorador_principiante.png';
+import stampCordoba from '../assets/images/explorador_intermedio.png';
+import stampSegovia from '../assets/images/explorador_avanzado.png';
+import stampSevilla from '../assets/images/cazador_de_rutas.png';
+import stampSagrada from '../assets/images/guia_local.png';
+import stampOlite from '../assets/images/guia_local_experto.png';
 
 export interface GamifiedBadge {
   id: string; // badge_01 to badge_06

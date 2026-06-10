@@ -25,6 +25,7 @@ import {
   Lock,
   Unlock,
   Key,
+  Landmark,
   RefreshCw,
   Trash2,
   Eye,
@@ -43,15 +44,15 @@ import {
   recoverEmail 
 } from '../utils/firebase';
 
-import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
-import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
-import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
-import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
-import stampSagrada from '../assets/images/05E_Guia_Local.png';
-import stampOlite from '../assets/images/06F_guia_local_experto.png';
-import specialBronce from '../assets/images/lider_de_expedicion_1.png';
-import specialPlata from '../assets/images/guia_legendario_2.png';
-import specialOro from '../assets/images/explorador_supremo.png';
+import stampAlhambra from '../assets/images/explorador_principiante.png';
+import stampCordoba from '../assets/images/explorador_intermedio.png';
+import stampSegovia from '../assets/images/explorador_avanzado.png';
+import stampSevilla from '../assets/images/cazador_de_rutas.png';
+import stampSagrada from '../assets/images/guia_local.png';
+import stampOlite from '../assets/images/guia_local_experto.png';
+import specialBronce from '../assets/images/lider_de_expedicion.png';
+import specialPlata from '../assets/images/guia_legendario.png';
+import specialOro from '../assets/images/explorador_supremo-1.png';
 import mapaPintaMapas from '../assets/images/mapa_pinta_mapas.png';
 import logoPintaMapas from '../assets/images/Logo Pinta Mapas2.png';
 import logoAvatar from '../assets/images/logo.avatar.png';
@@ -910,7 +911,7 @@ export default function LandingView({
           </div>
 
           {/* CARD 2: Visita los Sitios (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left relative overflow-hidden group">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
                 <Compass className="w-5 h-5 text-[#1A56DB]" />
@@ -925,10 +926,15 @@ export default function LandingView({
             
             {/* Design detail bottom line */}
             <div className="h-1 w-12 bg-[#1A56DB]/30 rounded"></div>
+
+            {/* Monumento histórico watermark */}
+            <div className="absolute bottom-[-15%] right-[-5%] w-48 h-48 text-[#1A56DB]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#1A56DB]/[0.08] transition-all duration-500">
+              <Landmark className="w-full h-full stroke-[1]" />
+            </div>
           </div>
 
           {/* CARD 3: GPS Check-in (col-span-12 md:col-span-5) */}
-          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left">
+          <div className="col-span-1 md:col-span-5 bg-[#161F30] border border-[#005049]/25 p-4 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 hover:border-[#1A56DB]/40 transition-colors text-left relative overflow-hidden group">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] border border-[#1A56DB]/20">
                 <MapPin className="w-5 h-5 text-[#1A56DB]" />
@@ -947,6 +953,11 @@ export default function LandingView({
               <span className="text-[10px] font-black tracking-widest text-[#1A56DB] uppercase">
                 {t('realtime_validation')}
               </span>
+            </div>
+
+            {/* GPS Check-in watermark */}
+            <div className="absolute bottom-[-15%] right-[-5%] w-48 h-48 text-[#1A56DB]/[0.04] pointer-events-none select-none group-hover:scale-105 group-hover:text-[#1A56DB]/[0.08] transition-all duration-500">
+              <MapPin className="w-full h-full stroke-[1]" />
             </div>
           </div>
 
@@ -999,7 +1010,7 @@ export default function LandingView({
                 Insignias Digitales (Badges)
               </h3>
               <p className="text-xs sm:text-sm text-[#8c9f9e]/90 leading-relaxed">
-                estas son las insignias que podrás ir obteniendo a medida que desbloqueas los sitios históricos sucesivamente hasta completar las (6) insignias.
+                Estas son las insignias que podrás ir obteniendo a medida que desbloqueas los sitios históricos sucesivamente hasta completar las (6) insignias.
               </p>
             </div>
 
@@ -1023,7 +1034,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR PRINCIPIANTE</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
 
               <motion.div 
@@ -1044,7 +1055,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR INTERMEDIO</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
 
               <motion.div 
@@ -1065,7 +1076,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR AVANZADO</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
 
               <motion.div 
@@ -1086,7 +1097,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">CAZADOR DE RUTAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
 
               <motion.div 
@@ -1107,7 +1118,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
 
               <motion.div 
@@ -1128,7 +1139,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL EXPERTO</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
               </motion.div>
             </div>
 
@@ -1142,7 +1153,7 @@ export default function LandingView({
                 Insignias Especiales
               </h3>
               <p className="text-xs sm:text-sm text-[#8c9f9e]/90 leading-relaxed">
-                Estas insignias la podrás obtener al completar las (6) rutas, Bronce, Plata, Oro
+                Estas insignias las podrás obtener completando cada ruta.
               </p>
             </div>
 
@@ -1231,9 +1242,6 @@ export default function LandingView({
 
       {/* 4. CALL TO ACTION SECTION */}
       <section className="py-20 bg-[#001d2c]/40 border-y border-[#005049]/20 text-center space-y-6 px-4">
-        <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#1A56DB] max-w-2xl mx-auto leading-relaxed">
-          {t('footer_manifesto')}
-        </p>
         <h2 className="font-headline text-2xl sm:text-3xl font-black text-on-surface max-w-xl mx-auto leading-tight">
           {t('listo_comenzar_coleccion')}
         </h2>
@@ -1243,6 +1251,9 @@ export default function LandingView({
         >
           {t('saber_mas')}
         </button>
+        <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#F8F9FA] max-w-2xl mx-auto leading-relaxed">
+          {t('footer_manifesto')}
+        </p>
       </section>
 
       {/* Dynamic Profile Carousel */}
@@ -1258,7 +1269,7 @@ export default function LandingView({
                 src={logoPintaMapas} 
                 alt="Pinta Mapas" 
                 referrerPolicy="no-referrer"
-                className="h-12 w-auto object-contain"
+                className="h-[58px] w-auto object-contain"
               />
             </div>
             <p className="text-[11px] text-on-surface-variant/70 leading-relaxed max-w-xs">
@@ -1272,7 +1283,7 @@ export default function LandingView({
                 className="max-w-[124px] h-auto object-contain block"
               />
               <span className="text-[10px] text-on-surface-variant/60 font-mono font-medium block mt-1">
-                (Idea, conceptualización y desarrollo | Nelson Salinas)
+                Idea, conceptualización y desarrollo | Nelson Salinas
               </span>
             </div>
           </div>

@@ -29,13 +29,13 @@ import {
 import { Location, UserProfile, UserStats } from '../types';
 import { useLanguage } from '../translations';
 
-import stampAlhambra from '../assets/images/01A_explorador_principiante.png';
+import stampAlhambra from '../assets/images/explorador_principiante.png';
 import parqueCentralImg from '../assets/images/parque_central_caracas_1780684136722.png';
-import stampCordoba from '../assets/images/02B_explorador_intermedio.png';
-import stampSegovia from '../assets/images/03C_explorador_avanzado.png';
-import stampSevilla from '../assets/images/04D_Cazador_de_rutas.png';
-import stampSagrada from '../assets/images/05E_Guia_Local.png';
-import stampOlite from '../assets/images/06F_guia_local_experto.png';
+import stampCordoba from '../assets/images/explorador_intermedio.png';
+import stampSegovia from '../assets/images/explorador_avanzado.png';
+import stampSevilla from '../assets/images/cazador_de_rutas.png';
+import stampSagrada from '../assets/images/guia_local.png';
+import stampOlite from '../assets/images/guia_local_experto.png';
 import logoCnft from '../assets/images/logo_cnft.png';
 
 const badgeImageMap: Record<string, string> = {
@@ -336,7 +336,7 @@ export default function DashboardView({
                     className="w-full h-full object-contain transition-all drop-shadow-[0_0_10px_rgba(26, 86, 219,0.5)]" 
                   />
                   {isUnlocked && (
-                    <div className="absolute top-0 right-0 bg-secondary text-on-secondary px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_0_8px_rgba(26, 86, 219,0.4)]">
+                    <div className="absolute top-0 right-0 bg-[#FFFFFF] text-[#161F30] px-1.5 py-0.5 rounded-md text-[9px] font-black font-mono shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
                       X{multiplier}
                     </div>
                   )}
@@ -486,6 +486,29 @@ export default function DashboardView({
 
       {/* Moved Stacked Row Layout (Puntos Totales & Tu Progreso) */}
       <div className="flex flex-col gap-6 items-stretch w-full">
+        {/* Status/Level Card - Visible only on mobile, placed above points on mobile */}
+        <div className="glass-card p-6 rounded-xl flex flex-col gap-3 text-left relative overflow-hidden md:hidden">
+          <div className="space-y-1">
+            <p className="font-sans text-[10px] font-bold text-secondary/60 uppercase tracking-widest leading-none">
+              {t('status')}
+            </p>
+            <h4 className="font-headline text-sm font-extrabold text-on-surface tracking-tight">
+              {t('explorer_level').replace('{level}', String(user.level))}
+            </h4>
+            <p className="font-sans text-[11px] text-on-surface-variant/80 font-medium">
+              {t('xp_to_level_up').replace('{xp}', String(user.xpToNextLevel - user.xp))}
+            </p>
+          </div>
+          
+          {/* Progress Bar Container */}
+          <div className="w-full bg-[#001019] h-1.5 rounded-full overflow-hidden border border-[#005049]/20">
+            <div 
+              className="bg-gradient-to-r from-[#1A56DB] to-[#00E676] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(26, 86, 219,0.4)]" 
+              style={{ width: `${Math.min(100, Math.round((user.xp / user.xpToNextLevel) * 100))}%` }}
+            />
+          </div>
+        </div>
+
         {/* Puntos Totales Card (Full Row) */}
         <div className="glass-card p-6 sm:p-8 rounded-xl flex flex-row items-center gap-6 text-left relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-[0.02] select-none pointer-events-none">
