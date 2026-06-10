@@ -305,6 +305,9 @@ export default function App() {
   });
 
   const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [isCloudSyncComplete, setIsCloudSyncComplete] = useState<boolean>(() => {
+    return !localStorage.getItem('passport_firebase_uid');
+  });
 
   // Synchronize Firebase Auth state on boot and perform automatic restoration
   useEffect(() => {
@@ -325,6 +328,7 @@ export default function App() {
       if (firebaseUser) {
         setFirebaseUid(firebaseUser.uid);
         localStorage.setItem('passport_firebase_uid', firebaseUser.uid);
+        setIsCloudSyncComplete(false);
 
         let initialProgressLoaded = false;
         let initialUserLoaded = false;
@@ -332,6 +336,7 @@ export default function App() {
         const checkAuthLoading = () => {
           if (initialProgressLoaded && initialUserLoaded) {
             setAuthLoading(false);
+            setIsCloudSyncComplete(true);
           }
         };
 
@@ -429,6 +434,7 @@ export default function App() {
         setFirebaseUid(null);
         localStorage.removeItem('passport_firebase_uid');
         setAuthLoading(false);
+        setIsCloudSyncComplete(true);
       }
     });
 
@@ -511,7 +517,7 @@ export default function App() {
   const locationsSerialized = JSON.stringify(locations);
 
   useEffect(() => {
-    if (firebaseUid && userEmail && userEmail !== 'felix.voyager@gmail.com') {
+    if (isCloudSyncComplete && firebaseUid && userEmail && userEmail !== 'felix.voyager@gmail.com') {
       const timeout = setTimeout(() => {
         saveUserProfileAndProgress(
           firebaseUid,
@@ -534,6 +540,7 @@ export default function App() {
       return () => clearTimeout(timeout);
     }
   }, [
+    isCloudSyncComplete,
     firebaseUid,
     userEmail,
     userName,
