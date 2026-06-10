@@ -1034,7 +1034,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR PRINCIPIANTE</span>
               </motion.div>
 
               <motion.div 
@@ -1055,7 +1055,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR INTERMEDIO</span>
               </motion.div>
 
               <motion.div 
@@ -1076,7 +1076,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">EXPLORADOR AVANZADO</span>
               </motion.div>
 
               <motion.div 
@@ -1097,7 +1097,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">CAZADOR DE RUTAS</span>
               </motion.div>
 
               <motion.div 
@@ -1118,7 +1118,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL</span>
               </motion.div>
 
               <motion.div 
@@ -1139,7 +1139,7 @@ export default function LandingView({
                   className="w-16 h-16 md:w-20 md:h-20 object-contain shadow-md"
                   referrerPolicy="no-referrer"
                 />
-                <span className="text-[11px] font-semibold text-[#8c9f9e]">BITACORA PINTA MAPAS</span>
+                <span className="text-[11px] font-semibold text-[#8c9f9e]">GUIA LOCAL EXPERTO</span>
               </motion.div>
             </div>
 
