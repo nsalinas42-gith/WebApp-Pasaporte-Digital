@@ -56,7 +56,7 @@ export default function SettingsView({
   setLockedRouteIds,
   locations
 }: SettingsViewProps) {
-  const { t, translateUser } = useLanguage();
+  const { language, t, translateUser } = useLanguage();
   const { publicKey, connected, disconnect } = useWallet();
   const { connection } = useConnection();
 
@@ -211,7 +211,7 @@ export default function SettingsView({
     setWallet(translatedUser.linkedWallet);
     setAvatarUrl(translatedUser.avatarUrl);
     setBio(translatedUser.bio || '');
-  }, [user, translateUser]);
+  }, [user.email, user.joinedDate, language]);
 
   // Helper to compress and resize custom uploaded photos to save weight and prevent Firestore size limits
   const compressPhotoAndSet = (base64Str: string) => {

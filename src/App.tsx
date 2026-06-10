@@ -326,93 +326,102 @@ export default function App() {
         setFirebaseUid(firebaseUser.uid);
         localStorage.setItem('passport_firebase_uid', firebaseUser.uid);
 
+        let initialProgressLoaded = false;
+        let initialUserLoaded = false;
+
+        const checkAuthLoading = () => {
+          if (initialProgressLoaded && initialUserLoaded) {
+            setAuthLoading(false);
+          }
+        };
+
         const progressDocRef = doc(db, 'user_progress', firebaseUser.uid);
         unsubscribeProgress = onSnapshot(progressDocRef, (progressSnap) => {
+          initialProgressLoaded = true;
           if (progressSnap.exists()) {
             const progressData = progressSnap.data();
 
-            // Fetch users/{userId} details or read from current snapshot
-            const userDocRef = doc(db, 'users', firebaseUser.uid);
-            getDoc(userDocRef).then((userSnap) => {
-              const userData = userSnap.exists() ? userSnap.data() : null;
-
-              const profile: UserProfile = {
-                name: userData?.name || progressData.name || '',
-                email: userData?.email || progressData.email || firebaseUser.email || '',
-                avatarUrl: userData?.avatarUrl || progressData.avatarUrl || '',
-                title: progressData.title || userData?.title || 'Explorador',
-                level: Number(progressData.level) || 1,
-                xp: Number(progressData.xp) || 0,
-                xpToNextLevel: Number(progressData.xpToNextLevel) || 2000,
-                joinedDate: progressData.joinedDate || userData?.createdAt || 'Miembro reciente',
-                linkedWallet: progressData.linkedWallet || '',
-                bio: userData?.bio || progressData.bio || '',
+            setUser((prev) => {
+              const updated = {
+                ...prev,
+                level: Number(progressData.level) || prev.level,
+                xp: Number(progressData.xp) || prev.xp,
+                xpToNextLevel: Number(progressData.xpToNextLevel) || prev.xpToNextLevel,
+                linkedWallet: progressData.linkedWallet || prev.linkedWallet || '',
               };
-
-              const stats: UserStats = {
-                regionsVisited: progressData.stats?.regionsVisited ?? 3,
-                momentsCaptured: progressData.stats?.momentsCaptured ?? 12,
-                sharedAchievements: progressData.stats?.sharedAchievements ?? 8,
-              };
-
-              let fileLocations: Location[] = [];
-              if (progressData.locations) {
-                try {
-                  fileLocations = JSON.parse(progressData.locations);
-                } catch (e) {
-                  console.error("Error decoding locations JSON snapshot from user_progress:", e);
-                }
-              }
-
-              // Update React States
-              setUser(profile);
-              setStats(stats);
-              if (fileLocations.length > 0) {
-                setLocations(fileLocations);
-              }
-
-              // Persist caches
-              localStorage.setItem('passport_user', JSON.stringify(profile));
-              localStorage.setItem('passport_stats', JSON.stringify(stats));
-              if (fileLocations.length > 0) {
-                localStorage.setItem('passport_locations', JSON.stringify(fileLocations));
-              }
-
-              // Hide landing screen and loading state once first real sync occurs
-              setShowLanding(false);
-              localStorage.setItem('passport_landing_entered', 'true');
-              setAuthLoading(false);
+              localStorage.setItem('passport_user', JSON.stringify(updated));
+              return updated;
             });
-          } else {
-            // New user registration flow - allow handleAuthSuccess to perform first write
-            setTimeout(() => {
-              setAuthLoading(false);
-            }, 1000);
+
+            if (progressData.stats) {
+              setStats((prev) => {
+                const updatedStats = {
+                  regionsVisited: progressData.stats.regionsVisited ?? prev.regionsVisited,
+                  momentsCaptured: progressData.stats.momentsCaptured ?? prev.momentsCaptured,
+                  sharedAchievements: progressData.stats.sharedAchievements ?? prev.sharedAchievements,
+                };
+                localStorage.setItem('passport_stats', JSON.stringify(updatedStats));
+                return updatedStats;
+              });
+            }
+
+            if (progressData.locations) {
+              try {
+                const fileLocations = JSON.parse(progressData.locations);
+                if (fileLocations && fileLocations.length > 0) {
+                  setLocations(fileLocations);
+                  localStorage.setItem('passport_locations', JSON.stringify(fileLocations));
+                }
+              } catch (e) {
+                console.error("Error decoding locations JSON snapshot from user_progress:", e);
+              }
+            }
+
+            // Hide landing screen and loading state once first real sync occurs
+            setShowLanding(false);
+            localStorage.setItem('passport_landing_entered', 'true');
           }
+          checkAuthLoading();
         }, (err) => {
           console.error("Real-time progress syncing error:", err);
-          setAuthLoading(false);
+          initialProgressLoaded = true;
+          checkAuthLoading();
         });
 
         // Also add real-time snapshot on public user metadata users/{userId} for multi-device/tab updates
         unsubscribeUser = onSnapshot(doc(db, 'users', firebaseUser.uid), (userSnap) => {
+          initialUserLoaded = true;
           if (userSnap.exists()) {
             const userData = userSnap.data();
             setUser((prev) => {
+              const formatJoinedDate = (createdAt: any) => {
+                if (!createdAt) return 'Miembro reciente';
+                if (createdAt.toDate) return createdAt.toDate().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+                return String(createdAt);
+              };
+
               const updated = {
                 ...prev,
                 name: userData.name || prev.name,
                 email: userData.email || prev.email,
                 avatarUrl: userData.avatarUrl || prev.avatarUrl,
-                bio: userData.bio || prev.bio,
+                bio: userData.bio || prev.bio || '',
                 title: userData.title || prev.title,
+                joinedDate: formatJoinedDate(userData.createdAt),
               };
               localStorage.setItem('passport_user', JSON.stringify(updated));
               return updated;
             });
+
+            // Hide landing screen when sync arrives
+            setShowLanding(false);
+            localStorage.setItem('passport_landing_entered', 'true');
           }
+          checkAuthLoading();
         }, (err) => {
           console.error("User metadata real-time subscription error:", err);
+          initialUserLoaded = true;
+          checkAuthLoading();
         });
 
       } else {
