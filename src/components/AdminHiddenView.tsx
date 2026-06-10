@@ -22,7 +22,8 @@ import {
   ShieldCheck,
   Users,
   Search,
-  UserX
+  UserX,
+  LogOut
 } from 'lucide-react';
 import { Location, UserProfile } from '../types';
 import { INITIAL_LOCATIONS } from '../data';
@@ -481,10 +482,10 @@ export default function AdminHiddenView({
 
         <button
           onClick={onClose}
-          className="px-5 py-2.5 bg-[#001c27] hover:bg-[#1A56DB]/10 border border-[#1A56DB]/30 hover:border-[#1A56DB] text-[#1A56DB] transition-all text-xs font-black uppercase tracking-wider rounded-xl flex items-center gap-2 cursor-pointer outline-none"
+          className="px-5 py-2.5 bg-red-950/20 hover:bg-red-950/40 border border-red-500/30 hover:border-red-500 text-red-400 transition-all text-xs font-black uppercase tracking-wider rounded-xl flex items-center gap-2 cursor-pointer outline-none"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Volver al Inicio
+          <LogOut className="w-4 h-4" />
+          Cerrar Sesión
         </button>
       </header>
 

@@ -803,7 +803,7 @@ export default function App() {
         onResetToZeroState={handleResetToZeroState}
         onToggleLocationCheckIn={handleToggleLocationCheckIn}
         onClose={() => {
-          setShowLanding(true);
+          handleLogout();
           setActiveTab('dashboard');
         }}
       />
