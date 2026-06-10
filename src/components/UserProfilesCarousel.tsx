@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { collection, limit, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { UserProfile } from '../types';
 import { Users, Sparkles, ChevronLeft, ChevronRight, Compass } from 'lucide-react';
@@ -88,62 +88,58 @@ export default function UserProfilesCarousel() {
   const [isPaused, setIsPaused] = useState(false);
   const autoPlayTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Load registered profiles from Firestore
+  // Load registered profiles from Firestore in real-time
   useEffect(() => {
-    async function fetchProfiles() {
-      try {
-        setLoading(true);
-        // We query the users collection
-        const q = query(collection(db, 'users'), limit(12));
-        const querySnapshot = await getDocs(q);
-        
-        if (!querySnapshot.empty) {
-          const fetchedList: ProfileCarouselItem[] = [];
-          querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            // Map Firestore doc to Carousel item schema, ensuring strict default/fallback structures
-            const name = data.name || 'Viajero Misterioso';
-            const rawTitle = data.title || 'Explorador';
-            
-            // Generate clean pseudonym handles from nickname or names
-            let pseudo = data.pseudonym || data.title || '';
-            if (!pseudo || pseudo.includes(' ')) {
-              pseudo = '@' + name.toLowerCase().replace(/\s+/g, '_');
-            } else if (!pseudo.startsWith('@')) {
-              pseudo = '@' + pseudo;
-            }
+    setLoading(true);
+    const q = query(collection(db, 'users'), limit(12));
 
-            fetchedList.push({
-              uid: docSnap.id,
-              name: name,
-              pseudonym: pseudo,
-              bio: data.bio || 'Sin biografía escrita aún. ¡Explorando nuevos mapas digitales!',
-              avatarUrl: data.avatarUrl || avatarJoven1, // Fallback profile picture
-              title: rawTitle
-            });
-          });
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const fetchedList: ProfileCarouselItem[] = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          // Map Firestore doc to Carousel item schema, ensuring strict default/fallback structures
+          const name = data.name || 'Viajero Misterioso';
+          const rawTitle = data.title || 'Explorador';
+          
+          // Generate clean pseudonym handles from nickname or names
+          let pseudo = data.pseudonym || data.title || '';
+          if (!pseudo || pseudo.includes(' ')) {
+            pseudo = '@' + name.toLowerCase().replace(/\s+/g, '_');
+          } else if (!pseudo.startsWith('@')) {
+            pseudo = '@' + pseudo;
+          }
 
-          // Mix fetched profiles with mock profiles to guarantee a full, rich carousel list (uniqueness based on pseudonym/id)
-          const combined = [...fetchedList];
-          MOCK_PROFILES.forEach(mock => {
-            if (!combined.some(p => p.pseudonym === mock.pseudonym)) {
-              combined.push(mock);
-            }
+          fetchedList.push({
+            uid: docSnap.id,
+            name: name,
+            pseudonym: pseudo,
+            bio: data.bio || 'Sin biografía escrita aún. ¡Explorando nuevos mapas digitales!',
+            avatarUrl: data.avatarUrl || avatarJoven1, // Fallback profile picture
+            title: rawTitle
           });
-          setProfiles(combined);
-        } else {
-          // Keep MOCK list if collection is empty
-          setProfiles(MOCK_PROFILES);
-        }
-      } catch (err) {
-        console.log('Using robust mockup carousel profiles (read permission restricted to direct admins).');
+        });
+
+        // Mix fetched profiles with mock profiles to guarantee a full, rich carousel list
+        const combined = [...fetchedList];
+        MOCK_PROFILES.forEach(mock => {
+          if (!combined.some(p => p.pseudonym === mock.pseudonym)) {
+            combined.push(mock);
+          }
+        });
+        setProfiles(combined);
+      } else {
+        // Keep MOCK list if collection is empty
         setProfiles(MOCK_PROFILES);
-      } finally {
-        setLoading(false);
       }
-    }
+      setLoading(false);
+    }, (err) => {
+      console.log('Using robust mockup carousel profiles (read permission restricted to direct admins).', err);
+      setProfiles(MOCK_PROFILES);
+      setLoading(false);
+    });
 
-    fetchProfiles();
+    return () => unsubscribe();
   }, []);
 
   // Set up the configurable rotation clock interval (3.5 seconds)
