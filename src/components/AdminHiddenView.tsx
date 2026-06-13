@@ -23,7 +23,8 @@ import {
   Users,
   Search,
   UserX,
-  LogOut
+  LogOut,
+  Download
 } from 'lucide-react';
 import { Location, UserProfile } from '../types';
 import { INITIAL_LOCATIONS } from '../data';
@@ -41,6 +42,7 @@ import {
   resetCloudPostcardsToDefault,
   POSTCARD_IMAGE_MAP
 } from '../utils/firebase';
+import { generateSolanaManual } from '../utils/pdfGenerator';
 
 import stampAlhambra from '../assets/images/explorador_principiante.png';
 import stampCordoba from '../assets/images/explorador_intermedio.png';
@@ -1111,6 +1113,24 @@ export default function AdminHiddenView({
                 <p className="text-[10px] text-on-surface-variant/70 mt-1.5 leading-relaxed font-sans">
                   Selecciona la red de Solana de destino utilizada para emitir transacciones Web3.
                 </p>
+              </div>
+
+              {/* MAESTRO DE PRODUCCIÓN ON-CHAIN */}
+              <div className="pt-4 border-t border-[#005049]/25 space-y-2">
+                <span className="text-[10px] text-[#c8e7fb] font-black uppercase tracking-wider block">
+                  Manual de Despliegue en Producción
+                </span>
+                <p className="text-[10px] text-on-surface-variant/70 leading-relaxed font-sans">
+                  Obtén el instructivo técnico paso a paso (Pasos 1, 2, 3 y 4), comandos del CLI de Metaplex y scripts de inicialización del Árbol de Merkle para desplegar la colección on-chain en Solana Mainnet de manera guiada.
+                </p>
+                <button
+                  type="button"
+                  onClick={generateSolanaManual}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-[10px] uppercase py-3 px-4 rounded-xl cursor-pointer transition-all active:scale-95 shadow-md shadow-purple-600/10"
+                >
+                  <Download className="w-3.5 h-3.5 animate-pulse" />
+                  Descargar Manual PDF
+                </button>
               </div>
             </div>
           </div>
