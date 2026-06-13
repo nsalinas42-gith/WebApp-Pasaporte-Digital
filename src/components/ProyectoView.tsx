@@ -260,7 +260,7 @@ export default function ProyectoView({ onClose }: ProyectoViewProps) {
                 </h4>
               </div>
               <p className="text-xs text-on-surface-variant/90 leading-relaxed">
-                Pruebas de geolocalización con educadores de Caracas, impresión a gran escala de los mapas físicos de prueba (bond 80g), y despliegue del contrato cNFT en Solana Devnet.
+                Pruebas de geolocalización con educadores de Caracas, impresión a gran escala de los mapas físicos de prueba (bond 80g), y despliegue del contrato cNFT en Solana Mainnet.
               </p>
             </div>
             <div className="pt-2">

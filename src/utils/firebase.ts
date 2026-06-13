@@ -444,7 +444,7 @@ export function subscribeSolanaGlobalSettings(
   const cachedNetwork = localStorage.getItem('solana_global_network');
   const initialSettings = {
     walletEnabled: cachedEnabled === null ? true : cachedEnabled === 'true',
-    network: (cachedNetwork as 'MAINET' | 'DEVNET') || 'DEVNET'
+    network: (cachedNetwork as 'MAINET' | 'DEVNET') || 'MAINET'
   };
   callback(initialSettings);
 
@@ -464,7 +464,7 @@ export function subscribeSolanaGlobalSettings(
       const data = snap.data();
       const nextSettings = {
         walletEnabled: data.walletEnabled !== false,
-        network: (data.network as 'MAINET' | 'DEVNET') || 'DEVNET',
+        network: (data.network as 'MAINET' | 'DEVNET') || 'MAINET',
       };
       
       // Keep local cache in sync with cloud

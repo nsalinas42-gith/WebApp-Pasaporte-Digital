@@ -130,12 +130,12 @@ export default function AdminHiddenView({
   const [selectedDbTable, setSelectedDbTable] = useState<'locations' | 'user' | 'system'>('locations');
   const [simulationLogs, setSimulationLogs] = useState<string[]>(() => [
     `[${new Date().toISOString().slice(11, 19)}] Sistema inicializado de forma segura.`,
-    `[${new Date().toISOString().slice(11, 19)}] Solana RPC devnet conectada: 100% operativa.`,
+    `[${new Date().toISOString().slice(11, 19)}] Solana RPC Mainnet-Beta conectada: 100% operativa.`,
     `[${new Date().toISOString().slice(11, 19)}] Sesión de administración de alta jerarquía establecida.`
   ]);
 
   const [globalWalletEnabled, setGlobalWalletEnabled] = useState<boolean>(true);
-  const [globalNetwork, setGlobalNetwork] = useState<'MAINET' | 'DEVNET'>('DEVNET');
+  const [globalNetwork, setGlobalNetwork] = useState<'MAINET' | 'DEVNET'>('MAINET');
 
   useEffect(() => {
     const unsubscribe = subscribeSolanaGlobalSettings((settings) => {
@@ -518,7 +518,7 @@ export default function AdminHiddenView({
             </div>
 
             <div className="bg-[#00121a] border border-[#005049]/20 p-5 rounded-2xl text-left space-y-1 shadow-md">
-              <span className="text-[9px] text-[#8c9f9e] font-black uppercase tracking-wider block">Solana Devnet</span>
+              <span className="text-[9px] text-[#8c9f9e] font-black uppercase tracking-wider block">Solana Mainnet</span>
               <span className="text-xs font-bold font-mono text-[#1A56DB] flex items-center gap-1 bg-[#1A56DB]/10 border border-[#1A56DB]/20 px-2 py-1 rounded max-w-fit mt-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
                 CONECTADO
