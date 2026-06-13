@@ -1226,6 +1226,7 @@ export default function App() {
         {activeTab === 'postales_digitales' && (
           <PostalesDigitalesView 
             locations={translatedLocations}
+            user={user}
           />
         )}
 

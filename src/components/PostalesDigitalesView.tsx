@@ -20,7 +20,7 @@ import {
   Check
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Location } from '../types';
+import { Location, UserProfile } from '../types';
 import { useLanguage } from '../translations';
 import { useWallet } from '@solana/wallet-adapter-react';
 import QRCode from 'qrcode';
@@ -41,6 +41,7 @@ const POSTALES_IMAGES: Record<string, string> = {
 
 interface PostalesDigitalesViewProps {
   locations: Location[];
+  user?: UserProfile;
 }
 
 interface MintState {
@@ -49,7 +50,7 @@ interface MintState {
   txHash: string | null;
 }
 
-export default function PostalesDigitalesView({ locations }: PostalesDigitalesViewProps) {
+export default function PostalesDigitalesView({ locations, user }: PostalesDigitalesViewProps) {
   const { t, language } = useLanguage();
   const { publicKey, connected } = useWallet();
 
@@ -70,7 +71,12 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
 
   useEffect(() => {
     const isSimulatedActive = localStorage.getItem('solana-active') !== 'false';
-    if (connected && publicKey) {
+    if (user && user.linkedWallet && user.linkedWallet.trim() !== '') {
+      setWalletConnected(true);
+      setWalletAddress(user.linkedWallet);
+      setWalletBalance(user.linkedWallet === 'felix.voyager@solana.inv' ? 1.48 : 5.86);
+      setWalletType('real');
+    } else if (connected && publicKey) {
       setWalletConnected(true);
       setWalletAddress(publicKey.toBase58());
       setWalletBalance(16.42);
@@ -86,7 +92,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
       setWalletBalance(0);
       setWalletType(null);
     }
-  }, [connected, publicKey]);
+  }, [connected, publicKey, user?.linkedWallet]);
 
   // Minting tracking state for the 6 postcards
   const [mintStatus, setMintStatus] = useState<Record<string, MintState>>(() => {
@@ -295,6 +301,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
         ctx.fillText("Red: Solana Mainnet-Beta (Sandbox Class)", 1090, 375);
         ctx.fillText("Formato: Compressed NFT (cNFT) de alta fidelidad", 1090, 405);
         ctx.fillText("Estado: CONFIRMADO & REGISTRADO", 1090, 435);
+        ctx.fillText(`Destinatario (Wallet): ${walletAddress.slice(0, 12)}...${walletAddress.slice(-12)}`, 1090, 465);
 
         // Blockchain Transaction segment
         ctx.fillStyle = "#ffffff";
@@ -484,6 +491,7 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
     ctx.fillText("Red: Solana Mainnet-Beta (Sandbox Class)", 1090, 375);
     ctx.fillText("Formato: Compressed NFT (cNFT) de alta fidelidad", 1090, 405);
     ctx.fillText("Estado: CONFIRMADO & REGISTRADO", 1090, 435);
+    ctx.fillText(`Destinatario (Wallet): ${walletAddress.slice(0, 12)}...${walletAddress.slice(-12)}`, 1090, 465);
 
     // Blockchain Transaction segment
     ctx.fillStyle = "#ffffff";
@@ -909,6 +917,12 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
                 <div className="flex justify-between">
                   <span>Operación:</span>
                   <span className="text-purple-300 font-bold">Mint Digital Stamp (cNFT)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Firmante:</span>
+                  <span className="text-secondary select-all font-semibold truncate max-w-[150px]" title={walletAddress}>
+                    {walletAddress}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Autoridad:</span>
