@@ -19,16 +19,11 @@ interface SolanaProviderProps {
 }
 
 export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
-  // Definir la red a la que nos conectaremos (Devnet para pruebas, Mainnet para producción)
-  const network = WalletAdapterNetwork.Devnet;
+  // Definir la red a la que nos conectaremos (Mainnet para producción)
+  const network = WalletAdapterNetwork.Mainnet;
 
-  // Configurar el endpoint RPC. Se prefiere un proveedor de alto rendimiento como Ankr para evitar el rate-limiting de nodos públicos oficiales.
-  const endpoint = useMemo(() => {
-    if (network === WalletAdapterNetwork.Devnet) {
-      return 'https://rpc.ankr.com/solana_devnet';
-    }
-    return clusterApiUrl(network);
-  }, [network]);
+  // Configurar el endpoint RPC personalizado de QuickNode
+  const endpoint = 'https://warmhearted-convincing-pond.solana-mainnet.quiknode.pro/e94dfde1704c2550b45140431b9afae59cacecb2/';
 
   // Inicializar los adaptadores de las wallets que deseas soportar
   const wallets = useMemo(

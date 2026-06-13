@@ -62,6 +62,11 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
   const [showWalletSelector, setShowWalletSelector] = useState<boolean>(false);
   const [showSignModal, setShowSignModal] = useState<boolean>(false);
   const [signingPostcardIndex, setSigningPostcardIndex] = useState<number | null>(null);
+  const [isIframe, setIsIframe] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsIframe(window.self !== window.top);
+  }, []);
 
   useEffect(() => {
     const isSimulatedActive = localStorage.getItem('solana-active') !== 'false';
@@ -623,6 +628,33 @@ export default function PostalesDigitalesView({ locations }: PostalesDigitalesVi
           </span>
         </div>
       </div>
+
+
+      {isIframe && (
+        <div className="bg-gradient-to-r from-amber-500/10 to-[#1e1205] border border-amber-500/35 p-5 rounded-2xl text-left flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 animate-in slide-in-from-top-3 duration-300">
+          <div className="flex items-start gap-3.5 w-full">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/35 flex items-center justify-center text-amber-400 shrink-0 select-none">
+              ⚠️
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-headline font-bold text-sm text-amber-400 uppercase tracking-wider">Restricción de Visor Detectada</h4>
+              <p className="text-xs text-on-surface-variant/90 leading-relaxed max-w-2xl">
+                Las billeteras de Solana (como Phantom o Solflare) bloquean las firmas e inicios de sesión si la dApp corre dentro de pantallas integradas (Marcos/iFrames) para tu seguridad de activos. Abre esta dApp en una pestaña externa para reclamar y acuñar tus postales libremente.
+              </p>
+            </div>
+          </div>
+          <div className="w-full sm:w-auto shrink-0 self-center">
+            <a
+              href={window.location.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-black py-2.5 px-5 rounded-xl font-black text-xs uppercase tracking-wider transition cursor-pointer text-center shadow-md shrink-0 whitespace-nowrap"
+            >
+              Abrir en Pestaña Nueva
+            </a>
+          </div>
+        </div>
+      )}
 
       {!walletConnected && (
         <div className="bg-gradient-to-r from-amber-500/10 to-[#1e1205] border border-amber-500/35 p-5 rounded-2xl text-left flex items-start gap-3.5 animate-in slide-in-from-top-3 duration-300">

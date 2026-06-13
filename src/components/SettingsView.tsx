@@ -95,7 +95,7 @@ export default function SettingsView({
       console.warn("Error fetching wallet balance via main RPC. Trying fallback...", err);
       try {
         const { Connection } = await import('@solana/web3.js');
-        const fallbackConn = new Connection('https://api.devnet.solana.com', 'confirmed');
+        const fallbackConn = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
         const lamports = await fallbackConn.getBalance(publicKey);
         setRealBalance(lamports / 1000000000);
       } catch (fallbackErr) {
@@ -670,13 +670,14 @@ export default function SettingsView({
                 <p className="opacity-90 text-[#00E676]">
                   Las billeteras Web3 bloquean las firmas e inicios de sesión si la dApp corre dentro de pantallas integradas (Marcos/iFrames) para tu seguridad. Abre esta dApp en una pestaña nueva para poder interactuar libremente.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => window.open(window.location.origin + window.location.pathname, '_blank')}
-                  className="w-full bg-amber-500 text-black py-2 px-3 rounded-xl font-black text-[10.5px] uppercase tracking-wide hover:bg-amber-400 transition cursor-pointer text-center block shadow"
+                <a
+                  href={window.location.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-amber-500 hover:bg-amber-400 text-black py-2 px-3 rounded-xl font-black text-[10.5px] uppercase tracking-wide transition cursor-pointer text-center block shadow"
                 >
                   Abrir en Pestaña Nueva
-                </button>
+                </a>
               </div>
             )}
 
