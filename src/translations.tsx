@@ -39,7 +39,7 @@ const DICTIONARY: Record<Language, Record<string, string>> = {
     // Landing How It Works
     'como_funciona': '¿Cómo funciona?',
     'physical_map_title': 'Adquiere tu Mapa Físico',
-    'physical_map_desc': 'Empieza tu viaje con nuestro mapa premium de alta calidad. Contiene los marcadores secretos y códigos QR necesarios para activar tu Bitácora Digital.',
+    'physical_map_desc': 'Empieza tu viaje con nuestros mapas de alta calidad. Contiene los sitios históricos y códigos QR necesarios para poder obtener más información en la página web.',
     'visit_sites_title': 'Visita los Sitios',
     'visit_sites_desc': 'Explora monumentos históricos y maravillas naturales. Cada ubicación es un nuevo hito en tu carrera como Explorador Digital.',
     'gps_checkin_title': 'GPS Check-in',
