@@ -42,6 +42,11 @@ export const LIST_AVATARS = [
 export function resolveAvatar(url: string | undefined): string {
   if (!url) return AVATAR_DIEGO;
   
+  // If it's a base64 data URL or a remote web URL (like Firebase Storage), return it directly
+  if (url.startsWith('data:image/') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
   try {
     const lowerUrl = decodeURIComponent(url).toLowerCase();
     

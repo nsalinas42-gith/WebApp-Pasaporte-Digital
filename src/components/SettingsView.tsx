@@ -31,6 +31,7 @@ import { useLanguage } from '../translations';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { LIST_AVATARS } from '../utils/avatars';
+import { auth, uploadAvatarToStorage, updateUserProfileAuth } from '../utils/firebase';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const PRESET_AVATARS = LIST_AVATARS;
@@ -67,6 +68,8 @@ export default function SettingsView({
   const [wallet, setWallet] = useState(user.linkedWallet);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
   const [bio, setBio] = useState(user.bio || '');
+  const [pendingAvatarBlob, setPendingAvatarBlob] = useState<Blob | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Web3 Solana integration states
   const [isIframe, setIsIframe] = useState(false);
@@ -240,9 +243,16 @@ export default function SettingsView({
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(img, 0, 0, w, h);
-        // Use JPEG format at 0.75 compression quality (significantly reduces footprint to ~10KB-15KB!)
-        const compressed = canvas.toDataURL('image/jpeg', 0.75);
-        setAvatarUrl(compressed);
+        // Convert to compressed binary Blob to upload to storage
+        canvas.toBlob((blob) => {
+          if (blob) {
+            setPendingAvatarBlob(blob);
+            const previewUrl = URL.createObjectURL(blob);
+            setAvatarUrl(previewUrl);
+          } else {
+            setAvatarUrl(base64Str);
+          }
+        }, 'image/jpeg', 0.75);
       } else {
         setAvatarUrl(base64Str);
       }
@@ -267,19 +277,48 @@ export default function SettingsView({
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onUpdateUser({
-      ...user,
-      name,
-      email,
-      title,
-      linkedWallet: wallet,
-      avatarUrl,
-      bio
-    });
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    setIsSaving(true);
+    setErrorMsg(null);
+    setSaveSuccess(false);
+
+    try {
+      let finalAvatarUrl = avatarUrl;
+      const currentUser = auth.currentUser;
+
+      if (currentUser && pendingAvatarBlob) {
+        // 1. Upload to Firebase Storage
+        const uploadUrl = await uploadAvatarToStorage(currentUser.uid, pendingAvatarBlob);
+        finalAvatarUrl = uploadUrl;
+        setAvatarUrl(uploadUrl);
+        setPendingAvatarBlob(null);
+      }
+
+      // 2. Update Firebase Auth Profile (photoURL and displayName)
+      if (currentUser) {
+        await updateUserProfileAuth(name, finalAvatarUrl);
+      }
+
+      // 3. Update React parent state
+      onUpdateUser({
+        ...user,
+        name,
+        email,
+        title,
+        linkedWallet: wallet,
+        avatarUrl: finalAvatarUrl,
+        bio
+      });
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err: any) {
+      console.error("Error saving profile settings:", err);
+      setErrorMsg("Ocurrió un error al guardar los cambios: " + (err.message || String(err)));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -365,6 +404,7 @@ export default function SettingsView({
                     type="button"
                     onClick={() => {
                       setAvatarUrl(p.url);
+                      setPendingAvatarBlob(null);
                       setErrorMsg(null);
                     }}
                     title={p.name}
@@ -506,9 +546,13 @@ export default function SettingsView({
             <button
               id="btn-save-settings"
               type="submit"
-              className="py-3 px-6 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wider hover:brightness-105 active:scale-95 transition-all outline-none"
+              disabled={isSaving}
+              className={`py-3 px-6 bg-secondary text-on-secondary font-bold rounded-xl text-xs uppercase tracking-wider active:scale-95 transition-all outline-none flex items-center gap-2 ${
+                isSaving ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-105'
+              }`}
             >
-              {t('guardar_cambios_btn')}
+              {isSaving && <RefreshCw className="w-4 h-4 animate-spin text-on-secondary" />}
+              {isSaving ? 'Guardando...' : t('guardar_cambios_btn')}
             </button>
           </div>
         </form>

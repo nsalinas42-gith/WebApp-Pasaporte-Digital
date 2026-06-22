@@ -9,7 +9,8 @@ import {
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  updateProfile
 } from 'firebase/auth';
 import { 
   initializeFirestore, 
@@ -29,6 +30,12 @@ import {
   enableIndexedDbPersistence,
   setLogLevel
 } from 'firebase/firestore';
+import { 
+  getStorage, 
+  ref as storageRef, 
+  uploadBytes, 
+  getDownloadURL 
+} from 'firebase/storage';
 import { UserProfile, UserStats, Location } from '../types';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -54,6 +61,13 @@ export const db = initializeFirestore(app, {
 }, firebaseConfig.firestoreDatabaseId);
 
 export const auth = getAuth(app);
+
+export let storage: any = null;
+try {
+  storage = getStorage(app);
+} catch (e) {
+  console.warn("Firebase Storage is not available or has not been initialized. Inline base64 avatars will be used as a fallback:", e);
+}
 
 // Enable offline persistence if allowed in the current browser/iframe sandbox
 try {
@@ -244,6 +258,50 @@ export async function saveUserProfileAndProgress(
     console.log(`Cloud progress successfully synced to Firestore for verified UID: ${userId}`);
   } catch (error) {
     handleFirestoreError(error, ReturnOperationType.WRITE, progressDocPath);
+  }
+}
+
+/**
+ * Uploads a profile avatar file (or Blob) to Firebase Storage and returns its download URL.
+ * If Firebase Storage is not available, falls back to an inline base64 data URL.
+ */
+export async function uploadAvatarToStorage(userId: string, fileOrBlob: File | Blob): Promise<string> {
+  const getBase64 = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(fileOrBlob);
+    });
+  };
+
+  if (!storage) {
+    console.warn("Storage service is not available. Saving avatar as inline base64 string.");
+    return await getBase64();
+  }
+
+  try {
+    const fileExtension = fileOrBlob instanceof File ? fileOrBlob.name.split('.').pop() || 'jpg' : 'jpg';
+    const fileRef = storageRef(storage, `users/${userId}/avatar_${Date.now()}.${fileExtension}`);
+    const snapshot = await uploadBytes(fileRef, fileOrBlob);
+    return await getDownloadURL(snapshot.ref);
+  } catch (error: any) {
+    console.warn("Firebase Storage upload failed (perhaps unconfigured or blocked by rules). Falling back to inline base64 avatar:", error.message || error);
+    return await getBase64();
+  }
+}
+
+/**
+ * Updates the Firebase Auth profile (displayName and photoURL) of the currently authenticated user.
+ */
+export async function updateUserProfileAuth(displayName: string, photoURL: string): Promise<void> {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    await updateProfile(currentUser, {
+      displayName: displayName,
+      photoURL: photoURL
+    });
+    console.log("Firebase Auth profile successfully updated.");
   }
 }
 
