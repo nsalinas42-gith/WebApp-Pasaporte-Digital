@@ -502,6 +502,9 @@ export default function CollectiveMap() {
                     alt={currentName} 
                     className="w-12 h-12 rounded-full object-cover bg-surface shadow-inner"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = avatarJoven1;
+                    }}
                   />
                   {selectedUser?.isMock ? (
                     <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[9px] text-white font-bold shadow-md">
@@ -536,12 +539,22 @@ export default function CollectiveMap() {
                         alt={selectedUser.name} 
                         className="w-11 h-11 rounded-full border border-amber-500 bg-slate-900 object-cover"
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = avatarJoven1;
+                        }}
                       />
                       <div>
                         <h4 className="text-sm font-semibold tracking-tight text-white">{selectedUser.name}</h4>
                         <div className="text-xs font-mono text-primary font-semibold">{selectedUser.pseudonym}</div>
                       </div>
                     </div>
+                    <button 
+                      onClick={() => setSelectedUser(null)} 
+                      className="text-white/40 hover:text-white transition font-bold text-xs p-1"
+                      aria-label="Cerrar ficha"
+                    >
+                      ✕
+                    </button>
                   </div>
 
                   {selectedUser.title && (
