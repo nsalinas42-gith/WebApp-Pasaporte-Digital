@@ -50,7 +50,6 @@ export interface UserProfile {
   joinedDate: string;
   linkedWallet: string;
   bio?: string;
-  avatarConfig?: any;
 }
 
 export interface LeaderboardEntry {

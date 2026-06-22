@@ -360,7 +360,6 @@ export default function App() {
                 xp: Number(progressData.xp) || prev.xp,
                 xpToNextLevel: Number(progressData.xpToNextLevel) || prev.xpToNextLevel,
                 linkedWallet: progressData.linkedWallet || prev.linkedWallet || '',
-                avatarConfig: progressData.avatarConfig !== undefined ? progressData.avatarConfig : prev.avatarConfig,
               };
               localStorage.setItem('passport_user', JSON.stringify(updated));
               return updated;
@@ -428,7 +427,6 @@ export default function App() {
                 bio: userData.bio || prev.bio || '',
                 title: userData.title || prev.title,
                 joinedDate: formatJoinedDate(userData.createdAt),
-                avatarConfig: userData.avatarConfig !== undefined ? userData.avatarConfig : prev.avatarConfig,
               };
               localStorage.setItem('passport_user', JSON.stringify(updated));
               return updated;
@@ -921,7 +919,6 @@ export default function App() {
         xpToNextLevel: user.xpToNextLevel,
         joinedDate: user.joinedDate || 'Miembro desde: Reciente',
         linkedWallet: user.linkedWallet || '',
-        avatarConfig: user.avatarConfig || null,
       };
       
       // 2. See if there is existing progress in the cloud

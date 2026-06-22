@@ -32,7 +32,7 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { auth, uploadAvatarToStorage, updateUserProfileAuth } from '../utils/firebase';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import AvatarEditor from './AvatarEditor';
+import { LIST_AVATARS } from '../utils/avatars';
 
 interface SettingsViewProps {
   user: UserProfile;
@@ -68,8 +68,6 @@ export default function SettingsView({
   const [bio, setBio] = useState(user.bio || '');
   const [pendingAvatarBlob, setPendingAvatarBlob] = useState<Blob | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [showEditor, setShowEditor] = useState(false);
-  const [avatarConfig, setAvatarConfig] = useState<any>(user.avatarConfig || null);
 
   // Web3 Solana integration states
   const [isIframe, setIsIframe] = useState(false);
@@ -214,7 +212,6 @@ export default function SettingsView({
     setWallet(translatedUser.linkedWallet);
     setAvatarUrl(translatedUser.avatarUrl);
     setBio(translatedUser.bio || '');
-    setAvatarConfig(user.avatarConfig || null);
   }, [user.email, user.joinedDate, language]);
 
   // Helper to compress and resize custom uploaded photos to save weight and prevent Firestore size limits
@@ -354,8 +351,7 @@ export default function SettingsView({
         title,
         linkedWallet: wallet,
         avatarUrl: finalAvatarUrl,
-        bio,
-        avatarConfig
+        bio
       });
 
       setSaveSuccess(true);
@@ -391,52 +387,107 @@ export default function SettingsView({
             {t('editar_cuenta_section')}
           </h3>
 
-          {/* Avatar & Photo Upload Section */}
-          <div className="bg-[#001c24]/50 border border-[#005049]/30 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row gap-5 items-center">
-            {/* Circular Preview with custom editor click */}
-            <div className="relative group/avatar flex-shrink-0">
-              <div 
-                className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(26, 86, 219,0.15)] bg-[#001019] flex items-center justify-center relative cursor-pointer group-hover/avatar:border-secondary transition-all"
-                onClick={() => setShowEditor(true)}
-              >
-                {avatarUrl ? (
-                  <img 
-                    src={avatarUrl} 
-                    alt="Vista previa del avatar" 
-                    className="w-full h-full object-cover transition-transform group-hover/avatar:scale-105"
-                    referrerPolicy="no-referrer"
+          {/* Avatar & Photo Selection Section */}
+          <div className="bg-[#001c24]/50 border border-[#005049]/30 rounded-2xl p-5 space-y-5">
+            <div className="flex flex-col sm:flex-row gap-5 items-center">
+              {/* Circular Preview */}
+              <div className="relative group/avatar flex-shrink-0">
+                <div 
+                  className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(26, 86, 219,0.15)] bg-[#001019] flex items-center justify-center relative transition-all"
+                >
+                  {avatarUrl ? (
+                    <img 
+                      src={avatarUrl} 
+                      alt="Vista previa del avatar" 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <User className="w-8 h-8 text-on-surface-variant/40" />
+                  )}
+                </div>
+              </div>
+
+              {/* Custom Image Upload Option */}
+              <div className="flex-1 space-y-3 text-center sm:text-left">
+                <div>
+                  <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1.5 justify-center sm:justify-start text-secondary">
+                    <Camera className="w-4 h-4" /> Avatar de Explorador
+                  </h4>
+                  <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1">
+                    Selecciona uno de los avatares ilustrados oficiales de la bitácora o sube una foto personalizada desde tu dispositivo.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-0.5">
+                  <input
+                    id="avatar-file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
-                ) : (
-                  <User className="w-8 h-8 text-on-surface-variant/40" />
-                )}
-                <div className="absolute inset-0 bg-[#001019]/75 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center text-[9px] text-secondary font-bold transition-all gap-1">
-                  <Settings className="w-4 h-4 text-secondary animate-pulse" />
-                  <span>Diseñar Avatar</span>
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('avatar-file-input')?.click()}
+                    aria-label="Subir foto personalizada"
+                    className="py-2 px-4 bg-[#0d2a29] border border-secondary/30 hover:border-secondary hover:bg-[#113837] text-xs font-bold rounded-lg text-secondary flex items-center gap-1.5 transition-all outline-none cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    Subir foto personalizada
+                  </button>
+                  {avatarUrl && !LIST_AVATARS.some(item => item.url === avatarUrl) && (
+                    <button
+                      type="button"
+                      onClick={() => setAvatarUrl(LIST_AVATARS[4].url)} // default back to Diego
+                      className="py-2 px-3 border border-dashed border-slate-500 hover:border-slate-400 hover:bg-[#001019]/40 text-xs text-slate-400 hover:text-slate-300 rounded-lg flex items-center gap-1 transition-all"
+                    >
+                      Restablecer preset
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Custom Avatar Generation Editor Trigger Button */}
-            <div className="flex-1 space-y-3 text-center sm:text-left">
-              <div>
-                <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1 justify-center sm:justify-start text-secondary">
-                  <Settings className="w-3.5 h-3.5" /> Avatar Personalizado DiceBear
-                </h4>
-                <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1 animate-pulse">
-                  ¡Crea y personaliza tu propio avatar digital interactivo en tiempo real con diferentes peinados, colores, expresiones y accesorios para tu bitácora!
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => setShowEditor(true)}
-                  aria-label="Diseñar y Configurar Avatar Personalizado"
-                  className="py-2 px-4 bg-[#0d2a29] border border-secondary/30 hover:border-secondary hover:bg-[#113837] text-xs font-bold rounded-lg text-secondary flex items-center gap-1.5 transition-all outline-none cursor-pointer hover:scale-105 active:scale-95"
-                >
-                  <Settings className="w-4 h-4" />
-                  Configurar Avatar Personalizado
-                </button>
+            {/* Presets Grid */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block text-left">
+                Avatares Oficiales de Caracas
+              </label>
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+                {LIST_AVATARS.map((item) => {
+                  const isSelected = avatarUrl === item.url || (avatarUrl && avatarUrl.includes(item.name.toLowerCase()));
+                  return (
+                    <button
+                      key={item.name}
+                      type="button"
+                      onClick={() => {
+                        setAvatarUrl(item.url);
+                        setPendingAvatarBlob(null); // Clear custom upload if choosing preset
+                      }}
+                      className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer group/item ${
+                        isSelected 
+                          ? 'border-secondary bg-secondary/10 scale-105 shadow-[0_0_10px_rgba(20,184,166,0.3)]' 
+                          : 'border-[#005049]/30 hover:border-[#005049]/80 bg-[#001019]/40'
+                      }`}
+                      title={item.name}
+                    >
+                      <img 
+                        src={item.url} 
+                        alt={item.name} 
+                        className="w-full h-full object-cover transition-transform group-hover/item:scale-110"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-[8px] text-[#c8e7fb] text-center truncate font-bold opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        {item.name}
+                      </div>
+                      {isSelected && (
+                        <div className="absolute top-1 right-1 bg-secondary text-[#001019] rounded-full p-0.5 shadow-md">
+                          <Check className="w-2.5 h-2.5 stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -769,32 +820,6 @@ export default function SettingsView({
         </div>
 
       </div>
-
-      {showEditor && (
-        <div className="fixed inset-0 bg-[#020817]/90 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all" role="dialog" aria-modal="true">
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-teal-500/30 rounded-3xl p-4 md:p-6 shadow-[0_0_30px_rgba(20,184,166,0.15)] animate-in zoom-in duration-200 text-left">
-            <button 
-              type="button"
-              onClick={() => setShowEditor(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-10 font-bold bg-slate-800 hover:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer border-0"
-              title="Cerrar Editor"
-            >
-              ✕
-            </button>
-            <div className="pt-4 max-h-[85vh] overflow-y-auto pr-2 scrollbar-thin">
-              <AvatarEditor 
-                initialConfig={avatarConfig} 
-                onSave={({ config, dataUrl }) => {
-                  setAvatarUrl(dataUrl);
-                  setAvatarConfig(config);
-                  setPendingAvatarBlob(null);
-                  setShowEditor(false);
-                }} 
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
