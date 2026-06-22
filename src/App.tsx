@@ -527,6 +527,8 @@ export default function App() {
   const userLinkedWallet = user.linkedWallet;
   const userJoinedDate = user.joinedDate;
   const userBio = user.bio || '';
+  const userLatitude = user.latitude;
+  const userLongitude = user.longitude;
   const statsSerialized = JSON.stringify(stats);
   const locationsSerialized = JSON.stringify(locations);
 
@@ -546,6 +548,8 @@ export default function App() {
             joinedDate: userJoinedDate,
             linkedWallet: userLinkedWallet,
             bio: userBio,
+            latitude: userLatitude,
+            longitude: userLongitude,
           },
           JSON.parse(statsSerialized),
           JSON.parse(locationsSerialized)
@@ -566,6 +570,8 @@ export default function App() {
     userLinkedWallet,
     userJoinedDate,
     userBio,
+    userLatitude,
+    userLongitude,
     statsSerialized,
     locationsSerialized
   ]);
@@ -620,6 +626,13 @@ export default function App() {
     const currentLvl = Math.floor(currentXP / 2000) + 1;
 
     setLocations(updatedLocations);
+
+    // Save check-in coordinates to user profile
+    setUser(prev => ({
+      ...prev,
+      latitude: Number(place.latitude),
+      longitude: Number(place.longitude)
+    }));
 
     // Check if the entire route was completed to increment regionsVisited
     const wasAlreadyCompleted = targetLoc.isCheckedIn;

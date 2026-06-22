@@ -218,6 +218,8 @@ export async function saveUserProfileAndProgress(
         title: profile.title || 'Explorador',
         bio: profile.bio || '',
         lastLogin: serverTimestamp(),
+        ...(profile.latitude !== undefined ? { latitude: Number(profile.latitude) } : {}),
+        ...(profile.longitude !== undefined ? { longitude: Number(profile.longitude) } : {}),
       }, { merge: true });
     } else {
       // Record user metadata profile (Create - Including createdAt serverTimestamp)
@@ -230,6 +232,8 @@ export async function saveUserProfileAndProgress(
         bio: profile.bio || '',
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
+        ...(profile.latitude !== undefined ? { latitude: Number(profile.latitude) } : {}),
+        ...(profile.longitude !== undefined ? { longitude: Number(profile.longitude) } : {}),
       });
     }
   } catch (error) {
@@ -353,6 +357,8 @@ export async function getUserProfileAndProgress(userId: string): Promise<{
       joinedDate: data.joinedDate || 'Miembro reciente',
       linkedWallet: data.linkedWallet || '',
       bio: userData?.bio || data.bio || '',
+      latitude: userData?.latitude !== undefined ? Number(userData.latitude) : undefined,
+      longitude: userData?.longitude !== undefined ? Number(userData.longitude) : undefined,
     };
 
     const stats: UserStats = {

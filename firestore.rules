@@ -53,7 +53,9 @@ service cloud.firestore {
         && (!('secondaryEmail' in data) || (data.secondaryEmail is string && data.secondaryEmail.size() <= 200))
         && (!('passwordHash' in data) || (data.passwordHash is string && data.passwordHash.size() <= 128))
         && (!('recoveryToken' in data) || (data.recoveryToken is string && data.recoveryToken.size() <= 128))
-        && (!('recoveryTokenExpires' in data) || (data.recoveryTokenExpires is string && data.recoveryTokenExpires.size() <= 128));
+        && (!('recoveryTokenExpires' in data) || (data.recoveryTokenExpires is string && data.recoveryTokenExpires.size() <= 128))
+        && (!('latitude' in data) || (data.latitude is number))
+        && (!('longitude' in data) || (data.longitude is number));
     }
 
     // Validation Blueprint for User Progress Document

@@ -58,6 +58,7 @@ import logoPintaMapas from '../assets/images/Logo Pinta Mapas2.png';
 import logoAvatar from '../assets/images/logo.avatar.png';
 import caracasAvilaImg from '../assets/images/caracas_sky_avila_1780684422323.png';
 import UserProfilesCarousel from './UserProfilesCarousel';
+import CollectiveMap from './CollectiveMap';
 import UserWayAccessibility from './UserWayAccessibility';
 
 interface LandingViewProps {
@@ -1258,6 +1259,11 @@ export default function LandingView({
 
       {/* Dynamic Profile Carousel */}
       <UserProfilesCarousel />
+
+      {/* Collective Map Section */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <CollectiveMap />
+      </div>
 
       {/* 5. FOOTER SECTION */}
       <footer className="bg-[#00080d] border-t border-[#005049]/20 pt-16 pb-10 px-6 md:px-16">

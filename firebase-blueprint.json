@@ -45,6 +45,14 @@
           "type": "string",
           "format": "date-time"
         },
+        "latitude": {
+          "type": "number",
+          "description": "Latitud del último registro o check-in"
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitud del último registro o check-in"
+        },
         "lastLogin": {
           "type": "string",
           "format": "date-time"

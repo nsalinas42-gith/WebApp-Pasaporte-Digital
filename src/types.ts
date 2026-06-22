@@ -50,6 +50,8 @@ export interface UserProfile {
   joinedDate: string;
   linkedWallet: string;
   bio?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface LeaderboardEntry {
