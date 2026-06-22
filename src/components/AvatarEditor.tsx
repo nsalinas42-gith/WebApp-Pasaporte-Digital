@@ -171,11 +171,11 @@ const AVATAR_OPTIONS: Record<string, { label: string; values: string[] }> = {
   },
   hairColor: { 
     label: 'Color de Pelo', 
-    values: ['2c1b18', '4a312c', '724133', 'a55728', 'c93305', 'b58143', 'd6b370', 'ecdcbf', 'f59797', 'e8e1e1'] 
+    values: ['000000', '1a1a1a', '2c1b18', '4a312c', '724133', 'a55728', 'c93305', 'b58143', 'd6b370', 'ecdcbf', 'f59797', 'e8e1e1'] 
   },
   hatColor: { 
     label: 'Color de Sombrero/Gorra', 
-    values: ['262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
+    values: ['000000', '1a1a1a', '262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
   },
   accessories: { 
     label: 'Accesorios/Lentes', 
@@ -183,7 +183,7 @@ const AVATAR_OPTIONS: Record<string, { label: string; values: string[] }> = {
   },
   accessoriesColor: { 
     label: 'Color de Accesorios', 
-    values: ['262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
+    values: ['000000', '1a1a1a', '262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
   },
   facialHair: { 
     label: 'Barba / Bigote', 
@@ -191,7 +191,7 @@ const AVATAR_OPTIONS: Record<string, { label: string; values: string[] }> = {
   },
   facialHairColor: { 
     label: 'Color de Barba', 
-    values: ['2c1b18', '4a312c', '724133', 'a55728', 'c93305', 'b58143', 'd6b370', 'ecdcbf', 'f59797', 'e8e1e1'] 
+    values: ['000000', '1a1a1a', '2c1b18', '4a312c', '724133', 'a55728', 'c93305', 'b58143', 'd6b370', 'ecdcbf', 'f59797', 'e8e1e1'] 
   },
   clothing: { 
     label: 'Estilo de Ropa', 
@@ -199,7 +199,7 @@ const AVATAR_OPTIONS: Record<string, { label: string; values: string[] }> = {
   },
   clothesColor: { 
     label: 'Color de Ropa', 
-    values: ['262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
+    values: ['000000', '1a1a1a', '262e33', '65c9ff', '5199e4', '25557c', 'e6e6e6', '929598', '3c4f5c', 'b1e2ff', 'a7ffc4', 'ffdeb5', 'ffafb9', 'ffffb1', 'ff488e', 'ff5c5c', 'ffffff'] 
   },
   clothingGraphic: { 
     label: 'Gráfico Camiseta', 
@@ -223,7 +223,7 @@ const AVATAR_OPTIONS: Record<string, { label: string; values: string[] }> = {
   },
   backgroundColor: {
     label: 'Color de Fondo',
-    values: ['65c9ff', 'ffafb9', 'ffffb1', 'a7ffc4', '5199e4', 'e6e6e6', '3c4f5c', 'ffffff']
+    values: ['000000', '1a1a1a', '65c9ff', 'ffafb9', 'ffffb1', 'a7ffc4', '5199e4', 'e6e6e6', '3c4f5c', 'ffffff']
   }
 };
 

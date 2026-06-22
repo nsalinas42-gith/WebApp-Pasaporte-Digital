@@ -217,6 +217,7 @@ export async function saveUserProfileAndProgress(
         avatarUrl: profile.avatarUrl || '',
         title: profile.title || 'Explorador',
         bio: profile.bio || '',
+        avatarConfig: profile.avatarConfig || null,
         lastLogin: serverTimestamp(),
       }, { merge: true });
     } else {
@@ -228,6 +229,7 @@ export async function saveUserProfileAndProgress(
         avatarUrl: profile.avatarUrl || '',
         title: profile.title || 'Explorador',
         bio: profile.bio || '',
+        avatarConfig: profile.avatarConfig || null,
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
       });
@@ -246,6 +248,7 @@ export async function saveUserProfileAndProgress(
       linkedWallet: profile.linkedWallet || '',
       title: profile.title || 'Explorador',
       bio: profile.bio || '',
+      avatarConfig: profile.avatarConfig || null,
       stats: {
         regionsVisited: stats.regionsVisited,
         momentsCaptured: stats.momentsCaptured,
@@ -353,6 +356,7 @@ export async function getUserProfileAndProgress(userId: string): Promise<{
       joinedDate: data.joinedDate || 'Miembro reciente',
       linkedWallet: data.linkedWallet || '',
       bio: userData?.bio || data.bio || '',
+      avatarConfig: userData?.avatarConfig || data.avatarConfig || null,
     };
 
     const stats: UserStats = {
