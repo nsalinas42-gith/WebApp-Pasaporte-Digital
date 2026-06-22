@@ -4,7 +4,6 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { APIProvider, Map, Marker, InfoWindow } from '@vis.gl/react-google-maps';
 import { collection, query, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useLanguage } from '../translations';
@@ -110,9 +109,7 @@ const MOCK_PROFILES_WITH_COORDS: MapUser[] = [
 export default function CollectiveMap() {
   const { t } = useLanguage();
   const [explorers, setExplorers] = useState<MapUser[]>(MOCK_PROFILES_WITH_COORDS);
-  const [selectedUser, setSelectedUser] = useState<MapUser | null>(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 10.506085, lng: -66.912 });
-  const [zoom, setZoom] = useState(14);
+  const [selectedUser, setSelectedUser] = useState<MapUser | null>(MOCK_PROFILES_WITH_COORDS[0]); // default to first mock for beautiful preview state
   const [mapMode, setMapMode] = useState<'artistic' | 'google'>('artistic'); // default to 'artistic' to always preserve stellar custom UX with ZERO billing errors
   
   // Local map zoom/navigation states
@@ -120,11 +117,9 @@ export default function CollectiveMap() {
   const [artisticPan, setArtisticPan] = useState({ x: 0, y: 0 });
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
-  const apiKey = process.env.GOOGLE_MAPS_PLATFORM_KEY || '';
-
   // Listen to real-time users collection in Firestore
   useEffect(() => {
-    const q = query(collection(db, 'users'), limit(50));
+    const q = query(collection(db, 'users'), limit(500));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let dbUsers: MapUser[] = [];
@@ -132,7 +127,7 @@ export default function CollectiveMap() {
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           // We only display users on the map who have registered coordinate geolocations
-          if (data.latitude !== undefined && data.longitude !== undefined) {
+          if (data.latitude != null && data.longitude != null) {
             const name = data.name || 'Viajero Misterioso';
             let pseudo = data.pseudonym || data.title || '';
             if (!pseudo || pseudo.includes(' ')) {
@@ -174,8 +169,6 @@ export default function CollectiveMap() {
 
   const handleFocusUser = (user: MapUser) => {
     setSelectedUser(user);
-    setMapCenter({ lat: user.latitude, lng: user.longitude });
-    setZoom(15);
 
     if (mapMode === 'artistic') {
       // Pin relative map placement
@@ -201,7 +194,7 @@ export default function CollectiveMap() {
     return { x, y };
   };
 
-  // Helper for artistic drag gestures
+  // Helper for drag gestures
   const handleMouseDown = (e: React.MouseEvent) => {
     dragStartRef.current = { x: e.clientX - artisticPan.x, y: e.clientY - artisticPan.y };
   };
@@ -227,6 +220,14 @@ export default function CollectiveMap() {
     setSelectedUser(null);
   };
 
+  // Generate dynamic, billing-free embed URL showcasing real location
+  // Changed "t=k" (satellite) to "t=m" (roadmap view) per user requirement
+  const currentLat = selectedUser?.latitude || 10.506085;
+  const currentLng = selectedUser?.longitude || -66.914631;
+  const currentAvatar = selectedUser?.avatarUrl || avatarJoven1;
+  const currentName = selectedUser?.name || 'Aventurero';
+  const embedUrl = `https://maps.google.com/maps?q=${currentLat},${currentLng}&t=m&z=17&ie=UTF8&iwloc=&output=embed`;
+
   return (
     <div className="w-full bg-surface-variant/40 rounded-3xl border border-outline/30 overflow-hidden shadow-2xl backdrop-blur-md p-6 md:p-8" id="collective-map-section">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
@@ -247,7 +248,7 @@ export default function CollectiveMap() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="inline-flex rounded-xl bg-surface/60 border border-outline/20 p-1">
             <button
-              onClick={() => { setMapMode('artistic'); setSelectedUser(null); }}
+              onClick={() => setMapMode('artistic')}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 mapMode === 'artistic'
                   ? 'bg-primary text-on-primary shadow'
@@ -258,7 +259,7 @@ export default function CollectiveMap() {
               <span>Mapa Ilustrado</span>
             </button>
             <button
-              onClick={() => { setMapMode('google'); setSelectedUser(null); }}
+              onClick={() => setMapMode('google')}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 mapMode === 'google'
                   ? 'bg-primary text-on-primary shadow'
@@ -266,7 +267,7 @@ export default function CollectiveMap() {
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
-              <span>Google Maps</span>
+              <span>Google Mapa</span>
             </button>
           </div>
 
@@ -336,7 +337,7 @@ export default function CollectiveMap() {
         {/* Right Side: Interactive Map Frame representing coordinates perfectly */}
         <div className="lg:col-span-3 h-[450px] rounded-2xl overflow-hidden border border-outline/25 shadow-inner relative bg-slate-950 order-1 lg:order-2">
           {mapMode === 'artistic' ? (
-            /* CRITICAL UPGRADE: Stellar custom Offline-friendly, zero-billing Caracas Cartography Canvas */
+            /* Map canvas using custom base illustrated Caracas Map */
             <div 
               className="w-full h-full relative overflow-hidden select-none cursor-grab active:cursor-grabbing"
               onMouseDown={handleMouseDown}
@@ -344,13 +345,11 @@ export default function CollectiveMap() {
               onMouseUp={handleMouseUpOrLeave}
               onMouseLeave={handleMouseUpOrLeave}
             >
-              {/* Outer Coordinates Frame */}
               <div className="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-primary/20 flex items-center gap-1.5 text-[10px] font-mono text-primary select-none pointer-events-none">
                 <Compass className="w-3.5 h-3.5 animate-spin-slow" />
                 <span>CASCO HISTÓRICO DE CARACAS (MODO ILUSTRADO)</span>
               </div>
 
-              {/* Viewport Control Panel representing zoom buttons */}
               <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1.5">
                 <button 
                   onClick={() => setArtisticZoom(prev => Math.min(3, prev + 0.2))}
@@ -374,12 +373,11 @@ export default function CollectiveMap() {
 
               {/* Scaled/Panned Container */}
               <div 
-                className="absolute inset-0 transition-transform duration-300 ease-out origin-center"
+                className="absolute inset-0 transition-transform duration-300 ease-out origin-center animate-fade-in"
                 style={{
                   transform: `scale(${artisticZoom}) translate(${artisticPan.x}px, ${artisticPan.y}px)`,
                 }}
               >
-                {/* Physical Base Illustrated Caracas Map Asset */}
                 <img 
                   src={CustomCaracasMapImg} 
                   alt="Mapa de Caracas Pinta Mapas" 
@@ -400,10 +398,8 @@ export default function CollectiveMap() {
                         setSelectedUser(user);
                       }}
                     >
-                      {/* Pulse Radial Effect */}
                       <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping scale-150 opacity-75"></span>
                       
-                      {/* Anchor pin head containing avatar */}
                       <div className={`relative p-0.5 rounded-full border-2 transition-all ${
                         selectedUser?.uid === user.uid 
                           ? 'bg-amber-500 scale-125 border-amber-300 shadow-lg z-30' 
@@ -415,9 +411,14 @@ export default function CollectiveMap() {
                           className="w-8 h-8 rounded-full object-cover bg-surface"
                           referrerPolicy="no-referrer"
                         />
-                        {/* Micro Label appearing on hover */}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-0.5 whitespace-nowrap bg-black/90 text-[9px] font-mono rounded border border-outline/30 text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                          {user.pseudonym}
+                        {/* Selected/focused label (Always visible) or Hover Label */}
+                        <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 whitespace-nowrap bg-black/95 text-[9px] rounded-lg border border-primary/30 text-white flex flex-col items-center shadow-lg transition-all ${
+                          selectedUser?.uid === user.uid
+                            ? 'opacity-100 scale-100 pointer-events-auto'
+                            : 'opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 pointer-events-none'
+                        }`}>
+                          <span className="font-semibold text-[10px] text-white leading-none mb-0.5">{user.name}</span>
+                          <span className="font-mono text-[8px] text-primary leading-none">{user.pseudonym}</span>
                         </div>
                       </div>
                     </div>
@@ -425,7 +426,7 @@ export default function CollectiveMap() {
                 })}
               </div>
 
-              {/* Full Interactive Custom Leaflet-Style Detail Dialog box */}
+              {/* Detail Info Card */}
               {selectedUser && (
                 <div className="absolute bottom-4 left-4 right-16 md:right-auto md:max-w-xs z-30 bg-black/85 backdrop-blur-lg border border-primary/30 p-4 rounded-xl shadow-2xl text-white select-text animate-fade-in">
                   <div className="flex items-start justify-between gap-2">
@@ -467,88 +468,104 @@ export default function CollectiveMap() {
                 </div>
               )}
             </div>
-          ) : apiKey ? (
-            /* Satellite Map Engine utilizing the configured platform key */
-            <APIProvider apiKey={apiKey}>
-              <Map
-                center={mapCenter}
-                zoom={zoom}
-                onCenterChanged={(ev) => setMapCenter(ev.detail.center)}
-                onZoomChanged={(ev) => setZoom(ev.detail.zoom)}
-                mapId="DEMO_MAP_ID"
-                className="w-full h-full"
-                gestureHandling="cooperative"
-                disableDefaultUI={false}
-              >
-                {explorers.map((user) => (
-                  <Marker
-                    key={user.uid}
-                    position={{ lat: user.latitude, lng: user.longitude }}
-                    onClick={() => setSelectedUser(user)}
-                    title={`${user.name} (${user.pseudonym})`}
+          ) : (
+            /* GUARANTEED NO BILLING ERROR: Custom Avatar-equipped google roadmap layout */
+            <div className="w-full h-full relative bg-slate-900">
+              <iframe
+                title="Google Maps Caracas Standard"
+                src={embedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: 'contrast(1.02) brightness(0.98)' }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                className="w-full h-full animate-fade-in"
+              ></iframe>
+
+              {/* OVERLAY: Beautiful avatar pin floating perfectly above the centered Google Maps location pin */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+14px)] pointer-events-none z-20 flex flex-col items-center">
+                
+                {/* Floating Name & Pseudonym label above the avatar pin */}
+                <div className="mb-2 px-3 py-1.5 bg-black/95 border border-primary/40 rounded-xl text-center shadow-2xl flex flex-col items-center select-none pointer-events-none min-w-[125px] animate-fade-in animate-bounce-slow">
+                  <span className="text-[10px] font-bold text-white tracking-tight leading-none mb-1">{currentName}</span>
+                  <span className="text-[9px] font-mono text-primary font-semibold leading-none">{selectedUser?.pseudonym || '@aventurero'}</span>
+                </div>
+
+                {/* Ping wave effect radiating from the pin base */}
+                <span className="absolute bottom-0 w-8 h-8 rounded-full bg-primary/45 animate-ping -mb-4"></span>
+                
+                {/* Floating active avatar bubble */}
+                <div className="relative p-0.5 bg-primary rounded-full shadow-2xl border-2 border-white animate-bounce-slow flex-shrink-0">
+                  <img 
+                    src={currentAvatar} 
+                    alt={currentName} 
+                    className="w-12 h-12 rounded-full object-cover bg-surface shadow-inner"
+                    referrerPolicy="no-referrer"
                   />
-                ))}
+                  {selectedUser?.isMock ? (
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[9px] text-white font-bold shadow-md">
+                      ★
+                    </span>
+                  ) : (
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-teal-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold shadow-md">
+                      ✓
+                    </span>
+                  )}
+                </div>
+                {/* Cute pointer stem */}
+                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary -mt-1 drop-shadow-md"></div>
+              </div>
 
-                {selectedUser && (
-                  <InfoWindow
-                    position={{ lat: selectedUser.latitude, lng: selectedUser.longitude }}
-                    onCloseClick={() => setSelectedUser(null)}
-                  >
-                    <div className="flex flex-col p-2 max-w-[240px] text-zinc-900 font-sans">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={selectedUser.avatarUrl}
-                          alt={selectedUser.name}
-                          className="w-10 h-10 rounded-full border border-amber-500 bg-slate-50 object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div>
-                          <div className="font-semibold text-sm leading-tight text-slate-900">{selectedUser.name}</div>
-                          <div className="text-xs font-mono text-indigo-600 font-bold">{selectedUser.pseudonym}</div>
-                        </div>
-                      </div>
+              {/* Float status badge */}
+              <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-primary/20 flex flex-col gap-0.5 text-[10px] font-mono text-white max-w-xs">
+                <span className="flex items-center gap-1.5 text-primary font-bold">
+                  <Eye className="w-3.5 h-3.5 text-primary" />
+                  GOOGLE MAPAS ACTIVO
+                </span>
+                <span className="text-[9px] text-neutral-400">Ubicación de {selectedUser?.name || 'Aventurero'}</span>
+              </div>
 
-                      {selectedUser.title && (
-                        <div className="mt-2 text-[9px] bg-indigo-50 text-indigo-700 uppercase tracking-widest font-bold px-1.5 py-0.5 rounded self-start flex items-center gap-1">
-                          <Award className="w-3 h-3" />
-                          {selectedUser.title}
-                        </div>
-                      )}
-
-                      <p className="text-xs text-slate-700 mt-2 italic leading-relaxed border-t border-slate-100 pt-1.5">
-                        "{selectedUser.bio}"
-                      </p>
-
-                      <div className="mt-2.5 pt-2 border-t border-slate-150 flex items-center gap-1 text-[10px] text-slate-500 font-mono">
-                        <MapPin className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
-                        <span className="truncate">{selectedUser.latitude.toFixed(5)}, {selectedUser.longitude.toFixed(5)}</span>
+              {/* Absolute Detail Info Overlay on top of embed */}
+              {selectedUser && (
+                <div className="absolute bottom-4 left-4 right-16 md:right-auto md:max-w-xs z-30 bg-black/90 backdrop-blur-lg border border-primary/30 p-4 rounded-xl shadow-2xl text-white select-text animate-fade-in">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={selectedUser.avatarUrl} 
+                        alt={selectedUser.name} 
+                        className="w-11 h-11 rounded-full border border-amber-500 bg-slate-900 object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div>
+                        <h4 className="text-sm font-semibold tracking-tight text-white">{selectedUser.name}</h4>
+                        <div className="text-xs font-mono text-primary font-semibold">{selectedUser.pseudonym}</div>
                       </div>
                     </div>
-                  </InfoWindow>
-                )}
-              </Map>
-            </APIProvider>
-          ) : (
-            /* Fallback warning if user switches to Google Maps but key is completely empty */
-            <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[80px]"></div>
-              
-              <div className="relative border border-primary/20 bg-background/60 backdrop-blur-md p-6 rounded-2xl max-w-md shadow-xl z-10 flex flex-col items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-full border border-primary/20 text-primary">
-                  <MapPin className="w-7 h-7 animate-bounce" />
+                  </div>
+
+                  {selectedUser.title && (
+                    <div className="mt-2 text-[8px] bg-primary/15 border border-primary/30 text-primary uppercase tracking-wider font-bold px-1.5 py-0.5 rounded self-start inline-flex items-center gap-1.5">
+                      <Award className="w-3 h-3" />
+                      {selectedUser.title}
+                    </div>
+                  )}
+
+                  <p className="text-xs font-sans text-neutral-300 mt-2 leading-relaxed border-t border-neutral-800 pt-2 italic">
+                    "{selectedUser.bio}"
+                  </p>
+
+                  <div className="mt-3 pt-2 border-t border-neutral-800 flex items-center justify-between gap-1.5 text-[9px] text-neutral-400 font-mono">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                      Lat: {selectedUser.latitude.toFixed(5)}, Lng: {selectedUser.longitude.toFixed(5)}
+                    </span>
+                    {selectedUser.isMock && (
+                      <span className="text-amber-500 uppercase font-bold text-[8px]">★ GUÍA</span>
+                    )}
+                  </div>
                 </div>
-                <h3 className="text-md font-semibold text-on-surface font-sans">
-                  Visualización de Mapa de Google Maps
-                </h3>
-                <p className="text-xs text-on-surface-variant leading-relaxed font-sans max-w-sm">
-                  {t('no_key_warning')}
-                </p>
-                <div className="mt-3 text-[10px] font-mono text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-md w-full flex items-center gap-2 justify-center">
-                  <Info className="w-3.5 h-3.5" />
-                  <span>Configura GOOGLE_MAPS_PLATFORM_KEY en tus variables de entorno</span>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>
