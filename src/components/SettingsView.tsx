@@ -283,24 +283,69 @@ export default function SettingsView({
     setErrorMsg(null);
     setSaveSuccess(false);
 
+    // Timeout helper
+    const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+      let timeoutId: any;
+      const timeoutPromise = new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Tiempo de espera agotado"));
+        }, timeoutMs);
+      });
+
+      try {
+        const result = await Promise.race([promise, timeoutPromise]);
+        clearTimeout(timeoutId);
+        return result;
+      } catch (err) {
+        clearTimeout(timeoutId);
+        throw err;
+      }
+    };
+
     try {
       let finalAvatarUrl = avatarUrl;
       const currentUser = auth.currentUser;
 
       if (currentUser && pendingAvatarBlob) {
-        // 1. Upload to Firebase Storage
-        const uploadUrl = await uploadAvatarToStorage(currentUser.uid, pendingAvatarBlob);
-        finalAvatarUrl = uploadUrl;
-        setAvatarUrl(uploadUrl);
-        setPendingAvatarBlob(null);
+        // 1. Upload to Firebase Storage with timeout (7 seconds). Falls back to inline base64 if it fails/times out.
+        try {
+          console.log("Uploading avatar to Firebase Storage with timeout...");
+          const uploadUrl = await withTimeout(
+            uploadAvatarToStorage(currentUser.uid, pendingAvatarBlob),
+            7000
+          );
+          finalAvatarUrl = uploadUrl;
+          setAvatarUrl(uploadUrl);
+          setPendingAvatarBlob(null);
+        } catch (uploadErr) {
+          console.warn("Avatar upload failed or timed out. Emulating base64 inline fallback:", uploadErr);
+          const base64Fallback = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(pendingAvatarBlob);
+          });
+          finalAvatarUrl = base64Fallback;
+          setAvatarUrl(base64Fallback);
+          setPendingAvatarBlob(null);
+        }
       }
 
-      // 2. Update Firebase Auth Profile (photoURL and displayName)
+      // 2. Update Firebase Auth Profile (photoURL and displayName) with timeout (5 seconds).
+      // We skip if it fails or times out, as Firestore metadata and local state are the sources of truth.
       if (currentUser) {
-        await updateUserProfileAuth(name, finalAvatarUrl);
+        try {
+          console.log("Updating Firebase Auth Profile with timeout...");
+          await withTimeout(
+            updateUserProfileAuth(name, finalAvatarUrl),
+            5000
+          );
+        } catch (authProfileErr) {
+          console.warn("Auth profile displayName/photoURL update failed or timed out. Continuing to Firestore & parent state update:", authProfileErr);
+        }
       }
 
       // 3. Update React parent state
+      console.log("Saving to parent state and syncing to Firestore database...");
       onUpdateUser({
         ...user,
         name,

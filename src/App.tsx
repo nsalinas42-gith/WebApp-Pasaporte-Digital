@@ -343,6 +343,13 @@ export default function App() {
         const progressDocRef = doc(db, 'user_progress', firebaseUser.uid);
         unsubscribeProgress = onSnapshot(progressDocRef, (progressSnap) => {
           initialProgressLoaded = true;
+
+          // Bypass local pending updates to prevent race conditions or state reverting during active saving
+          if (progressSnap.metadata.hasPendingWrites) {
+            checkAuthLoading();
+            return;
+          }
+
           if (progressSnap.exists()) {
             const progressData = progressSnap.data();
 
@@ -396,6 +403,13 @@ export default function App() {
         // Also add real-time snapshot on public user metadata users/{userId} for multi-device/tab updates
         unsubscribeUser = onSnapshot(doc(db, 'users', firebaseUser.uid), (userSnap) => {
           initialUserLoaded = true;
+
+          // Bypass local pending updates to prevent race conditions or state reverting during active saving
+          if (userSnap.metadata.hasPendingWrites) {
+            checkAuthLoading();
+            return;
+          }
+
           if (userSnap.exists()) {
             const userData = userSnap.data();
             setUser((prev) => {
