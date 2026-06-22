@@ -30,11 +30,9 @@ import { UserProfile, Location } from '../types';
 import { useLanguage } from '../translations';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { LIST_AVATARS } from '../utils/avatars';
 import { auth, uploadAvatarToStorage, updateUserProfileAuth } from '../utils/firebase';
 import '@solana/wallet-adapter-react-ui/styles.css';
-
-const PRESET_AVATARS = LIST_AVATARS;
+import AvatarEditor from './AvatarEditor';
 
 interface SettingsViewProps {
   user: UserProfile;
@@ -70,6 +68,8 @@ export default function SettingsView({
   const [bio, setBio] = useState(user.bio || '');
   const [pendingAvatarBlob, setPendingAvatarBlob] = useState<Blob | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [avatarConfig, setAvatarConfig] = useState<any>(user.avatarConfig || null);
 
   // Web3 Solana integration states
   const [isIframe, setIsIframe] = useState(false);
@@ -214,6 +214,7 @@ export default function SettingsView({
     setWallet(translatedUser.linkedWallet);
     setAvatarUrl(translatedUser.avatarUrl);
     setBio(translatedUser.bio || '');
+    setAvatarConfig(user.avatarConfig || null);
   }, [user.email, user.joinedDate, language]);
 
   // Helper to compress and resize custom uploaded photos to save weight and prevent Firestore size limits
@@ -353,7 +354,8 @@ export default function SettingsView({
         title,
         linkedWallet: wallet,
         avatarUrl: finalAvatarUrl,
-        bio
+        bio,
+        avatarConfig
       });
 
       setSaveSuccess(true);
@@ -391,27 +393,11 @@ export default function SettingsView({
 
           {/* Avatar & Photo Upload Section */}
           <div className="bg-[#001c24]/50 border border-[#005049]/30 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row gap-5 items-center">
-            {/* Circular Preview with Drag & Drop or Camera icon overlay */}
+            {/* Circular Preview with custom editor click */}
             <div className="relative group/avatar flex-shrink-0">
               <div 
                 className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 shadow-[0_0_15px_rgba(26, 86, 219,0.15)] bg-[#001019] flex items-center justify-center relative cursor-pointer group-hover/avatar:border-secondary transition-all"
-                onClick={() => document.getElementById('avatar-upload')?.click()}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files?.[0];
-                  if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      if (typeof reader.result === 'string') {
-                        compressPhotoAndSet(reader.result);
-                      }
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
+                onClick={() => setShowEditor(true)}
               >
                 {avatarUrl ? (
                   <img 
@@ -424,65 +410,34 @@ export default function SettingsView({
                   <User className="w-8 h-8 text-on-surface-variant/40" />
                 )}
                 <div className="absolute inset-0 bg-[#001019]/75 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center text-[9px] text-secondary font-bold transition-all gap-1">
-                  <Camera className="w-4 h-4 text-secondary animate-pulse" />
-                  <span>{t('subir_foto_overlay')}</span>
+                  <Settings className="w-4 h-4 text-secondary animate-pulse" />
+                  <span>Diseñar Avatar</span>
                 </div>
               </div>
             </div>
 
-            {/* Upload Buttons and Presets */}
+            {/* Custom Avatar Generation Editor Trigger Button */}
             <div className="flex-1 space-y-3 text-center sm:text-left">
               <div>
-                <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1 justify-center sm:justify-start">
-                  <Camera className="w-3.5 h-3.5 text-secondary" /> {t('avatar_viajero_title')}
+                <h4 className="text-xs font-bold text-on-surface uppercase tracking-wide flex items-center gap-1 justify-center sm:justify-start text-secondary">
+                  <Settings className="w-3.5 h-3.5" /> Avatar Personalizado DiceBear
                 </h4>
-                <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1">
-                  {t('avatar_viajero_desc')}
+                <p className="text-[11px] text-[#c8e7fb]/70 leading-relaxed mt-1 animate-pulse">
+                  ¡Crea y personaliza tu propio avatar digital interactivo en tiempo real con diferentes peinados, colores, expresiones y accesorios para tu bitácora!
                 </p>
               </div>
 
-              {/* Preset avatars list */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                {PRESET_AVATARS.map((p, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setAvatarUrl(p.url);
-                      setPendingAvatarBlob(null);
-                      setErrorMsg(null);
-                    }}
-                    title={p.name}
-                    aria-label={`Seleccionar avatar de ${p.name}`}
-                    className={`w-8 h-8 rounded-full overflow-hidden border-2 focus:outline-none transition-all hover:scale-110 active:scale-95 cursor-pointer ${
-                      avatarUrl === p.url ? 'border-secondary scale-105 ring-2 ring-secondary/25' : 'border-[#005049]/40 hover:border-secondary'
-                    }`}
-                  >
-                    <img src={p.url} alt={`Avatar preset ${p.name}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  </button>
-                ))}
-              </div>
-
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-0.5">
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  aria-label="Subir foto de perfil"
-                  className="hidden"
-                />
                 <button
                   type="button"
-                  onClick={() => document.getElementById('avatar-upload')?.click()}
-                  aria-label="Haz click para buscar y subir tu foto de avatar"
-                  className="py-1.5 px-3 bg-[#0d2a29] border border-[#1A56DB]/30 hover:border-[#1A56DB] hover:bg-[#113837] text-[11px] font-bold rounded-lg text-[#1A56DB] flex items-center gap-1.5 transition-all outline-none cursor-pointer"
+                  onClick={() => setShowEditor(true)}
+                  aria-label="Diseñar y Configurar Avatar Personalizado"
+                  className="py-2 px-4 bg-[#0d2a29] border border-secondary/30 hover:border-secondary hover:bg-[#113837] text-xs font-bold rounded-lg text-secondary flex items-center gap-1.5 transition-all outline-none cursor-pointer hover:scale-105 active:scale-95"
                 >
-                  <Upload className="w-3.5 h-3.5" />
-                  {t('subir_foto_btn')}
+                  <Settings className="w-4 h-4" />
+                  Configurar Avatar Personalizado
                 </button>
               </div>
-
             </div>
           </div>
 
@@ -814,6 +769,32 @@ export default function SettingsView({
         </div>
 
       </div>
+
+      {showEditor && (
+        <div className="fixed inset-0 bg-[#020817]/90 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all" role="dialog" aria-modal="true">
+          <div className="relative w-full max-w-4xl bg-slate-900 border border-teal-500/30 rounded-3xl p-4 md:p-6 shadow-[0_0_30px_rgba(20,184,166,0.15)] animate-in zoom-in duration-200 text-left">
+            <button 
+              type="button"
+              onClick={() => setShowEditor(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-10 font-bold bg-slate-800 hover:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer border-0"
+              title="Cerrar Editor"
+            >
+              ✕
+            </button>
+            <div className="pt-4 max-h-[85vh] overflow-y-auto pr-2 scrollbar-thin">
+              <AvatarEditor 
+                initialConfig={avatarConfig} 
+                onSave={({ config, dataUrl }) => {
+                  setAvatarUrl(dataUrl);
+                  setAvatarConfig(config);
+                  setPendingAvatarBlob(null);
+                  setShowEditor(false);
+                }} 
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

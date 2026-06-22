@@ -314,7 +314,7 @@ export default function UserProfilesCarousel() {
                               {profile.name}
                             </h4>
                             <span className="text-xs font-mono text-[#8c9f9e] font-semibold block">
-                              {profile.pseudonym}
+                              {profile.title || 'Explorador'}
                             </span>
                           </div>
                         </div>
@@ -332,7 +332,7 @@ export default function UserProfilesCarousel() {
                         <div className="flex items-center gap-1.5">
                           <Compass className="w-3.5 h-3.5 text-secondary" />
                           <span className="text-[9px] font-black tracking-widest text-secondary font-mono uppercase">
-                            {profile.title || 'Explorador'}
+                            {profile.pseudonym}
                           </span>
                         </div>
                         <span className="text-[8px] font-bold text-on-surface-variant/40 font-mono tracking-wide uppercase">
