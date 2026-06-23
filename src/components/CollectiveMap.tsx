@@ -7,7 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { collection, query, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useLanguage } from '../translations';
-import { MapPin, Users, Compass, Navigation, Info, Award, Layers, Eye, RefreshCw, ZoomIn, ZoomOut } from 'lucide-react';
+import { MapPin, Users, Compass, Navigation, Info, Award, Layers, Eye, RefreshCw, ZoomIn, ZoomOut, Search } from 'lucide-react';
 
 // Preset avatar assets (matching UserProfilesCarousel fallback choices)
 import avatarHombre1 from '../assets/images/avatar_hombre_1.png';
@@ -110,7 +110,17 @@ export default function CollectiveMap() {
   const { t } = useLanguage();
   const [explorers, setExplorers] = useState<MapUser[]>(MOCK_PROFILES_WITH_COORDS);
   const [selectedUser, setSelectedUser] = useState<MapUser | null>(MOCK_PROFILES_WITH_COORDS[0]); // default to first mock for beautiful preview state
-  const [mapMode, setMapMode] = useState<'artistic' | 'google'>('artistic'); // default to 'artistic' to always preserve stellar custom UX with ZERO billing errors
+  const [mapMode, setMapMode] = useState<'artistic' | 'google'>('google'); // Defaulting standard Google view directly
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredExplorers = (explorers || []).filter((user) => {
+    if (!user) return false;
+    const q = (searchQuery || '').toLowerCase().trim();
+    if (!q) return true;
+    const name = (user.name || '').toLowerCase();
+    const pseudonym = (user.pseudonym || '').toLowerCase();
+    return name.includes(q) || pseudonym.includes(q);
+  });
   
   // Local map zoom/navigation states
   const [artisticZoom, setArtisticZoom] = useState(1.1);
@@ -229,7 +239,7 @@ export default function CollectiveMap() {
   const embedUrl = `https://maps.google.com/maps?q=${currentLat},${currentLng}&t=m&z=17&ie=UTF8&iwloc=&output=embed`;
 
   return (
-    <div className="w-full bg-surface-variant/40 rounded-3xl border border-outline/30 overflow-hidden shadow-2xl backdrop-blur-md p-6 md:p-8" id="collective-map-section">
+    <div className="w-full bg-surface-variant/40 rounded-none overflow-hidden shadow-none backdrop-blur-md p-6 md:p-8" id="collective-map-section">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
         <div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-primary/10 text-primary border border-primary/20 uppercase mb-2">
@@ -244,44 +254,42 @@ export default function CollectiveMap() {
           </p>
         </div>
 
-        {/* Dynamic selector to switch map engines beautifully */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="inline-flex rounded-xl bg-surface/60 border border-outline/20 p-1">
-            <button
-              onClick={() => setMapMode('artistic')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                mapMode === 'artistic'
-                  ? 'bg-primary text-on-primary shadow'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Mapa Ilustrado</span>
-            </button>
-            <button
-              onClick={() => setMapMode('google')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                mapMode === 'google'
-                  ? 'bg-primary text-on-primary shadow'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Google Mapa</span>
-            </button>
+        {/* Search dynamic field field replaced successfully */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-none sm:min-w-[240px]">
+            <input
+              type="text"
+              placeholder="Buscar por nombre o seudónimo..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-surface/60 border border-[#005049]/30 rounded-xl px-3.5 py-2 pl-9 text-xs text-on-surface placeholder:text-on-surface-variant/65 focus:outline-none focus:border-[#00E676]/60 focus:ring-1 focus:ring-[#00E676]/30 transition-all font-sans"
+            />
+            <Search className="w-3.5 h-3.5 text-on-surface-variant/60 absolute left-3 top-1/2 -translate-y-1/2" />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface text-xs font-bold font-sans p-1"
+                title="Limpiar búsqueda"
+              >
+                ✕
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface/50 border border-outline/20 text-xs font-mono text-on-surface-variant">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface/50 border border-[#005049]/30 text-xs font-mono text-on-surface-variant">
             <Users className="w-4 h-4 text-primary animate-pulse" />
-            <span>{explorers.length} {explorers.length === 1 ? 'Viajero' : 'Viajeros'}</span>
+            <span>
+              {searchQuery ? `${filteredExplorers.length} de ` : ''}
+              {explorers.length} {explorers.length === 1 ? 'Viajero' : 'Viajeros'}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left Side: Sidebar list of active explorers */}
-        <div className="lg:col-span-1 flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar bg-surface/20 rounded-2xl p-3 border border-outline/15 order-2 lg:order-1">
-          <div className="text-xs font-semibold tracking-widest text-primary/80 uppercase px-2 py-1 flex items-center gap-1.5 border-b border-outline/10 pb-2 mb-1 justify-between">
+        <div className="lg:col-span-1 flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar bg-surface/20 rounded-2xl p-3 border border-[#005049]/30 order-2 lg:order-1">
+          <div className="text-xs font-semibold tracking-widest text-primary/80 uppercase px-2 py-1 flex items-center gap-1.5 border-b border-[#005049]/30 pb-2 mb-1 justify-between">
             <span className="flex items-center gap-1.5">
               <Navigation className="w-3.5 h-3.5" />
               Exploradores Activos
@@ -293,14 +301,14 @@ export default function CollectiveMap() {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            {explorers.map((user) => (
+            {filteredExplorers.map((user) => (
               <button
                 key={user.uid}
                 onClick={() => handleFocusUser(user)}
                 className={`flex items-center gap-3 p-2.5 rounded-xl text-left border transition ${
                   selectedUser?.uid === user.uid
-                    ? 'bg-primary/15 border-primary text-on-surface shadow-md'
-                    : 'bg-surface/40 hover:bg-surface/80 border-outline/10 text-on-surface-variant hover:text-on-surface'
+                    ? 'bg-primary/15 border-[#00E676] text-on-surface shadow-md'
+                    : 'bg-surface/40 hover:bg-surface/80 border-[#005049]/30 text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <div className="relative flex-shrink-0">
@@ -309,6 +317,9 @@ export default function CollectiveMap() {
                     alt={user.name}
                     className="w-10 h-10 rounded-full border border-outline/15 object-cover bg-background"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = avatarJoven1;
+                    }}
                   />
                   {user.isMock ? (
                     <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-amber-500 rounded-full border border-surface flex items-center justify-center text-[8px] text-white" title="Guía Local">
@@ -335,7 +346,7 @@ export default function CollectiveMap() {
         </div>
 
         {/* Right Side: Interactive Map Frame representing coordinates perfectly */}
-        <div className="lg:col-span-3 h-[450px] rounded-2xl overflow-hidden border border-outline/25 shadow-inner relative bg-slate-950 order-1 lg:order-2">
+        <div className="lg:col-span-3 h-[450px] rounded-2xl overflow-hidden border border-[#005049]/30 shadow-inner relative bg-slate-950 order-1 lg:order-2">
           {mapMode === 'artistic' ? (
             /* Map canvas using custom base illustrated Caracas Map */
             <div 
@@ -386,7 +397,7 @@ export default function CollectiveMap() {
                 />
 
                 {/* Plotting User GPS Coordinates accurately on the map canvas */}
-                {explorers.map((user) => {
+                {filteredExplorers.map((user) => {
                   const { x, y } = getPositionOnArtMap(user.latitude, user.longitude);
                   return (
                     <div
@@ -410,6 +421,9 @@ export default function CollectiveMap() {
                           alt={user.name} 
                           className="w-8 h-8 rounded-full object-cover bg-surface"
                           referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = avatarJoven1;
+                          }}
                         />
                         {/* Selected/focused label (Always visible) or Hover Label */}
                         <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 whitespace-nowrap bg-black/95 text-[9px] rounded-lg border border-primary/30 text-white flex flex-col items-center shadow-lg transition-all ${
@@ -436,6 +450,9 @@ export default function CollectiveMap() {
                         alt={selectedUser.name} 
                         className="w-11 h-11 rounded-full border border-amber-500 bg-slate-900 object-cover"
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = avatarJoven1;
+                        }}
                       />
                       <div>
                         <h4 className="text-sm font-semibold tracking-tight text-white">{selectedUser.name}</h4>
