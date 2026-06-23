@@ -262,10 +262,10 @@ export default function CollectiveMap({ activeUser, activeLocations }: Collectiv
       return;
     }
 
-    // Fetch real user's progress from Firestore
+    // Fetch real user's progress from Firestore in real-time
     setIsLoadingProgress(true);
     const progressDocRef = doc(db, 'user_progress', selectedUser.uid);
-    getDoc(progressDocRef).then((snap) => {
+    const unsubscribeProgress = onSnapshot(progressDocRef, (snap) => {
       if (snap.exists()) {
         const data = snap.data();
         if (data.locations) {
@@ -273,7 +273,7 @@ export default function CollectiveMap({ activeUser, activeLocations }: Collectiv
             const parsed = JSON.parse(data.locations);
             setSelectedUserProgress(parsed);
           } catch (e) {
-            console.error("Error parsing user progress locations:", e);
+            console.error("Error parsing user progress locations in real-time:", e);
             setSelectedUserProgress(null);
           }
         } else {
@@ -283,11 +283,15 @@ export default function CollectiveMap({ activeUser, activeLocations }: Collectiv
         setSelectedUserProgress(null);
       }
       setIsLoadingProgress(false);
-    }).catch((err) => {
-      console.warn("Failed to fetch selected user progress:", err);
+    }, (err) => {
+      console.warn("Failed to fetch selected user progress in real-time:", err);
       setSelectedUserProgress(null);
       setIsLoadingProgress(false);
     });
+
+    return () => {
+      unsubscribeProgress();
+    };
   }, [selectedUser?.uid, activeLocations, activeUser?.name]);
 
   const filteredExplorers = (mergedExplorers || []).filter((user) => {
