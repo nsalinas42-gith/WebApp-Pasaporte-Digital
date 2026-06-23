@@ -1262,7 +1262,7 @@ export default function LandingView({
 
       {/* Collective Map Section */}
       <div className="w-full py-10">
-        <CollectiveMap />
+        <CollectiveMap activeUser={user} activeLocations={locations} />
       </div>
 
       {/* 5. FOOTER SECTION */}

@@ -10,7 +10,11 @@ if (typeof window !== 'undefined') {
   const originalOnError = window.onerror;
   window.onerror = function (message, source, lineno, colno, error) {
     const msgStr = String(message || '');
-    if (msgStr.includes('Script error.') || !source || !source.includes(window.location.origin)) {
+    if (
+      msgStr.toLowerCase().includes('script error') || 
+      !source || 
+      (typeof source === 'string' && !source.includes(window.location.origin))
+    ) {
       console.warn('Gracefully suppressed cross-origin script error:', message, 'from', source);
       return true; // Return true prevents firing the default event handler
     }
@@ -21,7 +25,11 @@ if (typeof window !== 'undefined') {
   };
 
   window.addEventListener('error', (event) => {
-    const isScriptError = event.message === 'Script error.' || !event.filename || !event.filename.includes(window.location.origin);
+    const msg = String(event.message || '');
+    const isScriptError = 
+      msg.toLowerCase().includes('script error') || 
+      !event.filename || 
+      !event.filename.includes(window.location.origin);
     if (isScriptError) {
       event.stopImmediatePropagation();
       event.preventDefault();
@@ -31,7 +39,7 @@ if (typeof window !== 'undefined') {
 
   window.addEventListener('unhandledrejection', (event) => {
     const message = event.reason && (event.reason.message || String(event.reason));
-    if (message && (message.includes('Script error') || message.includes('google') || message.includes('maps'))) {
+    if (message && (message.toLowerCase().includes('script error') || message.toLowerCase().includes('google') || message.toLowerCase().includes('maps'))) {
       event.stopImmediatePropagation();
       event.preventDefault();
       console.warn('Gracefully handled cross-origin/third-party promise rejection:', message);

@@ -4,10 +4,11 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { collection, query, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, limit, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useLanguage } from '../translations';
 import { MapPin, Users, Compass, Navigation, Info, Award, Layers, Eye, RefreshCw, ZoomIn, ZoomOut, Search } from 'lucide-react';
+import { Location, UserProfile } from '../types';
 
 // Preset avatar assets (matching UserProfilesCarousel fallback choices)
 import avatarHombre1 from '../assets/images/avatar_hombre_1.png';
@@ -28,6 +29,7 @@ interface MapUser {
   latitude: number;
   longitude: number;
   isMock?: boolean;
+  isLocalActiveUser?: boolean;
 }
 
 // Bounding box for mapping coordinates to the physical vector map of Caracas Casco Central
@@ -106,14 +108,189 @@ const MOCK_PROFILES_WITH_COORDS: MapUser[] = [
   }
 ];
 
-export default function CollectiveMap() {
+// Helper to get checked-in places for a specific locations list
+const getValidatedPlaces = (locs: Location[] | null) => {
+  if (!locs) return [];
+  const validated: { placeName: string; routeName: string }[] = [];
+  locs.forEach(loc => {
+    if (loc.places) {
+      loc.places.forEach(place => {
+        if (place.isCheckedIn) {
+          validated.push({
+            placeName: place.name,
+            routeName: loc.name
+          });
+        }
+      });
+    }
+  });
+  return validated;
+};
+
+// Helper to get mock validated places for mock users
+const getMockValidatedPlaces = (uid: string) => {
+  if (uid === 'mock-1') {
+    return [
+      { placeName: 'Plaza Bolívar', routeName: 'Casco Histórico' },
+      { placeName: 'Catedral de Caracas', routeName: 'Casco Histórico' },
+      { placeName: 'Casa Natal del Libertador', routeName: 'Casco Histórico' }
+    ];
+  }
+  if (uid === 'mock-2') {
+    return [
+      { placeName: 'Panteón Nacional', routeName: 'Ruta del Panteón' },
+      { placeName: 'Biblioteca Nacional', routeName: 'Ruta del Panteón' }
+    ];
+  }
+  if (uid === 'mock-3') {
+    return [
+      { placeName: 'Teatro Teresa Carreño', routeName: 'Circuito Museos' },
+      { placeName: 'Museo de Bellas Artes', routeName: 'Circuito Museos' },
+      { placeName: 'Parque Los Caobos', routeName: 'Circuito Museos' }
+    ];
+  }
+  if (uid === 'mock-4') {
+    return [
+      { placeName: 'Iglesia de San Francisco', routeName: 'Casco Histórico' },
+      { placeName: 'Palacio de las Academias', routeName: 'Casco Histórico' }
+    ];
+  }
+  if (uid === 'mock-5') {
+    return [
+      { placeName: 'Museo de Ciencias', routeName: 'Circuito Museos' },
+      { placeName: 'Galería de Arte Nacional', routeName: 'Circuito Museos' }
+    ];
+  }
+  return [
+    { placeName: 'Capitolio Federal', routeName: 'Casco Histórico' },
+    { placeName: 'Plaza Bolívar', routeName: 'Casco Histórico' }
+  ];
+};
+
+interface CollectiveMapProps {
+  activeUser?: UserProfile;
+  activeLocations?: Location[];
+}
+
+export default function CollectiveMap({ activeUser, activeLocations }: CollectiveMapProps) {
   const { t } = useLanguage();
   const [explorers, setExplorers] = useState<MapUser[]>(MOCK_PROFILES_WITH_COORDS);
   const [selectedUser, setSelectedUser] = useState<MapUser | null>(MOCK_PROFILES_WITH_COORDS[0]); // default to first mock for beautiful preview state
   const [mapMode, setMapMode] = useState<'artistic' | 'google'>('google'); // Defaulting standard Google view directly
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredExplorers = (explorers || []).filter((user) => {
+  const [selectedUserProgress, setSelectedUserProgress] = useState<Location[] | null>(null);
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
+
+  // Merge activeUser into the explorers list dynamically
+  const mergedExplorers = React.useMemo(() => {
+    let list = [...explorers];
+    
+    if (activeUser) {
+      const activeLat = activeUser.latitude ?? 10.506085;
+      const activeLng = activeUser.longitude ?? -66.914631;
+      
+      const localMapUser: MapUser = {
+        uid: 'local-active-user',
+        name: activeUser.name || 'Félix Rodríguez',
+        pseudonym: '@' + (activeUser.name || 'aventurero').toLowerCase().replace(/\s+/g, '_'),
+        bio: activeUser.bio || '¡Explorando nuevos mapas históricos físicos-digitales!',
+        avatarUrl: activeUser.avatarUrl || avatarHombre1,
+        title: activeUser.title || 'Explorador',
+        latitude: activeLat,
+        longitude: activeLng,
+        isLocalActiveUser: true,
+        isMock: false
+      };
+
+      // Check if there is an existing user in explorers with the same pseudonym or name
+      const existingIndex = list.findIndex(u => u.uid === 'local-active-user' || u.name === localMapUser.name);
+      if (existingIndex >= 0) {
+        list[existingIndex] = {
+          ...list[existingIndex],
+          ...localMapUser
+        };
+      } else {
+        // Put the active explorer at the top of the list!
+        list.unshift(localMapUser);
+      }
+    }
+    
+    return list;
+  }, [explorers, activeUser]);
+
+  // Whenever the activeUser coordinates or details update, sync selectedUser if they are the active user
+  useEffect(() => {
+    if (activeUser) {
+      const activeLat = activeUser.latitude ?? 10.506085;
+      const activeLng = activeUser.longitude ?? -66.914631;
+      
+      const updatedActiveUser: MapUser = {
+        uid: 'local-active-user',
+        name: activeUser.name || 'Félix Rodríguez',
+        pseudonym: '@' + (activeUser.name || 'aventurero').toLowerCase().replace(/\s+/g, '_'),
+        bio: activeUser.bio || '¡Explorando nuevos mapas históricos físicos-digitales!',
+        avatarUrl: activeUser.avatarUrl || avatarHombre1,
+        title: activeUser.title || 'Explorador',
+        latitude: activeLat,
+        longitude: activeLng,
+        isLocalActiveUser: true,
+        isMock: false
+      };
+
+      // If no user is selected, or if the selected user is the active user, set/update selectedUser
+      if (!selectedUser || selectedUser.uid === 'local-active-user' || selectedUser.name === activeUser.name) {
+        setSelectedUser(updatedActiveUser);
+      }
+    }
+  }, [activeUser?.latitude, activeUser?.longitude, activeUser?.name]);
+
+  // Fetch or subscribe to selectedUser progress validated places
+  useEffect(() => {
+    if (!selectedUser) {
+      setSelectedUserProgress(null);
+      return;
+    }
+
+    if (selectedUser.uid === 'local-active-user' || selectedUser.name === activeUser?.name) {
+      setSelectedUserProgress(activeLocations || null);
+      return;
+    }
+
+    if (selectedUser.isMock) {
+      setSelectedUserProgress(null);
+      return;
+    }
+
+    // Fetch real user's progress from Firestore
+    setIsLoadingProgress(true);
+    const progressDocRef = doc(db, 'user_progress', selectedUser.uid);
+    getDoc(progressDocRef).then((snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.locations) {
+          try {
+            const parsed = JSON.parse(data.locations);
+            setSelectedUserProgress(parsed);
+          } catch (e) {
+            console.error("Error parsing user progress locations:", e);
+            setSelectedUserProgress(null);
+          }
+        } else {
+          setSelectedUserProgress(null);
+        }
+      } else {
+        setSelectedUserProgress(null);
+      }
+      setIsLoadingProgress(false);
+    }).catch((err) => {
+      console.warn("Failed to fetch selected user progress:", err);
+      setSelectedUserProgress(null);
+      setIsLoadingProgress(false);
+    });
+  }, [selectedUser?.uid, activeLocations, activeUser?.name]);
+
+  const filteredExplorers = (mergedExplorers || []).filter((user) => {
     if (!user) return false;
     const q = (searchQuery || '').toLowerCase().trim();
     if (!q) return true;
@@ -280,7 +457,7 @@ export default function CollectiveMap() {
             <Users className="w-4 h-4 text-primary animate-pulse" />
             <span>
               {searchQuery ? `${filteredExplorers.length} de ` : ''}
-              {explorers.length} {explorers.length === 1 ? 'Viajero' : 'Viajeros'}
+              {mergedExplorers.length} {mergedExplorers.length === 1 ? 'Viajero' : 'Viajeros'}
             </span>
           </div>
         </div>
@@ -478,6 +655,48 @@ export default function CollectiveMap() {
                     "{selectedUser.bio}"
                   </p>
 
+                  {/* CHECK-IN VALIDATIONS SECTION */}
+                  <div className="mt-3 pt-3 border-t border-neutral-800 text-left">
+                    <div className="text-[10px] font-bold text-[#00E676] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00E676] animate-pulse"></span>
+                      Lugares Validados (Check-Ins)
+                    </div>
+                    {isLoadingProgress ? (
+                      <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+                        <div className="w-3 h-3 rounded-full border-2 border-[#00E676] border-t-transparent animate-spin"></div>
+                        <span>Cargando validaciones...</span>
+                      </div>
+                    ) : (
+                      (() => {
+                        const places = selectedUser.isMock 
+                          ? getMockValidatedPlaces(selectedUser.uid)
+                          : getValidatedPlaces(selectedUserProgress);
+                        
+                        if (places.length === 0) {
+                          return (
+                            <p className="text-[10px] text-neutral-400 italic">
+                              Ningún lugar validado todavía.
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <div className="max-h-[105px] overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                            {places.map((p, idx) => (
+                              <div key={idx} className="flex items-start gap-1.5 text-[10px] text-neutral-300 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5 shadow-sm">
+                                <span className="text-[#00E676] font-extrabold shrink-0">✓</span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold truncate text-white leading-tight">{p.placeName}</p>
+                                  <p className="text-[8px] text-neutral-400 truncate leading-none mt-0.5">{p.routeName}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()
+                    )}
+                  </div>
+
                   <div className="mt-3 pt-2 border-t border-neutral-800 flex items-center gap-1.5 text-[9px] text-neutral-400 font-mono">
                     <MapPin className="w-3.5 h-3.5 text-rose-500" />
                     <span>Lat: {selectedUser.latitude.toFixed(5)}, Lng: {selectedUser.longitude.toFixed(5)}</span>
@@ -584,6 +803,48 @@ export default function CollectiveMap() {
                   <p className="text-xs font-sans text-neutral-300 mt-2 leading-relaxed border-t border-neutral-800 pt-2 italic">
                     "{selectedUser.bio}"
                   </p>
+
+                  {/* CHECK-IN VALIDATIONS SECTION */}
+                  <div className="mt-3 pt-3 border-t border-neutral-800 text-left">
+                    <div className="text-[10px] font-bold text-[#00E676] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00E676] animate-pulse"></span>
+                      Lugares Validados (Check-Ins)
+                    </div>
+                    {isLoadingProgress ? (
+                      <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+                        <div className="w-3 h-3 rounded-full border-2 border-[#00E676] border-t-transparent animate-spin"></div>
+                        <span>Cargando validaciones...</span>
+                      </div>
+                    ) : (
+                      (() => {
+                        const places = selectedUser.isMock 
+                          ? getMockValidatedPlaces(selectedUser.uid)
+                          : getValidatedPlaces(selectedUserProgress);
+                        
+                        if (places.length === 0) {
+                          return (
+                            <p className="text-[10px] text-neutral-400 italic">
+                              Ningún lugar validado todavía.
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <div className="max-h-[105px] overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                            {places.map((p, idx) => (
+                              <div key={idx} className="flex items-start gap-1.5 text-[10px] text-neutral-300 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5 shadow-sm">
+                                <span className="text-[#00E676] font-extrabold shrink-0">✓</span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold truncate text-white leading-tight">{p.placeName}</p>
+                                  <p className="text-[8px] text-neutral-400 truncate leading-none mt-0.5">{p.routeName}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()
+                    )}
+                  </div>
 
                   <div className="mt-3 pt-2 border-t border-neutral-800 flex items-center justify-between gap-1.5 text-[9px] text-neutral-400 font-mono">
                     <span className="flex items-center gap-1">
